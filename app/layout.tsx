@@ -18,11 +18,11 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className={inter.variable}>
-        <Providers>
             <body>
-            {children}
+                <Providers>
+                    {children}
+                </Providers>
             </body>
-        </Providers>
         </html>
     );
 }
