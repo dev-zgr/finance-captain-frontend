@@ -29,7 +29,32 @@ npx shadcn-ui@latest add button
 - Components are placed in `components/ui/`.
 - For documentation and usage, see the [shadcn/ui docs](https://ui.shadcn.com/docs).
 
+### 4. Redux Toolkit Setup
+- This project uses [Redux Toolkit](https://redux-toolkit.js.org/) for state management.
+- To install Redux Toolkit and React Redux:
 
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+- The Redux store is defined in the `store/` directory (for example, `store/index.ts` or `store.ts`).
+- The Redux `<Provider>` is wired up at the application root (for example, in `app/layout.tsx` or a shared `app/providers.tsx` component) so that state is available throughout the app.
+- When adding new slices, export them from the store and include them in the root reducer.
+
+### 5. Environment Variables
+- Environment-specific configuration is loaded from `.env.local` (which is git-ignored).
+- Copy `.env.local.example` to `.env.local` and fill in values appropriate for your environment.
+- The following variables are expected:
+
+```bash
+# Base URL for API requests (include protocol, no trailing slash)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+
+# Optional: API key or token used for authenticated requests
+NEXT_PUBLIC_API_KEY=your-local-api-key
+```
+
+- Update `.env.local.example` whenever new required environment variables are introduced.
 
 ---
 
