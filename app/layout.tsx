@@ -4,7 +4,7 @@ import {Inter} from "next/font/google";
 import {Providers} from "@/app/providers";
 import React from "react";
 
-const inter = Inter({subsets: ["latin"], variable: "--font-sans", display: "swap"});
+const inter = Inter({subsets: ["latin"], variable: "--font-inter", display: "swap"});
 
 export const metadata: Metadata = {
     title: "Create Next App",
