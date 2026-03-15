@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Initialization
 
-## Getting Started
-
-First, run the development server:
+### 1. Next.js Setup
+- This project uses [Next.js](https://nextjs.org/) for the React application framework.
+- To start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Tailwind CSS Setup
+- [Tailwind CSS](https://tailwindcss.com/) is used for utility-first styling.
+- Tailwind is configured via `postcss.config.mjs` and imported in `app/globals.css`.
+- To install Tailwind CSS and its dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install tailwindcss@latest postcss@latest autoprefixer@latest
+```
+- For more details, see the [Tailwind Next.js guide](https://tailwindcss.com/docs/guides/nextjs).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. shadcn/ui Setup
+- [shadcn/ui](https://ui.shadcn.com/) provides accessible, customizable UI components built on top of Radix UI and Tailwind CSS.
+- To install shadcn/ui:
 
-## Learn More
+```bash
+npx shadcn-ui@latest init
+npx shadcn-ui@latest add button
+```
+- Components are placed in `components/ui/`.
+- For documentation and usage, see the [shadcn/ui docs](https://ui.shadcn.com/docs).
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Redux Toolkit Setup
+- This project uses [Redux Toolkit](https://redux-toolkit.js.org/) for state management.
+- To install Redux Toolkit and React Redux:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install @reduxjs/toolkit react-redux
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- The Redux store is defined in the `store/` directory (for example, `store/index.ts` or `store.ts`).
+- The Redux `<Provider>` is wired up at the application root (for example, in `app/layout.tsx` or a shared `app/providers.tsx` component) so that state is available throughout the app.
+- When adding new slices, export them from the store and include them in the root reducer.
 
-## Deploy on Vercel
+### 5. Environment Variables
+- Environment-specific configuration is loaded from `.env.local` (which is git-ignored).
+- Copy `.env.local.example` to `.env.local` and fill in values appropriate for your environment.
+- The following variables are expected:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Base URL for API requests (include protocol, no trailing slash)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Optional: API key or token used for authenticated requests
+NEXT_PUBLIC_API_KEY=your-local-api-key
+```
+
+- Update `.env.local.example` whenever new required environment variables are introduced.
+
+---
+
+For further learning, see:
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [shadcn/ui Documentation](https://ui.shadcn.com/docs)
+
