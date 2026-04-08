@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { AppShell } from '@/components/layout/AppShell';
 import { login as loginAction } from '@/lib/slices/authSlice';
 import { LoginForm } from '@/components/components/login-form';
-import { Card, CardContent } from '@/components/ui/card';
 import {API_ENDPOINTS} from "@/lib/constants/api";
 import axios from "axios";
 
@@ -80,15 +79,8 @@ export default function LoginPage() {
             onSubmit={handleSubmit}
             pending={pending}
             errors={errors}
+            success={success}
           />
-          {success && (
-            <Card className="mt-6 border-green-500 bg-green-50">
-              <CardContent className="flex items-center gap-3 py-4">
-                {/*<RiCheckboxCircleLine className="text-green-600 w-6 h-6" />*/}
-                <span className="text-green-700 font-medium">Login successful! Redirecting to dashboard...</span>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </AppShell>

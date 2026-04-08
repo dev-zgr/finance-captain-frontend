@@ -25,6 +25,7 @@ export interface LoginFormProps {
         password?: string;
         general?: string;
     };
+    success?: boolean;
     className?: string;
 }
 
@@ -36,6 +37,7 @@ export function LoginForm({
                               onSubmit,
                               pending = false,
                               errors = {},
+                              success,
                               className,
                               ...props
                           }: LoginFormProps) {
@@ -58,6 +60,16 @@ export function LoginForm({
                                     <i className="ri-information-line mr-2 text-blue-500 text-lg"
                                        aria-hidden="true"></i>
                                     {errors.general}
+                                </div>
+                            )}
+
+                            {success && (
+                                <div
+                                    className="mb-2 rounded-md bg-green-100 border border-green-300 text-green-800 px-4 py-2 text-sm flex items-center">
+                                    <RiInfoI size={18}/>
+                                    <i className="ri-information-line mr-2 text-blue-500 text-lg"
+                                       aria-hidden="true"></i>
+                                    Login successful! Redirecting to dashboard...
                                 </div>
                             )}
 
