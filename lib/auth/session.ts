@@ -6,23 +6,37 @@ type StoredAuthPayload = {
   content: AuthContent;
   expiresAt: number;
 };
-
 function isAuthContent(value: unknown): value is AuthContent {
   if (!value || typeof value !== "object") return false;
 
-  const candidate = value as Partial<AuthContent> & {
-    user?: Partial<AuthContent["user"]>;
+  const candidate = value as {
+    token?: unknown;
+    expiresIn?: unknown;
+    user?: unknown;
+  };
+
+  if (typeof candidate.token !== "string" || typeof candidate.expiresIn !== "number") {
+    return false;
+  }
+
+  if (!candidate.user || typeof candidate.user !== "object") {
+    return false;
+  }
+
+  const user = candidate.user as {
+    id?: unknown;
+    firstName?: unknown;
+    lastName?: unknown;
+    email?: unknown;
+    phoneNumber?: unknown;
   };
 
   return (
-    typeof candidate.token === "string" &&
-    typeof candidate.expiresIn === "number" &&
-    !!candidate.user &&
-    typeof candidate.user.id === "number" &&
-    typeof candidate.user.firstName === "string" &&
-    typeof candidate.user.lastName === "string" &&
-    typeof candidate.user.email === "string" &&
-    typeof candidate.user.phoneNumber === "string"
+    typeof user.id === "number" &&
+    typeof user.firstName === "string" &&
+    typeof user.lastName === "string" &&
+    typeof user.email === "string" &&
+    typeof user.phoneNumber === "string"
   );
 }
 
@@ -85,22 +99,6 @@ export function restoreAuthFromStorage(now = Date.now()): AuthContent | null {
     return null;
   }
 }
-
-export function persistAuthSession(content: AuthContent, now = Date.now()): boolean {
-  if (typeof window === "undefined" || !isAuthContent(content)) {
-    return false;
-  }
-
-  const expiresAt = normalizeExpiresAt(content.expiresIn, now);
-  if (!expiresAt || expiresAt <= now) {
-    return false;
-  }
-
-  const payload: StoredAuthPayload = { content, expiresAt };
-  window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
-  return true;
-}
-
 export function clearPersistedAuth() {
   if (typeof window === "undefined") {
     return;
