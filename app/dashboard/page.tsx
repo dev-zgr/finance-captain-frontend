@@ -1,41 +1,23 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
 import { useSelector } from 'react-redux';
 
-import { AppShell } from '@/components/layout/AppShell';
-import { Button } from '@/components/ui/button';
 import type { RootState } from '@/lib/store';
+import { AuthenticatedDashboardLayout } from "@/components/dashboard/AuthenticatedDashboardLayout";
 
 export default function DashboardPage() {
-    const { isAuthenticated, content } = useSelector((state: RootState) => state.auth);
+    const { content } = useSelector((state: RootState) => state.auth);
+    const firstName = content?.user?.firstName ?? "Captain";
 
     return (
-        <AppShell>
-            <section className="space-y-4">
-                {isAuthenticated ? (
-                    <>
-                        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-                        <p className="text-sm text-muted-foreground">
-                            Welcome back
-                            {content?.user?.firstName ? `, ${content.user.firstName}` : ''}!
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <h1 className="text-xl font-semibold tracking-tight">Please login to continue</h1>
-                        <p className="text-sm text-muted-foreground">
-                            You need to be authenticated to view your dashboard.
-                        </p>
-                        <div className="mt-4">
-                            <Button asChild>
-                                <Link href="/login">Go to login</Link>
-                            </Button>
-                        </div>
-                    </>
-                )}
+        <AuthenticatedDashboardLayout>
+            <section className="space-y-2">
+                <h1 className="text-2xl font-semibold tracking-tight">Welcome back, {firstName}</h1>
+                <p className="text-sm text-muted-foreground">
+                    Your dashboard sidebar is now the primary layout.
+                </p>
             </section>
-        </AppShell>
+        </AuthenticatedDashboardLayout>
     );
 }
