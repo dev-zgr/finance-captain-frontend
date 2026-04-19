@@ -48,8 +48,8 @@ export function AuthenticatedDashboardLayout({ children }: { children: React.Rea
     <SidebarProvider>
       <AppSidebar className="z-30" />
       <SidebarInset className="min-h-svh font-sans">
-        <div className="sticky top-2 z-10 px-2">
-          <div className="flex items-center gap-2 py-2">
+        <div className="sticky top-0 z-30 border-b bg-background px-2 shadow-sm">
+          <div className="flex items-center gap-2 bg-background py-2">
             <SidebarTrigger />
             <Breadcrumb>
               <BreadcrumbList>
@@ -70,7 +70,6 @@ export function AuthenticatedDashboardLayout({ children }: { children: React.Rea
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div className="border-b" />
         </div>
         <main className="flex-1 p-4 md:p-6">{children}</main>
         <footer className="relative z-0 border-t bg-background">
