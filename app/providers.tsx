@@ -4,7 +4,8 @@ import React, { useEffect } from 'react';
 import { Provider, useDispatch } from 'react-redux';
 
 import { store } from '@/lib/store';
-import { setAuthFromStorage, type AuthContent } from '@/lib/slices/authSlice';
+import { setAuthFromStorage } from '@/lib/slices/authSlice';
+import { restoreAuthFromStorage } from '@/lib/auth/session';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch();
@@ -12,17 +13,8 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        try {
-            const raw = window.localStorage.getItem('auth');
-            if (!raw) return;
-
-            const parsed = JSON.parse(raw) as AuthContent;
-            dispatch(setAuthFromStorage(parsed));
-        } catch (error) {
-            console.error('Failed to restore auth state from localStorage', error);
-            window.localStorage.removeItem('auth');
-            dispatch(setAuthFromStorage(null));
-        }
+        const restoredAuth = restoreAuthFromStorage();
+        dispatch(setAuthFromStorage(restoredAuth));
     }, [dispatch]);
 
     return <>{children}</>;

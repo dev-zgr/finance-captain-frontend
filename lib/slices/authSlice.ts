@@ -25,11 +25,13 @@ export interface AuthContent {
 
 export interface AuthState {
     isAuthenticated: boolean;
+    isHydrated: boolean;
     content: AuthContent | null;
 }
 
 const initialState: AuthState = {
     isAuthenticated: false,
+    isHydrated: false,
     content: null,
 };
 
@@ -39,13 +41,16 @@ const authSlice = createSlice({
     reducers: {
         login(state, action: PayloadAction<AuthContent>) {
             state.isAuthenticated = true;
+            state.isHydrated = true;
             state.content = action.payload;
         },
         logout(state) {
             state.isAuthenticated = false;
+            state.isHydrated = true;
             state.content = null;
         },
         setAuthFromStorage(state, action: PayloadAction<AuthContent | null>) {
+            state.isHydrated = true;
             if (action.payload) {
                 state.isAuthenticated = true;
                 state.content = action.payload;
