@@ -1,7 +1,7 @@
 import type { ExpenseCheckingCategory, IncomeCheckingCategory } from "@/lib/checking-account/constants";
 
 export type TransactionType = "INCOME" | "EXPENSE";
-export type TransactionMethodType = "MANUAL" | "VLM";
+export type TransactionMethodType = "MANUAL" | "VLM_EXTRACTION";
 
 export type ExpenseFormValues = {
   date: string;
@@ -59,4 +59,20 @@ export type ApiErrorResponse = {
   timestamp?: string;
   errorDetails?: string;
   fieldErrors?: Record<string, string>;
+};
+
+export type ExtractedTransaction = {
+  date: string;
+  amount: number;
+  expenseCategory?: ExpenseCheckingCategory;
+  incomeCategory?: IncomeCheckingCategory;
+  description: string;
+};
+
+export type VlmExtractionResponse = {
+  date?: string;
+  amount?: number;
+  expenseCategory?: ExpenseCheckingCategory;
+  incomeCategory?: IncomeCheckingCategory;
+  description?: string;
 };

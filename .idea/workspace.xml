@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: add income addition dialog and enhance expense form with AI categorization">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/components/checking-account/income-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/income-form.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/validation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/validation.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +66,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "22-manual-expense-addition-and-api-interaction",
+    "git-widget-placeholder": "24-feat-vlm-image-extraction-tab-for-checking-account-transaction-adding",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/components/components/layoutComponents",
