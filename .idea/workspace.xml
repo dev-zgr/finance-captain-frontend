@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: implement authentication checks and enhance dashboard layout">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/components/layoutComponents/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/layoutComponents/app-sidebar.tsx" afterDir="false" />
+    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: add income addition dialog and enhance expense form with AI categorization">
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/income-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/income-form.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/validation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/validation.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +63,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "20-initial-layout-for-checking-page-using-shadcn-ui",
+    "git-widget-placeholder": "22-manual-expense-addition-and-api-interaction",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/components/components/layoutComponents",
@@ -79,6 +80,9 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/components/components/layoutComponents" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -132,7 +136,23 @@
       <option name="project" value="LOCAL" />
       <updated>1776566243665</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: add manual expense addition and API interaction components">
+      <option name="closed" value="true" />
+      <created>1777207758130</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1777207758130</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat: add income addition dialog and enhance expense form with AI categorization">
+      <option name="closed" value="true" />
+      <created>1777211918421</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1777211918421</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -141,7 +161,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: enhance dashboard layout with logout modal and breadcrumb navigation" />
     <MESSAGE value="feat: implement authentication checks and enhance dashboard layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: implement authentication checks and enhance dashboard layout" />
+    <MESSAGE value="feat: add manual expense addition and API interaction components" />
+    <MESSAGE value="feat: add income addition dialog and enhance expense form with AI categorization" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add income addition dialog and enhance expense form with AI categorization" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

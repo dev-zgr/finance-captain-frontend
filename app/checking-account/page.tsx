@@ -1,9 +1,20 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 import { AuthenticatedDashboardLayout } from "@/components/dashboard/AuthenticatedDashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckingActionsCard } from "@/components/components/checking-account/checking-actions-card";
+import { AddExpenseDialog } from "@/components/components/checking-account/add-expense-sheet";
+import { AddIncomeDialog } from "@/components/components/checking-account/add-income-sheet";
+import type { RootState } from "@/lib/store";
 
 export default function CheckingPage() {
+  const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
+  const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
+  const token = useSelector((state: RootState) => state.auth.content?.token ?? "");
+
   return (
     <AuthenticatedDashboardLayout>
       <section className="space-y-6">
@@ -27,13 +38,10 @@ export default function CheckingPage() {
               <CardContent className="min-h-24" />
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Card 2</CardTitle>
-                <CardDescription>Bottom right placeholder.</CardDescription>
-              </CardHeader>
-              <CardContent className="min-h-24" />
-            </Card>
+            <CheckingActionsCard 
+              onAddExpense={() => setExpenseDialogOpen(true)}
+              onAddIncome={() => setIncomeDialogOpen(true)}
+            />
           </div>
         </div>
 
@@ -45,6 +53,9 @@ export default function CheckingPage() {
           <CardContent className="min-h-40" />
         </Card>
       </section>
+
+      <AddExpenseDialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen} token={token} />
+      <AddIncomeDialog open={incomeDialogOpen} onOpenChange={setIncomeDialogOpen} token={token} />
     </AuthenticatedDashboardLayout>
   );
 }
