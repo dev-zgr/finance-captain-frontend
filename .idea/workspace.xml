@@ -5,8 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: implement authentication checks and enhance dashboard layout">
+      <change afterPath="$PROJECT_DIR$/Software Requirements Document-2.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/components/checking-account/add-expense-sheet.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/components/checking-account/checking-actions-card.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/calendar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/combobox.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/command.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/date-picker.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/dialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/input-group.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/item.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/popover.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/tabs.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/ui/textarea.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/checking-account/constants.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/checking-account/validation.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/components/layoutComponents/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/layoutComponents/app-sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/checking-account/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/checking-account/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ui/button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ui/button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +84,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "20-initial-layout-for-checking-page-using-shadcn-ui",
+    "git-widget-placeholder": "22-manual-expense-addition-and-api-interaction",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/components/components/layoutComponents",
@@ -79,6 +101,9 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/components/components/layoutComponents" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
