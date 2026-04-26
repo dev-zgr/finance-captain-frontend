@@ -35,6 +35,7 @@ import {
 } from "@/lib/checking-account/constants";
 import {
   validateExpenseForm,
+  validateIncomeForm,
   mapBackendFieldErrors,
   toBackendDate,
 } from "@/lib/checking-account/validation";
@@ -194,7 +195,7 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
     setFieldErrors({});
     setGlobalError("");
 
-    const validationErrors = validateExpenseForm(values as ExpenseFormValues);
+    const validationErrors = validateIncomeForm(values);
     if (Object.keys(validationErrors).length > 0) {
       setFieldErrors(validationErrors as IncomeFormFieldErrors);
       setStatus("idle");
@@ -268,8 +269,8 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
           )}
           {status === "success" && (
             <div className="flex flex-col items-center gap-3 animate-in fade-in duration-300">
-              <div className="rounded-full bg-green-500/20 p-4">
-                <CheckCircle2 className="size-12 text-green-600" strokeWidth={1.5} />
+              <div className="rounded-full bg-gray-200/50 p-4">
+                <CheckCircle2 className="size-12 text-gray-800" strokeWidth={1.5} />
               </div>
               <p className="text-gray-700 text-sm font-medium">Income Added!</p>
             </div>

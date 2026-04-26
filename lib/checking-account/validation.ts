@@ -1,8 +1,14 @@
 import {
   isExpenseCheckingCategory,
+  isIncomeCheckingCategory,
   MAX_DESCRIPTION_LENGTH,
 } from "@/lib/checking-account/constants";
-import type { ExpenseFormFieldErrors, ExpenseFormValues } from "@/lib/checking-account/types";
+import type {
+  ExpenseFormFieldErrors,
+  ExpenseFormValues,
+  IncomeFormFieldErrors,
+  IncomeFormValues,
+} from "@/lib/checking-account/types";
 
 function parseAmount(value: string): number | null {
   const numeric = Number(value);
@@ -60,6 +66,39 @@ export function validateExpenseForm(values: ExpenseFormValues): ExpenseFormField
     fieldErrors.category = "Category is required.";
   } else if (!isExpenseCheckingCategory(values.category)) {
     fieldErrors.category = "Please choose a valid expense category.";
+  }
+
+  return fieldErrors;
+}
+
+export function validateIncomeForm(values: IncomeFormValues): IncomeFormFieldErrors {
+  const fieldErrors: IncomeFormFieldErrors = {};
+
+  if (!values.date) {
+    fieldErrors.date = "Date is required.";
+  } else if (isFutureDate(values.date)) {
+    fieldErrors.date = "Date must be today or earlier.";
+  }
+
+  if (!values.amount.trim()) {
+    fieldErrors.amount = "Amount is required.";
+  } else {
+    const amount = parseAmount(values.amount);
+    if (amount === null) {
+      fieldErrors.amount = "Amount must be a valid number.";
+    } else if (amount <= 0) {
+      fieldErrors.amount = "Amount must be greater than 0.";
+    }
+  }
+
+  if (values.description.length > MAX_DESCRIPTION_LENGTH) {
+    fieldErrors.description = `Description must be ${MAX_DESCRIPTION_LENGTH} characters or fewer.`;
+  }
+
+  if (!values.category) {
+    fieldErrors.category = "Category is required.";
+  } else if (!isIncomeCheckingCategory(values.category)) {
+    fieldErrors.category = "Please choose a valid income category.";
   }
 
   return fieldErrors;

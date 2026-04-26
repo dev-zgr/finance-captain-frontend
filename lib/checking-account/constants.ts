@@ -22,9 +22,14 @@ export type ExpenseCheckingCategory = (typeof EXPENSE_CHECKING_CATEGORIES)[numbe
 export type IncomeCheckingCategory = (typeof INCOME_CHECKING_CATEGORIES)[number];
 
 const EXPENSE_CATEGORY_SET: ReadonlySet<string> = new Set(EXPENSE_CHECKING_CATEGORIES);
+const INCOME_CATEGORY_SET: ReadonlySet<string> = new Set(INCOME_CHECKING_CATEGORIES);
 
 export function isExpenseCheckingCategory(value: string): value is ExpenseCheckingCategory {
   return EXPENSE_CATEGORY_SET.has(value);
+}
+
+export function isIncomeCheckingCategory(value: string): value is IncomeCheckingCategory {
+  return INCOME_CATEGORY_SET.has(value);
 }
 
 // Category display mappings
