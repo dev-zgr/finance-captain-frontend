@@ -1,4 +1,4 @@
-import type { ExpenseCheckingCategory } from "@/lib/checking-account/constants";
+import type { ExpenseCheckingCategory, IncomeCheckingCategory } from "@/lib/checking-account/constants";
 
 export type TransactionType = "INCOME" | "EXPENSE";
 export type TransactionMethodType = "MANUAL" | "VLM";
@@ -10,8 +10,17 @@ export type ExpenseFormValues = {
   category: string;
 };
 
+export type IncomeFormValues = {
+  date: string;
+  amount: string;
+  description: string;
+  category: string;
+};
+
 export type ExpenseFormField = keyof ExpenseFormValues;
+export type IncomeFormField = keyof IncomeFormValues;
 export type ExpenseFormFieldErrors = Partial<Record<ExpenseFormField, string>>;
+export type IncomeFormFieldErrors = Partial<Record<IncomeFormField, string>>;
 
 export type CategorySuggestionRequest = {
   description: string;
@@ -25,11 +34,18 @@ export type CategorySuggestionContent = {
 };
 
 export type CreateCheckingTransactionRequest = {
-  transactionType: TransactionType;
+  transactionType: "EXPENSE";
   transactionMethodType: TransactionMethodType;
   amount: number;
   date: string;
   expenseCategory: ExpenseCheckingCategory;
+  description?: string;
+} | {
+  transactionType: "INCOME";
+  transactionMethodType: TransactionMethodType;
+  amount: number;
+  date: string;
+  incomeCategory: IncomeCheckingCategory;
   description?: string;
 };
 

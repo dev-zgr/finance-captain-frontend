@@ -26,6 +26,7 @@ interface ComboboxSelectProps {
   placeholder?: string
   searchPlaceholder?: string
   disabled?: boolean
+  onBlur?: () => void
 }
 
 export function ComboboxSelect({
@@ -35,12 +36,21 @@ export function ComboboxSelect({
   placeholder = "Select an item...",
   searchPlaceholder = "Search...",
   disabled = false,
+  onBlur,
 }: ComboboxSelectProps) {
   const [open, setOpen] = React.useState(false)
   const selectedItem = items.find((item) => item.value === value)
 
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    // Call onBlur when popover closes
+    if (!newOpen && onBlur) {
+      onBlur();
+    }
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -49,7 +59,11 @@ export function ComboboxSelect({
           className="w-full justify-between"
           disabled={disabled}
         >
-          {selectedItem ? selectedItem.label : placeholder}
+          {selectedItem ? (
+            selectedItem.label
+          ) : (
+            <span className="text-muted-foreground">{placeholder}</span>
+          )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

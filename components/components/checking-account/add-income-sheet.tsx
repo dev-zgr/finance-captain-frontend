@@ -2,23 +2,23 @@
 
 import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ExpenseForm } from "@/components/components/checking-account/expense-form";
+import { IncomeForm } from "@/components/components/checking-account/income-form";
 
-type AddExpenseDialogProps = {
+type AddIncomeDialogProps = {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
   token: string;
 };
 
-export function AddExpenseDialog({ open, onOpenChange, token }: AddExpenseDialogProps) {
+export function AddIncomeDialog({ open, onOpenChange, token }: AddIncomeDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[60%] !max-w-6xl sm:!max-w-6xl h-auto" style={{ transform: 'translateY(-20px)' }}>
         <DialogHeader className="pb-2">
-          <DialogTitle>Add Expense</DialogTitle>
-          <DialogDescription>Create a manual expense transaction for your checking account.</DialogDescription>
+          <DialogTitle>Add Income</DialogTitle>
+          <DialogDescription>Create a manual income transaction for your checking account.</DialogDescription>
         </DialogHeader>
-        <ExpenseForm token={token} />
+        <IncomeForm token={token} />
       </DialogContent>
     </Dialog>
   );

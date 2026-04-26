@@ -23,6 +23,20 @@ export async function requestCategorySuggestion(token: string, payload: Category
   );
 }
 
+export async function categorizeTransaction(token: string, payload: CategorySuggestionRequest) {
+  return axios.post<ApiSuccessResponse<CategorySuggestionContent> | ApiErrorResponse>(
+    API_ENDPOINTS.CATEGORIZE,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      validateStatus: () => true,
+    },
+  );
+}
+
 export async function createCheckingTransaction(token: string, payload: CreateCheckingTransactionRequest) {
   return axios.post<ApiSuccessResponse<Record<string, unknown>> | ApiErrorResponse>(
     API_ENDPOINTS.CHECKING_TRANSACTIONS,

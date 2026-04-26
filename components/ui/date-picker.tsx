@@ -30,10 +30,12 @@ export function DatePicker({
   const date = value ? new Date(value) : undefined;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const [open, setOpen] = React.useState(false);
 
   const handleSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       onChange(format(selectedDate, "yyyy-MM-dd"));
+      setOpen(false);
     }
   };
 
@@ -43,8 +45,16 @@ export function DatePicker({
     return dateToCheck > today;
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    // Call onBlur when popover closes
+    if (!newOpen && onBlur) {
+      onBlur();
+    }
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -52,7 +62,6 @@ export function DatePicker({
           disabled={disabled}
           data-empty={!date}
           className="w-full justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
-          onBlur={onBlur}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? format(date, "MMM dd, yyyy") : <span>{placeholder}</span>}

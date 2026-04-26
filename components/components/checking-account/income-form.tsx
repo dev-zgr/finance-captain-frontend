@@ -23,13 +23,14 @@ import {
 import { ComboboxSelect } from "@/components/ui/combobox";
 
 import type {
-  ExpenseFormFieldErrors,
+  IncomeFormFieldErrors,
+  IncomeFormValues,
   ExpenseFormValues,
   CategorySuggestionRequest,
 } from "@/lib/checking-account/types";
 import {
-  EXPENSE_CHECKING_CATEGORIES,
-  EXPENSE_CATEGORIES_WITH_LABELS,
+  INCOME_CHECKING_CATEGORIES,
+  INCOME_CATEGORIES_WITH_LABELS,
   MAX_DESCRIPTION_LENGTH,
 } from "@/lib/checking-account/constants";
 import {
@@ -44,12 +45,12 @@ import {
 
 type PageStatus = "idle" | "submitting" | "ai-loading" | "success" | "error";
 
-type ExpenseFormProps = {
+type IncomeFormProps = {
   token: string;
   onSuccess?: () => void;
 };
 
-export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
+export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
   const [status, setStatus] = useState<PageStatus>("idle");
   const [showFadeOut, setShowFadeOut] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -57,21 +58,21 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
     type: "success" | "error";
     message: string;
   } | null>(null);
-  const [values, setValues] = useState<ExpenseFormValues>({
+  const [values, setValues] = useState<IncomeFormValues>({
     date: "",
     amount: "",
     description: "",
     category: "",
   });
-  const [fieldErrors, setFieldErrors] = useState<ExpenseFormFieldErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<IncomeFormFieldErrors>({});
   const [globalError, setGlobalError] = useState("");
-  const [touched, setTouched] = useState<Set<keyof ExpenseFormValues>>(new Set());
+  const [touched, setTouched] = useState<Set<keyof IncomeFormValues>>(new Set());
 
-  const markFieldTouched = (field: keyof ExpenseFormValues) => {
+  const markFieldTouched = (field: keyof IncomeFormValues) => {
     setTouched((prev) => new Set([...prev, field]));
   };
 
-  const getFieldError = (field: keyof ExpenseFormValues): string | undefined => {
+  const getFieldError = (field: keyof IncomeFormValues): string | undefined => {
     if (fieldErrors[field]) {
       return fieldErrors[field];
     }
@@ -82,7 +83,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
     return undefined;
   };
 
-  const handleFieldChange = useCallback((key: keyof ExpenseFormValues, value: string) => {
+  const handleFieldChange = useCallback((key: keyof IncomeFormValues, value: string) => {
     let sanitizedValue = value;
     // For amount field, allow only numbers and decimal point
     if (key === "amount") {
@@ -116,7 +117,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         description: values.description,
         amount,
         date: values.date ? toBackendDate(values.date) : undefined,
-        transactionType: "EXPENSE",
+        transactionType: "INCOME",
       };
       console.log("🤖 AI Categorize Request:", payload);
       const response = await categorizeTransaction(token, payload);
@@ -160,7 +161,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
       } else if (response.status === 400) {
         const data = response.data as { fieldErrors?: Record<string, string> };
         const fieldErrs = data?.fieldErrors;
-        setFieldErrors(mapBackendFieldErrors(fieldErrs));
+        setFieldErrors(mapBackendFieldErrors(fieldErrs) as IncomeFormFieldErrors);
         setAiMessage({
           type: "error",
           message: "Invalid input for AI categorization. Please check your entries.",
@@ -193,20 +194,20 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
     setFieldErrors({});
     setGlobalError("");
 
-    const validationErrors = validateExpenseForm(values);
+    const validationErrors = validateExpenseForm(values as ExpenseFormValues);
     if (Object.keys(validationErrors).length > 0) {
-      setFieldErrors(validationErrors);
+      setFieldErrors(validationErrors as IncomeFormFieldErrors);
       setStatus("idle");
       return;
     }
 
     try {
       const response = await createCheckingTransaction(token, {
-        transactionType: "EXPENSE",
+        transactionType: "INCOME",
         transactionMethodType: "MANUAL",
         amount: Number(values.amount),
         date: toBackendDate(values.date),
-        expenseCategory: values.category as typeof EXPENSE_CHECKING_CATEGORIES[number],
+        incomeCategory: values.category as typeof INCOME_CHECKING_CATEGORIES[number],
         description: values.description || undefined,
       });
 
@@ -229,7 +230,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         const data = response.data as { fieldErrors?: Record<string, string>; message?: string };
         const fieldErrs = data?.fieldErrors;
         const globalMsg = data?.message;
-        setFieldErrors(mapBackendFieldErrors(fieldErrs));
+        setFieldErrors(mapBackendFieldErrors(fieldErrs) as IncomeFormFieldErrors);
         if (globalMsg) {
           setGlobalError(globalMsg);
         }
@@ -267,21 +268,21 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
           )}
           {status === "success" && (
             <div className="flex flex-col items-center gap-3 animate-in fade-in duration-300">
-              <div className="rounded-full bg-gray-200/50 p-4">
-                <CheckCircle2 className="size-12 text-gray-800" strokeWidth={1.5} />
+              <div className="rounded-full bg-green-500/20 p-4">
+                <CheckCircle2 className="size-12 text-green-600" strokeWidth={1.5} />
               </div>
-              <p className="text-gray-700 text-sm font-medium">Expense Added!</p>
+              <p className="text-gray-700 text-sm font-medium">Income Added!</p>
             </div>
           )}
         </div>
       )}
 
-      <Tabs defaultValue="expense" className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
+      <Tabs defaultValue="income" className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
         <TabsList variant="line" className="w-full mb-4">
-          <TabsTrigger value="expense">Expense Form</TabsTrigger>
+          <TabsTrigger value="income">Income Form</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="expense" className="gap-4 p-2">
+        <TabsContent value="income" className="gap-4 p-2">
           <FieldGroup className="gap-4">
             {globalError && (
               <div className="rounded-md bg-red-100 border border-red-300 text-red-800 px-4 py-2 text-sm">
@@ -292,7 +293,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
             {/* Date and Amount side by side */}
             <div className="grid grid-cols-2 gap-4">
               <Field data-invalid={!!getFieldError("date")}>
-                <FieldLabel htmlFor="expense-date">Date</FieldLabel>
+                <FieldLabel htmlFor="income-date">Date</FieldLabel>
                 <FieldContent>
                   <DatePicker
                     value={values.date}
@@ -306,14 +307,14 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
               </Field>
 
               <Field data-invalid={!!getFieldError("amount")}>
-                <FieldLabel htmlFor="expense-amount">Amount</FieldLabel>
+                <FieldLabel htmlFor="income-amount">Amount</FieldLabel>
                 <FieldContent>
                   <InputGroup>
                     <InputGroupAddon>
                       <InputGroupText>$</InputGroupText>
                     </InputGroupAddon>
                     <InputGroupInput
-                      id="expense-amount"
+                      id="income-amount"
                       type="text"
                       inputMode="decimal"
                       placeholder="0.00"
@@ -343,12 +344,12 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
 
             {/* Category */}
             <Field data-invalid={!!getFieldError("category")}>
-              <FieldLabel htmlFor="expense-category">Category</FieldLabel>
+              <FieldLabel htmlFor="income-category">Category</FieldLabel>
               <FieldContent className="gap-2">
                 <div className="flex gap-2 w-full">
                   <div className="flex-1 min-w-0">
                     <ComboboxSelect
-                      items={EXPENSE_CATEGORIES_WITH_LABELS}
+                      items={INCOME_CATEGORIES_WITH_LABELS}
                       value={values.category}
                       onValueChange={(val) => {
                         handleFieldChange("category", val);
@@ -393,12 +394,12 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
 
             {/* Description */}
             <Field data-invalid={!!getFieldError("description")}>
-              <FieldLabel htmlFor="expense-description">Description</FieldLabel>
+              <FieldLabel htmlFor="income-description">Description</FieldLabel>
               <FieldContent>
                 <Input
-                  id="expense-description"
+                  id="income-description"
                   type="text"
-                  placeholder="What did you spend on?"
+                  placeholder="What is this income from?"
                   maxLength={MAX_DESCRIPTION_LENGTH}
                   value={values.description}
                   onChange={(e) => handleFieldChange("description", e.target.value)}
@@ -407,7 +408,6 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
                   aria-invalid={!!getFieldError("description")}
                 />
                 <div className={"mt-1"}>
-
                   <FieldDescription className="text-xs">
                     {values.description.length} / {MAX_DESCRIPTION_LENGTH}
                   </FieldDescription>
@@ -419,7 +419,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         </TabsContent>
       </Tabs>
 
-      {/* Add Expense button at bottom */}
+      {/* Add Income button at bottom */}
       <div className="flex gap-3 pt-8 border-t mt-auto">
         <Button
           type="submit"
@@ -439,7 +439,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
               Success
             </>
           ) : (
-            "Add Expense"
+            "Add Income"
           )}
         </Button>
       </div>

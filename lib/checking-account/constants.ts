@@ -40,8 +40,21 @@ export const CATEGORY_DISPLAY_MAP: Record<string, string> = {
   OTHER: "Other",
 };
 
+export const INCOME_CATEGORY_DISPLAY_MAP: Record<string, string> = {
+  SALARY: "Salary",
+  INVESTMENT: "Investment",
+  RENTAL: "Rental",
+  TRANSFERS: "Transfers",
+  OTHER: "Other",
+};
+
 export const EXPENSE_CATEGORIES_WITH_LABELS = EXPENSE_CHECKING_CATEGORIES.map((cat) => ({
   label: CATEGORY_DISPLAY_MAP[cat],
+  value: cat,
+}));
+
+export const INCOME_CATEGORIES_WITH_LABELS = INCOME_CHECKING_CATEGORIES.map((cat) => ({
+  label: INCOME_CATEGORY_DISPLAY_MAP[cat],
   value: cat,
 }));
 

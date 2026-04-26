@@ -7,10 +7,12 @@ import { AuthenticatedDashboardLayout } from "@/components/dashboard/Authenticat
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckingActionsCard } from "@/components/components/checking-account/checking-actions-card";
 import { AddExpenseDialog } from "@/components/components/checking-account/add-expense-sheet";
+import { AddIncomeDialog } from "@/components/components/checking-account/add-income-sheet";
 import type { RootState } from "@/lib/store";
 
 export default function CheckingPage() {
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
+  const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
   const token = useSelector((state: RootState) => state.auth.content?.token ?? "");
 
   return (
@@ -36,7 +38,10 @@ export default function CheckingPage() {
               <CardContent className="min-h-24" />
             </Card>
 
-            <CheckingActionsCard onAddExpense={() => setExpenseDialogOpen(true)} />
+            <CheckingActionsCard 
+              onAddExpense={() => setExpenseDialogOpen(true)}
+              onAddIncome={() => setIncomeDialogOpen(true)}
+            />
           </div>
         </div>
 
@@ -50,6 +55,7 @@ export default function CheckingPage() {
       </section>
 
       <AddExpenseDialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen} token={token} />
+      <AddIncomeDialog open={incomeDialogOpen} onOpenChange={setIncomeDialogOpen} token={token} />
     </AuthenticatedDashboardLayout>
   );
 }

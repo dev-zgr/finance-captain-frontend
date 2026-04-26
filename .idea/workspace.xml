@@ -4,31 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: implement authentication checks and enhance dashboard layout">
+    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: add manual expense addition and API interaction components">
       <change afterPath="$PROJECT_DIR$/Software Requirements Document-2.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/components/checking-account/add-expense-sheet.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/components/checking-account/checking-actions-card.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/calendar.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/combobox.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/command.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/date-picker.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/dialog.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/input-group.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/item.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/popover.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/tabs.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/textarea.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/checking-account/constants.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/checking-account/validation.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/checking-account/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/checking-account/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ui/button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ui/button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/add-expense-sheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/add-expense-sheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/checking-actions-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/checking-actions-card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ui/combobox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ui/combobox.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ui/date-picker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ui/date-picker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776566243665</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: add manual expense addition and API interaction components">
+      <option name="closed" value="true" />
+      <created>1777207758130</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1777207758130</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,7 +162,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: enhance dashboard layout with logout modal and breadcrumb navigation" />
     <MESSAGE value="feat: implement authentication checks and enhance dashboard layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: implement authentication checks and enhance dashboard layout" />
+    <MESSAGE value="feat: add manual expense addition and API interaction components" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add manual expense addition and API interaction components" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
