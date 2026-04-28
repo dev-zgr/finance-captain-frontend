@@ -9,6 +9,7 @@ import { CheckingActionsCard } from "@/components/components/checking-account/ch
 import { AddExpenseDialog } from "@/components/components/checking-account/add-expense-sheet";
 import { AddIncomeDialog } from "@/components/components/checking-account/add-income-sheet";
 import { AccountSummaryCard } from "@/components/components/checking-account/account-summary-card";
+import { AccountTimeSeriesChart } from "@/components/components/checking-account/account-time-series-chart";
 import type { RootState } from "@/lib/store";
 
 export default function CheckingPage() {
@@ -25,13 +26,7 @@ export default function CheckingPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Checking Account</h1>
 
         <div className="grid gap-4 lg:grid-cols-[13fr_7fr]">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Chart</CardTitle>
-              <CardDescription>Primary checking account visualization area.</CardDescription>
-            </CardHeader>
-            <CardContent className="min-h-56" />
-          </Card>
+          <AccountTimeSeriesChart token={token} />
 
           <div className="grid gap-4">
             <AccountSummaryCard token={token} refreshKey={summaryRefreshKey} />
