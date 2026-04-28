@@ -8,9 +8,10 @@ type AddExpenseDialogProps = {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
   token: string;
+  onSuccess?: () => void;
 };
 
-export function AddExpenseDialog({ open, onOpenChange, token }: AddExpenseDialogProps) {
+export function AddExpenseDialog({ open, onOpenChange, token, onSuccess }: AddExpenseDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[60%] !max-w-6xl sm:!max-w-6xl h-auto" style={{ transform: 'translateY(-20px)' }}>
@@ -18,7 +19,7 @@ export function AddExpenseDialog({ open, onOpenChange, token }: AddExpenseDialog
           <DialogTitle>Add Expense</DialogTitle>
           <DialogDescription>Create a manual expense transaction for your checking account.</DialogDescription>
         </DialogHeader>
-        <ExpenseForm token={token} />
+        <ExpenseForm token={token} onSuccess={onSuccess} />
       </DialogContent>
     </Dialog>
   );

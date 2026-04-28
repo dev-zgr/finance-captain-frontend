@@ -8,12 +8,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckingActionsCard } from "@/components/components/checking-account/checking-actions-card";
 import { AddExpenseDialog } from "@/components/components/checking-account/add-expense-sheet";
 import { AddIncomeDialog } from "@/components/components/checking-account/add-income-sheet";
+import { AccountSummaryCard } from "@/components/components/checking-account/account-summary-card";
 import type { RootState } from "@/lib/store";
 
 export default function CheckingPage() {
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
+  const [summaryRefreshKey, setSummaryRefreshKey] = useState(0);
   const token = useSelector((state: RootState) => state.auth.content?.token ?? "");
+
+  const handleTransactionSuccess = () => setSummaryRefreshKey((k) => k + 1);
 
   return (
     <AuthenticatedDashboardLayout>
@@ -30,15 +34,9 @@ export default function CheckingPage() {
           </Card>
 
           <div className="grid gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Card 1</CardTitle>
-                <CardDescription>Top right placeholder.</CardDescription>
-              </CardHeader>
-              <CardContent className="min-h-24" />
-            </Card>
+            <AccountSummaryCard token={token} refreshKey={summaryRefreshKey} />
 
-            <CheckingActionsCard 
+            <CheckingActionsCard
               onAddExpense={() => setExpenseDialogOpen(true)}
               onAddIncome={() => setIncomeDialogOpen(true)}
             />
@@ -54,8 +52,18 @@ export default function CheckingPage() {
         </Card>
       </section>
 
-      <AddExpenseDialog open={expenseDialogOpen} onOpenChange={setExpenseDialogOpen} token={token} />
-      <AddIncomeDialog open={incomeDialogOpen} onOpenChange={setIncomeDialogOpen} token={token} />
+      <AddExpenseDialog
+        open={expenseDialogOpen}
+        onOpenChange={setExpenseDialogOpen}
+        token={token}
+        onSuccess={handleTransactionSuccess}
+      />
+      <AddIncomeDialog
+        open={incomeDialogOpen}
+        onOpenChange={setIncomeDialogOpen}
+        token={token}
+        onSuccess={handleTransactionSuccess}
+      />
     </AuthenticatedDashboardLayout>
   );
 }

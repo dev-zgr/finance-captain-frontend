@@ -69,6 +69,13 @@ export type ExtractedTransaction = {
   description: string;
 };
 
+export type AccountSummary = {
+  accountBalance: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  accountOpeningDate: string | null;
+};
+
 export type VlmExtractionResponse = {
   date?: string;
   amount?: number;
