@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { API_ENDPOINTS } from "@/lib/constants/api";
 import type {
+  AccountSummary,
   ApiErrorResponse,
   ApiSuccessResponse,
   CategorySuggestionContent,
@@ -48,6 +49,16 @@ export async function createCheckingTransaction(token: string, payload: CreateCh
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      validateStatus: () => true,
+    },
+  );
+}
+
+export async function getAccountSummary(token: string) {
+  return axios.get<ApiSuccessResponse<AccountSummary> | ApiErrorResponse>(
+    API_ENDPOINTS.CHECKING_SUMMARY,
+    {
+      headers: { Authorization: `Bearer ${token}` },
       validateStatus: () => true,
     },
   );
