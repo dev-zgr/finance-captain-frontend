@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
 import { AuthenticatedDashboardLayout } from "@/components/dashboard/AuthenticatedDashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckingActionsCard } from "@/components/components/checking-account/checking-actions-card";
 import { AddExpenseDialog } from "@/components/components/checking-account/add-expense-sheet";
 import { AddIncomeDialog } from "@/components/components/checking-account/add-income-sheet";
 import { AccountSummaryCard } from "@/components/components/checking-account/account-summary-card";
 import { AccountTimeSeriesChart } from "@/components/components/checking-account/account-time-series-chart";
+import { RecentTransactionsTable } from "@/components/components/checking-account/recent-transactions-table";
 import type { RootState } from "@/lib/store";
 
 export default function CheckingPage() {
@@ -38,13 +38,7 @@ export default function CheckingPage() {
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Bottom Full Width</CardTitle>
-            <CardDescription>Bottom section placeholder.</CardDescription>
-          </CardHeader>
-          <CardContent className="min-h-40" />
-        </Card>
+        <RecentTransactionsTable token={token} />
       </section>
 
       <AddExpenseDialog

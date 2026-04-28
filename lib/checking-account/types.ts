@@ -61,6 +61,30 @@ export type ApiErrorResponse = {
   fieldErrors?: Record<string, string>;
 };
 
+export interface GetCheckingTransactionsParams {
+  page?: number;
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+  startDate?: string;
+  endDate?: string;
+  category?: string[];
+  transactionType?: string;
+}
+
+export interface TransactionDTO {
+  transactionId: number;
+  date: string;
+  amount: number;
+  category: string;
+  description: string;
+}
+
+export interface GetCheckingTransactionsResponseDTO {
+  transactions: TransactionDTO[];
+  totalPages: number;
+  totalElements: number;
+}
+
 export type ExtractedTransaction = {
   date: string;
   amount: number;
