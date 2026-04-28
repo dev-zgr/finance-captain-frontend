@@ -61,17 +61,19 @@ export type ApiErrorResponse = {
   fieldErrors?: Record<string, string>;
 };
 
-export interface GetCheckingTransactionsParams {
+export type SortBy = "date" | "amount";
+
+export interface GetTransactionsParams {
   page?: number;
-  sortBy?: string;
+  sortBy?: SortBy;
   sortDirection?: "ASC" | "DESC";
   startDate?: string;
   endDate?: string;
   category?: string[];
-  transactionType?: string;
+  transactionType?: TransactionType;
 }
 
-export interface TransactionDTO {
+export interface TransactionRow {
   transactionId: number;
   date: string;
   amount: number;
@@ -79,11 +81,16 @@ export interface TransactionDTO {
   description: string;
 }
 
-export interface GetCheckingTransactionsResponseDTO {
-  transactions: TransactionDTO[];
+export interface GetTransactionsResponse {
+  transactions: TransactionRow[];
   totalPages: number;
   totalElements: number;
 }
+
+// Backwards-compatible aliases for existing checking-account consumers.
+export type GetCheckingTransactionsParams = GetTransactionsParams;
+export type TransactionDTO = TransactionRow;
+export type GetCheckingTransactionsResponseDTO = GetTransactionsResponse;
 
 export type ExtractedTransaction = {
   date: string;

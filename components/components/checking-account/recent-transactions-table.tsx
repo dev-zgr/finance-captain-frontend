@@ -5,35 +5,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { format, parseISO } from "date-fns";
 import {
   AlertCircle,
-  ArrowDownRight,
-  ArrowLeftRight,
-  ArrowUpRight,
-  Car,
-  CircleHelp,
-  Clapperboard,
-  DollarSign,
-  HeartPulse,
-  Home,
   Inbox,
-  Lightbulb,
-  ShoppingBag,
-  TrendingUp,
-  UtensilsCrossed,
-  type LucideIcon,
-  Building2,
   ExternalLink,
+  ArrowRight,
 } from "lucide-react"
 
-import { getCheckingTransactions } from "@/lib/checking-account/api";
-import { isExpenseCheckingCategory, isIncomeCheckingCategory } from "@/lib/checking-account/constants";
+import { extractCheckingTransactionsResponse, getCheckingTransactions } from "@/lib/checking-account/api";
+import { getSignedAmountFromCategory, getTransactionTypeFromCategory } from "@/lib/checking-account/transaction-presentation";
 import type {
   ApiErrorResponse,
-  ApiSuccessResponse,
-  GetCheckingTransactionsResponseDTO,
   TransactionDTO,
 } from "@/lib/checking-account/types";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { TransactionCategoryBadge } from "@/components/components/checking-account/transaction-category-badge";
+import { TransactionTypeBadge } from "@/components/components/checking-account/transaction-type-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
@@ -48,28 +33,6 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
 });
-
-const CATEGORY_STYLES: Record<string, { icon: LucideIcon; className: string }> = {
-  FOOD: { icon: UtensilsCrossed, className: "border-amber-500/30 bg-amber-500/10 text-amber-700" },
-  TRANSPORT: { icon: Car, className: "border-sky-500/30 bg-sky-500/10 text-sky-700" },
-  UTILITIES: { icon: Lightbulb, className: "border-yellow-500/30 bg-yellow-500/10 text-yellow-700" },
-  RENT: { icon: Home, className: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700" },
-  HEALTHCARE: { icon: HeartPulse, className: "border-red-500/30 bg-red-500/10 text-red-700" },
-  ENTERTAINMENT: { icon: Clapperboard, className: "border-purple-500/30 bg-purple-500/10 text-purple-700" },
-  SHOPPING: { icon: ShoppingBag, className: "border-pink-500/30 bg-pink-500/10 text-pink-700" },
-  TRANSFERS: { icon: ArrowLeftRight, className: "border-indigo-500/30 bg-indigo-500/10 text-indigo-700" },
-  SALARY: { icon: DollarSign, className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700" },
-  INVESTMENT: { icon: TrendingUp, className: "border-lime-500/30 bg-lime-500/10 text-lime-700" },
-  RENTAL: { icon: Building2, className: "border-teal-500/30 bg-teal-500/10 text-teal-700" },
-  OTHER: { icon: CircleHelp, className: "border-zinc-500/30 bg-zinc-500/10 text-zinc-700" },
-};
-
-function toTitleCase(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[_-]+/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
 
 function formatTransactionDate(value: string): string {
   try {
@@ -93,36 +56,6 @@ function getErrorMessage(status: number, payload?: ApiErrorResponse): string {
   }
 
   return payload?.message ?? "Could not load recent transactions.";
-}
-
-function getCategoryKey(category: string): string {
-  return category.trim().toUpperCase();
-}
-
-function getCategoryVisuals(category: string): { icon: LucideIcon; className: string } {
-  return CATEGORY_STYLES[getCategoryKey(category)] ?? CATEGORY_STYLES.OTHER;
-}
-
-function isExpenseTransaction(transaction: TransactionDTO): boolean {
-  const categoryKey = getCategoryKey(transaction.category);
-
-  if (transaction.amount < 0) {
-    return true;
-  }
-
-  if (transaction.amount > 0 && isIncomeCheckingCategory(categoryKey)) {
-    return false;
-  }
-
-  if (transaction.amount > 0 && isExpenseCheckingCategory(categoryKey)) {
-    return true;
-  }
-
-  if (transaction.amount > 0) {
-    return false;
-  }
-
-  return isExpenseCheckingCategory(categoryKey);
 }
 
 export function RecentTransactionsTable({ token }: RecentTransactionsTableProps) {
@@ -151,8 +84,8 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
       }
 
       if (response.status === 200) {
-        const body = response.data as ApiSuccessResponse<GetCheckingTransactionsResponseDTO>;
-        setTransactions(body.content?.transactions ?? []);
+        const payload = extractCheckingTransactionsResponse(response.data);
+        setTransactions(payload?.transactions ?? []);
         return;
       }
 
@@ -200,7 +133,7 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
           </div>
           <Button variant="outline" size="sm" asChild>
             <Link href="/checking-account/transactions">
-              Get details
+              Get more details
               <ExternalLink data-icon="inline-end" />
             </Link>
           </Button>
@@ -221,16 +154,16 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
             </Button>
           </div>
         ) : (
-          <Table>
+          <Table className="table-fixed min-w-[980px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Transaction ID</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead className="pl-6">Description</TableHead>
-                <TableHead className="text-right">Details</TableHead>
+                <TableHead className="w-[140px]">Transaction ID</TableHead>
+                <TableHead className="w-[130px]">Type</TableHead>
+                <TableHead className="w-[170px]">Category</TableHead>
+                <TableHead className="w-[130px]">Date</TableHead>
+                <TableHead className="w-[140px] pr-4">Amount</TableHead>
+                <TableHead className="w-[260px] pl-4">Description</TableHead>
+                <TableHead className="w-[110px]">Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -250,14 +183,8 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
                 </TableRow>
               ) : (
                 displayRows.map((transaction) => {
-                  const isExpense = isExpenseTransaction(transaction);
-                  const isIncome = !isExpense;
-                  const categoryVisuals = getCategoryVisuals(transaction.category);
-                  const CategoryIcon = categoryVisuals.icon;
-                  const categoryClassName = categoryVisuals.className;
-                  const signedAmount = isExpense
-                    ? -Math.abs(Number(transaction.amount ?? 0))
-                    : Math.abs(Number(transaction.amount ?? 0));
+                  const transactionType = getTransactionTypeFromCategory(transaction.category);
+                  const signedAmount = getSignedAmountFromCategory(Number(transaction.amount ?? 0), transaction.category);
 
                   return (
                     <TableRow key={transaction.transactionId}>
@@ -265,45 +192,33 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
                         #{transaction.transactionId}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={cn(
-                            isIncome
-                              ? "bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/15"
-                              : "bg-red-500/10 text-red-700 hover:bg-red-500/10"
-                          )}
-                        >
-                          {isIncome ? "INCOME" : "EXPENSE"}
-                          {isIncome ? <ArrowUpRight data-icon="inline-end" /> : <ArrowDownRight data-icon="inline-end" />}
-                        </Badge>
+                        <TransactionTypeBadge category={transaction.category} />
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={categoryClassName}>
-                          <CategoryIcon data-icon="inline-start" />
-                          {toTitleCase(transaction.category)}
-                        </Badge>
+                        <TransactionCategoryBadge category={transaction.category} />
                       </TableCell>
                       <TableCell>{formatTransactionDate(transaction.date)}</TableCell>
                       <TableCell
                         className={cn(
-                          "pr-6 font-medium",
-                          isIncome ? "text-emerald-600" : "text-red-600"
+                          "pr-4 font-medium",
+                          transactionType === "INCOME" ? "text-emerald-600" : "text-red-600"
                         )}
                       >
                         {currencyFormatter.format(signedAmount)}
                       </TableCell>
-                      <TableCell className="pl-6">
+                      <TableCell className="pl-4">
                         <Link
                           href={`/checking-account/transactions/${transaction.transactionId}`}
-                          className="block max-w-[200px] truncate font-medium text-primary hover:underline"
+                          className="block max-w-[240px] truncate font-medium text-primary hover:underline"
                         >
                           {transaction.description}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell>
                         <Button variant="ghost" size="sm" asChild>
-                          <Link className={"text-gray-600"} href={`/checking-account/transactions/${transaction.transactionId}`}>
-                            Get details
-                            <ExternalLink className={"text-gray-800"}/>
+                          <Link href={`/checking-account/transactions/${transaction.transactionId}`}>
+                            Details
+                            <ArrowRight data-icon="inline-end" />
                           </Link>
                         </Button>
                       </TableCell>
