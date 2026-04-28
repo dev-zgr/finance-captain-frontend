@@ -9,6 +9,7 @@ type AddIncomeDialogProps = {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
   token: string;
+  onSuccess?: () => void;
 };
 
 const DESCRIPTIONS: Record<string, string> = {
@@ -16,7 +17,7 @@ const DESCRIPTIONS: Record<string, string> = {
   scan: "Scan your paystub to automatically extract income transaction details.",
 };
 
-export function AddIncomeDialog({ open, onOpenChange, token }: AddIncomeDialogProps) {
+export function AddIncomeDialog({ open, onOpenChange, token, onSuccess }: AddIncomeDialogProps) {
   const [activeTab, setActiveTab] = useState("income");
 
   return (
@@ -26,7 +27,7 @@ export function AddIncomeDialog({ open, onOpenChange, token }: AddIncomeDialogPr
           <DialogTitle>Add Income</DialogTitle>
           <DialogDescription>{DESCRIPTIONS[activeTab]}</DialogDescription>
         </DialogHeader>
-        <IncomeForm token={token} onTabChange={setActiveTab} />
+        <IncomeForm token={token} onTabChange={setActiveTab} onSuccess={onSuccess} />
       </DialogContent>
     </Dialog>
   );
