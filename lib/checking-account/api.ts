@@ -8,10 +8,12 @@ import type {
   CategorySuggestionContent,
   CategorySuggestionRequest,
   CreateCheckingTransactionRequest,
+  GetCheckingTransactionsParams,
+  GetCheckingTransactionsResponseDTO,
   TimeSeriesPeriod,
   TimeSeriesResponse,
-  VlmExtractionResponse,
   TransactionType,
+  VlmExtractionResponse,
 } from "@/lib/checking-account/types";
 
 export async function requestCategorySuggestion(token: string, payload: CategorySuggestionRequest) {
@@ -63,6 +65,54 @@ export async function getAccountSummary(token: string) {
       headers: { Authorization: `Bearer ${token}` },
       validateStatus: () => true,
     },
+  );
+}
+
+export async function getCheckingTransactions(
+  token: string,
+  params: GetCheckingTransactionsParams = {},
+  signal?: AbortSignal
+) {
+  return axios.get<ApiSuccessResponse<GetCheckingTransactionsResponseDTO> | ApiErrorResponse>(
+    API_ENDPOINTS.CHECKING_TRANSACTIONS,
+    {
+      signal,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      params: {
+        page: params.page ?? 0,
+        sortBy: params.sortBy ?? "date",
+        sortDirection: params.sortDirection ?? "DESC",
+        ...(params.startDate && { startDate: params.startDate }),
+        ...(params.endDate && { endDate: params.endDate }),
+        ...(params.category && params.category.length > 0 && { category: params.category }),
+        ...(params.transactionType && { transactionType: params.transactionType }),
+      },
+      paramsSerializer: {
+        serialize: (queryParams) => {
+          const searchParams = new URLSearchParams();
+          Object.entries(queryParams).forEach(([key, value]) => {
+            if (value === undefined || value === null) {
+              return;
+            }
+
+            if (Array.isArray(value)) {
+              value.forEach((item) => {
+                searchParams.append(key, String(item));
+              });
+              return;
+            }
+
+            searchParams.append(key, String(value));
+          });
+
+          return searchParams.toString();
+        },
+      },
+      validateStatus: () => true,
+    }
   );
 }
 
