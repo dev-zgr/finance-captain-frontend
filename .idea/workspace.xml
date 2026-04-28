@@ -6,13 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: Update workspace configuration to enhance income and expense forms with VLM extraction support">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/checking-account/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/checking-account/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/account-time-series-chart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/account-time-series-chart.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/chart-date-range-picker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/chart-date-range-picker.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +69,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "28-add-incomeexpense-area-chart-to-checking-account-dashboard",
+    "git-widget-placeholder": "30-implement-recent-transactions-data-table-dashboard-bottom-section",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/.claude/skills",

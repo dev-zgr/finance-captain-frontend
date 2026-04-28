@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 type ChartDateRangePickerProps = {
   value?: DateRange;
   onChange: (nextValue: DateRange | undefined) => void;
+  onClear?: () => void;
   clearable?: boolean;
   className?: string;
 };
@@ -31,6 +32,7 @@ function getDateRangeLabel(value?: DateRange): string {
 export function ChartDateRangePicker({
   value,
   onChange,
+  onClear,
   clearable = true,
   className,
 }: ChartDateRangePickerProps) {
@@ -41,6 +43,10 @@ export function ChartDateRangePicker({
   const handleClear = (e: React.MouseEvent<SVGSVGElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (onClear) {
+      onClear();
+      return;
+    }
     onChange(undefined);
   };
 

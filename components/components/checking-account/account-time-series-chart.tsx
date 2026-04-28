@@ -251,13 +251,22 @@ export function AccountTimeSeriesChart({ token }: AccountTimeSeriesChartProps) {
 
   const handleDateRangeChange = (nextRange: DateRange | undefined) => {
     if (!nextRange) {
-      setHasCustomDateRange(false);
-      setDateRange(fallbackRange);
+      // DayPicker may emit undefined as part of "start a new range" interactions.
+      // Keep custom mode active so fallback doesn't immediately overwrite selection.
+      setHasCustomDateRange(true);
+      setDateRange(undefined);
       return;
     }
 
     setDateRange(nextRange);
-    setHasCustomDateRange(Boolean(nextRange.from && nextRange.to));
+    // Keep custom mode enabled during partial selection so the picker doesn't
+    // get reset before users can choose an updated start/end date.
+    setHasCustomDateRange(Boolean(nextRange.from || nextRange.to));
+  };
+
+  const handleDateRangeClear = () => {
+    setHasCustomDateRange(false);
+    setDateRange(fallbackRange);
   };
 
   return (
@@ -288,6 +297,7 @@ export function AccountTimeSeriesChart({ token }: AccountTimeSeriesChartProps) {
               <ChartDateRangePicker
                 value={dateRange}
                 onChange={handleDateRangeChange}
+                onClear={handleDateRangeClear}
                 clearable={hasCustomDateRange}
               />
               {isLongDayRange ? (
