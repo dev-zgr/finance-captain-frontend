@@ -17,11 +17,11 @@ export function CheckingActionsCard({ onAddExpense, onAddIncome }: CheckingActio
         <CardTitle>Actions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <Button variant="secondary" size="lg" type="button" className="w-full justify-between" onClick={onAddIncome}>
+        <Button variant="outline" size="lg" type="button" className="w-full justify-between" onClick={onAddIncome}>
           <span>Add Income</span>
           <BanknoteArrowUp className="size-4 text-green-700" />
         </Button>
-        <Button variant="secondary" size="lg" className="w-full justify-between " onClick={onAddExpense} data-icon="inline-end">
+        <Button variant="outline" size="lg" className="w-full justify-between " onClick={onAddExpense} data-icon="inline-end">
           Add Expense
           <BanknoteArrowDown className="size-4 text-red-700"  />
         </Button>

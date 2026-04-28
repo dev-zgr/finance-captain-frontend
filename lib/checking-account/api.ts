@@ -8,13 +8,43 @@ import type {
   CategorySuggestionContent,
   CategorySuggestionRequest,
   CreateCheckingTransactionRequest,
-  GetCheckingTransactionsParams,
-  GetCheckingTransactionsResponseDTO,
+  GetTransactionsParams,
+  GetTransactionsResponse,
   TimeSeriesPeriod,
   TimeSeriesResponse,
   TransactionType,
   VlmExtractionResponse,
 } from "@/lib/checking-account/types";
+
+function isGetTransactionsResponse(value: unknown): value is GetTransactionsResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const payload = value as Partial<GetTransactionsResponse>;
+  return (
+    Array.isArray(payload.transactions) &&
+    typeof payload.totalPages === "number" &&
+    typeof payload.totalElements === "number"
+  );
+}
+
+export function extractCheckingTransactionsResponse(data: unknown): GetTransactionsResponse | null {
+  if (isGetTransactionsResponse(data)) {
+    return data;
+  }
+
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const wrapped = data as ApiSuccessResponse<GetTransactionsResponse>;
+  if (isGetTransactionsResponse(wrapped.content)) {
+    return wrapped.content;
+  }
+
+  return null;
+}
 
 export async function requestCategorySuggestion(token: string, payload: CategorySuggestionRequest) {
   return axios.post<ApiSuccessResponse<CategorySuggestionContent> | ApiErrorResponse>(
@@ -70,10 +100,10 @@ export async function getAccountSummary(token: string) {
 
 export async function getCheckingTransactions(
   token: string,
-  params: GetCheckingTransactionsParams = {},
+  params: GetTransactionsParams = {},
   signal?: AbortSignal
 ) {
-  return axios.get<ApiSuccessResponse<GetCheckingTransactionsResponseDTO> | ApiErrorResponse>(
+  return axios.get<GetTransactionsResponse | ApiErrorResponse>(
     API_ENDPOINTS.CHECKING_TRANSACTIONS,
     {
       signal,
