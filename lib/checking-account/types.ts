@@ -1,7 +1,7 @@
 import type { ExpenseCheckingCategory, IncomeCheckingCategory } from "@/lib/checking-account/constants";
 
 export type TransactionType = "INCOME" | "EXPENSE";
-export type TransactionMethodType = "MANUAL" | "VLM_EXTRACTION";
+export type TransactionMethodType = "MANUAL" | "VLM";
 
 export type ExpenseFormValues = {
   date: string;
@@ -72,6 +72,7 @@ export type ExtractedTransaction = {
 export type VlmExtractionResponse = {
   date?: string;
   amount?: number;
+  category?: string;
   expenseCategory?: ExpenseCheckingCategory;
   incomeCategory?: IncomeCheckingCategory;
   description?: string;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
-import { HelpCircle } from "lucide-react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { HelpCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
@@ -29,21 +29,42 @@ import { extractTransactionFromImage } from "@/lib/checking-account/api";
 
 const ACCEPTED_MIME_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const LOADING_PHRASES = [
+  "Doing magic...",
+  "Analyzing your receipt...",
+  "Extracting details...",
+  "Almost there...",
+];
 
-type VlmUploadTabStatus = "idle" | "uploading" | "processing" | "success" | "error";
+type VlmUploadTabStatus = "idle" | "uploading" | "extraction-success" | "error";
 
 type VlmUploadTabProps = {
   transactionType: TransactionType;
   token: string;
   onConfirm: (extracted: ExtractedTransaction) => void;
   onEdit: (extracted: ExtractedTransaction) => void;
+  submitError?: string;
 };
+
+function formatDisplayDate(iso: string): string {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
 
 export function VlmUploadTab({
   transactionType,
   token,
   onConfirm,
   onEdit,
+  submitError,
 }: VlmUploadTabProps) {
   const [status, setStatus] = useState<VlmUploadTabStatus>("idle");
   const [fileError, setFileError] = useState("");
@@ -51,7 +72,17 @@ export function VlmUploadTab({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [extracted, setExtracted] = useState<ExtractedTransaction | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [phraseIndex, setPhraseIndex] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (status !== "uploading") return;
+    setPhraseIndex(0);
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % LOADING_PHRASES.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [status]);
 
   const validateFile = (file: File): string | null => {
     if (!file) return "Please select a file";
@@ -120,21 +151,20 @@ export function VlmUploadTab({
         const extractedData = data?.content;
 
         if (extractedData) {
-          setStatus("success");
-          
-          const categoryField = transactionType === "EXPENSE" 
-            ? "expenseCategory" 
-            : "incomeCategory";
+          const rawCategory = (extractedData.category || "").toUpperCase();
+          const categoryField =
+            transactionType === "EXPENSE" ? "expenseCategory" : "incomeCategory";
 
           const transaction: ExtractedTransaction = {
             date: extractedData.date || "",
             amount: extractedData.amount || 0,
-            [categoryField]: extractedData[categoryField as never] || "",
+            [categoryField]: rawCategory || undefined,
             description: extractedData.description || "",
           };
 
           setExtracted(transaction);
-          setStatus("idle");
+          setStatus("extraction-success");
+          setTimeout(() => setStatus("idle"), 1500);
         } else {
           setGlobalError("Failed to extract data from image");
           setStatus("idle");
@@ -149,7 +179,8 @@ export function VlmUploadTab({
       } else if (response.status === 422) {
         const data = response.data as { message?: string };
         setGlobalError(
-          data?.message || "Could not extract transaction data from this image. Please try another image or enter manually."
+          data?.message ||
+            "Could not extract transaction data from this image. Please try another image or enter manually."
         );
         setStatus("idle");
       } else if (response.status === 503) {
@@ -190,16 +221,53 @@ export function VlmUploadTab({
     }
   };
 
+  if (status === "uploading") {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-20">
+        <Spinner className="size-10" />
+        <p className="text-sm text-gray-600 animate-pulse">
+          {LOADING_PHRASES[phraseIndex]}
+        </p>
+      </div>
+    );
+  }
+
+  if (status === "extraction-success") {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-20 animate-in fade-in duration-300">
+        <div className="rounded-full bg-gray-200/50 p-4">
+          <CheckCircle2 className="size-12 text-gray-800" strokeWidth={1.5} />
+        </div>
+        <p className="text-sm text-gray-700 font-medium">Data extracted successfully!</p>
+      </div>
+    );
+  }
+
   if (extracted) {
+    const isConfirmReady = !!(
+      extracted.date &&
+      extracted.amount &&
+      (extracted.expenseCategory || extracted.incomeCategory)
+    );
+
     return (
       <div className="flex flex-col gap-6 py-4 px-2">
-        {/* Extracted Data Card */}
+        {submitError && (
+          <div className="rounded-md bg-red-100 border border-red-300 text-red-800 px-4 py-2 text-sm">
+            {submitError}
+          </div>
+        )}
+
         <Card>
           <CardContent className="pt-6">
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <p className="text-sm font-medium text-gray-600">Date</p>
-                <p className="text-base text-gray-900 mt-1">{extracted.date}</p>
+                <p className="text-base text-gray-900 mt-1">
+                  {extracted.date ? formatDisplayDate(extracted.date) : (
+                    <span className="text-amber-600 text-sm">Missing</span>
+                  )}
+                </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Amount</p>
@@ -210,15 +278,19 @@ export function VlmUploadTab({
               <div>
                 <p className="text-sm font-medium text-gray-600">Category</p>
                 <p className="text-base text-gray-900 mt-1">
-                  {getCategoryLabel(
-                    extracted.expenseCategory || extracted.incomeCategory || ""
+                  {extracted.expenseCategory || extracted.incomeCategory ? (
+                    getCategoryLabel(
+                      extracted.expenseCategory || extracted.incomeCategory || ""
+                    )
+                  ) : (
+                    <span className="text-amber-600 text-sm">Missing</span>
                   )}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Description</p>
                 <p className="text-base text-gray-900 mt-1 truncate">
-                  {extracted.description}
+                  {extracted.description || <span className="text-gray-400 text-sm">—</span>}
                 </p>
               </div>
             </div>
@@ -229,8 +301,26 @@ export function VlmUploadTab({
               <Button variant="outline" onClick={handleEdit}>
                 Edit
               </Button>
-              <Button onClick={handleConfirm}>Confirm</Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <Button onClick={handleConfirm} disabled={!isConfirmReady}>
+                      Confirm
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {!isConfirmReady && (
+                  <TooltipContent>
+                    Date and category are required to confirm
+                  </TooltipContent>
+                )}
+              </Tooltip>
             </div>
+            {!isConfirmReady && (
+              <p className="text-xs text-amber-600 text-right mt-2">
+                Some fields are missing. Cannot submit incomplete data.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -247,7 +337,7 @@ export function VlmUploadTab({
 
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <FieldLabel htmlFor="vlm-upload">Upload Receipt or Invoice</FieldLabel>
+          <FieldLabel htmlFor="vlm-upload">{transactionType === "INCOME" ? "Upload your Paystub" : "Upload Receipt or Invoice"}</FieldLabel>
           <Tooltip>
             <TooltipTrigger asChild>
               <HelpCircle className="size-4 text-gray-500 cursor-help" />
@@ -296,14 +386,10 @@ export function VlmUploadTab({
                 </svg>
               </div>
               <p className="text-sm font-medium text-gray-900">
-                {selectedFile ? selectedFile.name : "Drag and drop your receipt here"}
+                {selectedFile ? selectedFile.name : transactionType === "INCOME" ? "Drag and drop your paystub here" : "Drag and drop your receipt here"}
               </p>
-              <p className="text-xs text-gray-500">
-                or click to browse
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                JPEG, PNG, PDF · Max 5 MB
-              </p>
+              <p className="text-xs text-gray-500">or click to browse</p>
+              <p className="text-xs text-gray-400 mt-2">JPEG, PNG, PDF · Max 5 MB</p>
             </div>
           </CardContent>
         </Card>
@@ -313,17 +399,10 @@ export function VlmUploadTab({
 
       <Button
         onClick={handleExtractData}
-        disabled={!selectedFile || status === "uploading"}
+        disabled={!selectedFile}
         className="w-full"
       >
-        {status === "uploading" ? (
-          <>
-            <Spinner className="mr-2 size-4" />
-            Processing...
-          </>
-        ) : (
-          "Extract Data"
-        )}
+        Extract Data
       </Button>
     </div>
   );

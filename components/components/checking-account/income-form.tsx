@@ -49,9 +49,10 @@ type PageStatus = "idle" | "submitting" | "ai-loading" | "success" | "error";
 type IncomeFormProps = {
   token: string;
   onSuccess?: () => void;
+  onTabChange?: (tab: string) => void;
 };
 
-export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
+export function IncomeForm({ token, onSuccess, onTabChange }: IncomeFormProps) {
   const [status, setStatus] = useState<PageStatus>("idle");
   const [showFadeOut, setShowFadeOut] = useState(false);
   const [activeTab, setActiveTab] = useState("income");
@@ -121,16 +122,12 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
         date: values.date ? toBackendDate(values.date) : undefined,
         transactionType: "INCOME",
       };
-      console.log("🤖 AI Categorize Request:", payload);
       const response = await categorizeTransaction(token, payload);
-      console.log("🤖 AI Categorize Response:", response.status, response.data);
 
       if (response.status === 200) {
         const data = response.data as { content?: { category?: string } };
-        console.log("🤖 Suggested Category Data:", data);
         if (data?.content?.category) {
           const suggested = data.content.category;
-          console.log("🤖 Setting category to:", suggested);
           setValues((prev) => ({ ...prev, category: suggested }));
           setAiMessage({
             type: "success",
@@ -141,7 +138,6 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
             setAiMessage(null);
           }, 3500);
         } else {
-          console.log("🤖 No category found in response");
           setAiMessage({
             type: "error",
             message: "Failed to determine category. Please select manually.",
@@ -262,7 +258,7 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
     try {
       const response = await createCheckingTransaction(token, {
         transactionType: "INCOME",
-        transactionMethodType: "VLM_EXTRACTION",
+        transactionMethodType: "VLM",
         amount: extracted.amount,
         date: extracted.date,
         incomeCategory: extracted.incomeCategory as typeof INCOME_CHECKING_CATEGORIES[number],
@@ -344,10 +340,10 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
         </div>
       )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
+      <Tabs value={activeTab} onValueChange={(tab) => { setActiveTab(tab); onTabChange?.(tab); }} className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
         <TabsList variant="line" className="w-full mb-4">
           <TabsTrigger value="income">Income Form</TabsTrigger>
-          <TabsTrigger value="scan">Scan Receipt</TabsTrigger>
+          <TabsTrigger value="scan">Scan Paystub</TabsTrigger>
         </TabsList>
 
         <TabsContent value="income" className="gap-4 p-2">
@@ -496,8 +492,8 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
         </TabsContent>
       </Tabs>
 
-      {/* Add Income button at bottom */}
-      <div className="flex gap-3 pt-8 border-t mt-auto">
+      {/* Add Income button at bottom — hidden on scan tab */}
+      <div className={`flex gap-3 pt-8 border-t mt-auto ${activeTab === "scan" ? "hidden" : ""}`}>
         <Button
           type="submit"
           size="lg"

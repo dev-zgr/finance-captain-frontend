@@ -55,6 +55,7 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
   const [status, setStatus] = useState<PageStatus>("idle");
   const [showFadeOut, setShowFadeOut] = useState(false);
   const [activeTab, setActiveTab] = useState("expense");
+  const [vlmSubmitError, setVlmSubmitError] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState<{
     type: "success" | "error";
@@ -121,16 +122,12 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         date: values.date ? toBackendDate(values.date) : undefined,
         transactionType: "EXPENSE",
       };
-      console.log("🤖 AI Categorize Request:", payload);
       const response = await categorizeTransaction(token, payload);
-      console.log("🤖 AI Categorize Response:", response.status, response.data);
 
       if (response.status === 200) {
         const data = response.data as { content?: { category?: string } };
-        console.log("🤖 Suggested Category Data:", data);
         if (data?.content?.category) {
           const suggested = data.content.category;
-          console.log("🤖 Setting category to:", suggested);
           setValues((prev) => ({ ...prev, category: suggested }));
           setAiMessage({
             type: "success",
@@ -141,7 +138,6 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
             setAiMessage(null);
           }, 3500);
         } else {
-          console.log("🤖 No category found in response");
           setAiMessage({
             type: "error",
             message: "Failed to determine category. Please select manually.",
@@ -258,16 +254,18 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
     setStatus("submitting");
     setFieldErrors({});
     setGlobalError("");
+    setVlmSubmitError("");
 
     try {
-      const response = await createCheckingTransaction(token, {
-        transactionType: "EXPENSE",
-        transactionMethodType: "VLM_EXTRACTION",
+      const payload = {
+        transactionType: "EXPENSE" as const,
+        transactionMethodType: "VLM" as const,
         amount: extracted.amount,
-        date: extracted.date,
+        date: extracted.date ? toBackendDate(extracted.date.split("T")[0]) : extracted.date,
         expenseCategory: extracted.expenseCategory as typeof EXPENSE_CHECKING_CATEGORIES[number],
         description: extracted.description || undefined,
-      });
+      };
+      const response = await createCheckingTransaction(token, payload);
 
       if (response.status === 200) {
         setStatus("success");
@@ -287,30 +285,28 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         const fieldErrs = data?.fieldErrors;
         const globalMsg = data?.message;
         setFieldErrors(mapBackendFieldErrors(fieldErrs));
-        if (globalMsg) {
-          setGlobalError(globalMsg);
-        }
+        setVlmSubmitError(globalMsg || "Validation error. Please check the extracted data.");
         setStatus("idle");
       } else if (response.status === 401) {
-        setGlobalError("Your session expired. Please log in again.");
+        setVlmSubmitError("Your session expired. Please log in again.");
         setStatus("idle");
       } else if (response.status === 500) {
         const data = response.data as { message?: string };
-        setGlobalError(data?.message || "Internal server error. Please try again.");
+        setVlmSubmitError(data?.message || "Internal server error. Please try again.");
         setStatus("idle");
       } else {
-        setGlobalError("Unexpected error occurred. Please try again.");
+        setVlmSubmitError("Unexpected error occurred. Please try again.");
         setStatus("idle");
       }
     } catch {
-      setGlobalError("Network error. Failed to create transaction.");
+      setVlmSubmitError("Network error. Failed to create transaction.");
       setStatus("idle");
     }
   }, [token, onSuccess]);
 
   const handleVlmEdit = useCallback((extracted: ExtractedTransaction) => {
     setValues({
-      date: extracted.date,
+      date: extracted.date ? extracted.date.split("T")[0] : "",
       amount: String(extracted.amount),
       category: extracted.expenseCategory || "",
       description: extracted.description,
@@ -493,34 +489,37 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
             token={token}
             onConfirm={handleVlmConfirm}
             onEdit={handleVlmEdit}
+            submitError={vlmSubmitError}
           />
         </TabsContent>
       </Tabs>
 
-      {/* Add Expense button at bottom */}
-      <div className="flex gap-3 pt-8 border-t mt-auto">
-        <Button
-          type="submit"
-          size="lg"
-          className="flex-1"
-          onClick={handleSubmit}
-          disabled={isSubmitDisabled}
-        >
-          {status === "submitting" ? (
-            <>
-              <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
-              Adding...
-            </>
-          ) : status === "success" ? (
-            <>
-              <CheckCircle2 className="size-4" data-icon="inline-start" />
-              Success
-            </>
-          ) : (
-            "Add Expense"
-          )}
-        </Button>
-      </div>
+      {/* Add Expense button at bottom — only shown on manual form tab */}
+      {activeTab === "expense" && (
+        <div className="flex gap-3 pt-8 border-t mt-auto">
+          <Button
+            type="submit"
+            size="lg"
+            className="flex-1"
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+          >
+            {status === "submitting" ? (
+              <>
+                <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+                Adding...
+              </>
+            ) : status === "success" ? (
+              <>
+                <CheckCircle2 className="size-4" data-icon="inline-start" />
+                Success
+              </>
+            ) : (
+              "Add Expense"
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
