@@ -39,9 +39,24 @@ import { clearPersistedAuth } from "@/lib/auth/session";
 import { LogoutModal } from "@/components/ui/logout-modal";
 
 const accountItems = [
-    { title: "Checking Account", icon: Wallet },
-    { title: "Debts Account", icon: Landmark },
-    { title: "Investment Account", icon: LineChart },
+    {
+        title: "Checking Account",
+        icon: Wallet,
+        overviewHref: "/checking-account",
+        transactionsHref: "/checking-account/transactions",
+    },
+    {
+        title: "Debts Account",
+        icon: Landmark,
+        overviewHref: "/debt-accounts",
+        transactionsHref: "/debt-account/transactions",
+    },
+    {
+        title: "Investment Account",
+        icon: LineChart,
+        overviewHref: "#",
+        transactionsHref: "#",
+    },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -93,7 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarGroupLabel>Account</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {accountItems.map(({ title, icon: Icon }) => (
+                                {accountItems.map(({ title, icon: Icon, overviewHref, transactionsHref }) => (
                                     <Collapsible key={title} className="group/collapsible" asChild>
                                         <SidebarMenuItem>
                                             <CollapsibleTrigger asChild>
@@ -107,12 +122,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                                 <SidebarMenuSub>
                                                     <SidebarMenuSubItem>
                                                         <SidebarMenuSubButton asChild>
-                                                            <Link href="/checking-account">Overview</Link>
+                                                            <Link href={overviewHref}>Overview</Link>
                                                         </SidebarMenuSubButton>
                                                     </SidebarMenuSubItem>
                                                     <SidebarMenuSubItem>
                                                         <SidebarMenuSubButton asChild>
-                                                            <Link href="/checking-account/transactions">Transactions</Link>
+                                                            <Link href={transactionsHref}>Transactions</Link>
                                                         </SidebarMenuSubButton>
                                                     </SidebarMenuSubItem>
                                                 </SidebarMenuSub>

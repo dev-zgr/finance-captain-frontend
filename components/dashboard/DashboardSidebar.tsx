@@ -41,9 +41,24 @@ import {
 import { LogoutModal } from "@/components/ui/logout-modal";
 
 const accountGroups = [
-  { title: "Checking Account", icon: RiWallet3Line },
-  { title: "Debts Account", icon: RiSecurePaymentLine },
-  { title: "Investment Account", icon: RiStockLine },
+  {
+    title: "Checking Account",
+    icon: RiWallet3Line,
+    overviewHref: "/checking-account",
+    transactionsHref: "/checking-account/transactions",
+  },
+  {
+    title: "Debts Account",
+    icon: RiSecurePaymentLine,
+    overviewHref: "/debt-accounts",
+    transactionsHref: "/debt-account/transactions",
+  },
+  {
+    title: "Investment Account",
+    icon: RiStockLine,
+    overviewHref: "#",
+    transactionsHref: "#",
+  },
 ];
 
 export function DashboardSidebar() {
@@ -94,7 +109,7 @@ export function DashboardSidebar() {
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {accountGroups.map(({ title, icon: Icon }) => (
+              {accountGroups.map(({ title, icon: Icon, overviewHref, transactionsHref }) => (
                 <Collapsible key={title} className="group/collapsible" asChild>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
@@ -108,12 +123,12 @@ export function DashboardSidebar() {
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
-                            <Link href="#">Overview</Link>
+                            <Link href={overviewHref}>Overview</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
-                            <Link href="#">Transactions</Link>
+                            <Link href={transactionsHref}>Transactions</Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       </SidebarMenuSub>
