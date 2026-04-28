@@ -8,6 +8,8 @@ import type {
   CategorySuggestionContent,
   CategorySuggestionRequest,
   CreateCheckingTransactionRequest,
+  TimeSeriesPeriod,
+  TimeSeriesResponse,
   VlmExtractionResponse,
   TransactionType,
 } from "@/lib/checking-account/types";
@@ -62,6 +64,28 @@ export async function getAccountSummary(token: string) {
       validateStatus: () => true,
     },
   );
+}
+
+type TimeSeriesRequestParams = {
+  period: TimeSeriesPeriod;
+  startDate: string;
+  endDate: string;
+};
+
+export async function getTimeSeriesData(
+  token: string,
+  params: TimeSeriesRequestParams,
+  signal?: AbortSignal
+) {
+  return axios.get<TimeSeriesResponse>(API_ENDPOINTS.TIME_SERIES, {
+    params,
+    signal,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    validateStatus: () => true,
+  });
 }
 
 export async function extractTransactionFromImage(

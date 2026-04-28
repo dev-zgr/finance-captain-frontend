@@ -76,6 +76,21 @@ export type AccountSummary = {
   accountOpeningDate: string | null;
 };
 
+export type TimeSeriesPeriod = "DAY" | "WEEK" | "MONTH";
+
+export type TimeSeriesDataPoint = {
+  intervalLabel: string;
+  totalIncome: number;
+  totalExpense: number;
+};
+
+export type TimeSeriesContent = {
+  aggregationPeriod: TimeSeriesPeriod;
+  dataPoints: TimeSeriesDataPoint[];
+};
+
+export type TimeSeriesResponse = ApiSuccessResponse<TimeSeriesContent> | ApiErrorResponse;
+
 export type VlmExtractionResponse = {
   date?: string;
   amount?: number;
