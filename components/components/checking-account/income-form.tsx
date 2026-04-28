@@ -25,8 +25,8 @@ import { ComboboxSelect } from "@/components/ui/combobox";
 import type {
   IncomeFormFieldErrors,
   IncomeFormValues,
-  ExpenseFormValues,
   CategorySuggestionRequest,
+  ExtractedTransaction,
 } from "@/lib/checking-account/types";
 import {
   INCOME_CHECKING_CATEGORIES,
@@ -34,7 +34,6 @@ import {
   MAX_DESCRIPTION_LENGTH,
 } from "@/lib/checking-account/constants";
 import {
-  validateExpenseForm,
   validateIncomeForm,
   mapBackendFieldErrors,
   toBackendDate,
@@ -43,17 +42,20 @@ import {
   categorizeTransaction,
   createCheckingTransaction,
 } from "@/lib/checking-account/api";
+import { VlmUploadTab } from "./vlm-upload-tab";
 
 type PageStatus = "idle" | "submitting" | "ai-loading" | "success" | "error";
 
 type IncomeFormProps = {
   token: string;
   onSuccess?: () => void;
+  onTabChange?: (tab: string) => void;
 };
 
-export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
+export function IncomeForm({ token, onSuccess, onTabChange }: IncomeFormProps) {
   const [status, setStatus] = useState<PageStatus>("idle");
   const [showFadeOut, setShowFadeOut] = useState(false);
+  const [activeTab, setActiveTab] = useState("income");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState<{
     type: "success" | "error";
@@ -120,16 +122,12 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
         date: values.date ? toBackendDate(values.date) : undefined,
         transactionType: "INCOME",
       };
-      console.log("🤖 AI Categorize Request:", payload);
       const response = await categorizeTransaction(token, payload);
-      console.log("🤖 AI Categorize Response:", response.status, response.data);
 
       if (response.status === 200) {
         const data = response.data as { content?: { category?: string } };
-        console.log("🤖 Suggested Category Data:", data);
         if (data?.content?.category) {
           const suggested = data.content.category;
-          console.log("🤖 Setting category to:", suggested);
           setValues((prev) => ({ ...prev, category: suggested }));
           setAiMessage({
             type: "success",
@@ -140,7 +138,6 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
             setAiMessage(null);
           }, 3500);
         } else {
-          console.log("🤖 No category found in response");
           setAiMessage({
             type: "error",
             message: "Failed to determine category. Please select manually.",
@@ -253,6 +250,71 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
     }
   }, [values, token, onSuccess]);
 
+  const handleVlmConfirm = useCallback(async (extracted: ExtractedTransaction) => {
+    setStatus("submitting");
+    setFieldErrors({});
+    setGlobalError("");
+
+    try {
+      const response = await createCheckingTransaction(token, {
+        transactionType: "INCOME",
+        transactionMethodType: "VLM",
+        amount: extracted.amount,
+        date: extracted.date,
+        incomeCategory: extracted.incomeCategory as typeof INCOME_CHECKING_CATEGORIES[number],
+        description: extracted.description || undefined,
+      });
+
+      if (response.status === 200) {
+        setStatus("success");
+        setTimeout(() => {
+          setShowFadeOut(true);
+          setTimeout(() => {
+            setStatus("idle");
+            setShowFadeOut(false);
+            setValues({ date: "", amount: "", description: "", category: "" });
+            setTouched(new Set());
+            setActiveTab("income");
+            onSuccess?.();
+          }, 300);
+        }, 2500);
+      } else if (response.status === 400) {
+        const data = response.data as { fieldErrors?: Record<string, string>; message?: string };
+        const fieldErrs = data?.fieldErrors;
+        const globalMsg = data?.message;
+        setFieldErrors(mapBackendFieldErrors(fieldErrs) as IncomeFormFieldErrors);
+        if (globalMsg) {
+          setGlobalError(globalMsg);
+        }
+        setStatus("idle");
+      } else if (response.status === 401) {
+        setGlobalError("Your session expired. Please log in again.");
+        setStatus("idle");
+      } else if (response.status === 500) {
+        const data = response.data as { message?: string };
+        setGlobalError(data?.message || "Internal server error. Please try again.");
+        setStatus("idle");
+      } else {
+        setGlobalError("Unexpected error occurred. Please try again.");
+        setStatus("idle");
+      }
+    } catch {
+      setGlobalError("Network error. Failed to create transaction.");
+      setStatus("idle");
+    }
+  }, [token, onSuccess]);
+
+  const handleVlmEdit = useCallback((extracted: ExtractedTransaction) => {
+    setValues({
+      date: extracted.date,
+      amount: String(extracted.amount),
+      category: extracted.incomeCategory || "",
+      description: extracted.description,
+    });
+    setTouched(new Set());
+    setActiveTab("income");
+  }, []);
+
   const isFormValid = !!(values.date && values.amount && values.category && values.description);
   const isSubmitDisabled = status !== "idle" || !isFormValid;
 
@@ -278,9 +340,10 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
         </div>
       )}
 
-      <Tabs defaultValue="income" className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
+      <Tabs value={activeTab} onValueChange={(tab) => { setActiveTab(tab); onTabChange?.(tab); }} className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
         <TabsList variant="line" className="w-full mb-4">
           <TabsTrigger value="income">Income Form</TabsTrigger>
+          <TabsTrigger value="scan">Scan Paystub</TabsTrigger>
         </TabsList>
 
         <TabsContent value="income" className="gap-4 p-2">
@@ -418,10 +481,19 @@ export function IncomeForm({ token, onSuccess }: IncomeFormProps) {
             </Field>
           </FieldGroup>
         </TabsContent>
+
+        <TabsContent value="scan" className="gap-4 p-2">
+          <VlmUploadTab
+            transactionType="INCOME"
+            token={token}
+            onConfirm={handleVlmConfirm}
+            onEdit={handleVlmEdit}
+          />
+        </TabsContent>
       </Tabs>
 
-      {/* Add Income button at bottom */}
-      <div className="flex gap-3 pt-8 border-t mt-auto">
+      {/* Add Income button at bottom — hidden on scan tab */}
+      <div className={`flex gap-3 pt-8 border-t mt-auto ${activeTab === "scan" ? "hidden" : ""}`}>
         <Button
           type="submit"
           size="lg"

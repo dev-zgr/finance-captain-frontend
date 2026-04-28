@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
     CHECKING_TRANSACTIONS: `${API_BASE_URL}/api/v1/checking/transactions`,
     CATEGORY_SUGGESTION: `${API_BASE_URL}/api/v1/ai/llm/category`,
     CATEGORIZE: `${API_BASE_URL}/api/v1/ai/categorize`,
+    VLM_EXTRACTION: `${API_BASE_URL}/api/v1/ai/vlm`,
 };

@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Provider, useDispatch } from 'react-redux';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 import { store } from '@/lib/store';
 import { setAuthFromStorage } from '@/lib/slices/authSlice';
@@ -23,7 +24,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <Provider store={store}>
-            <AuthInitializer>{children}</AuthInitializer>
+            <TooltipProvider>
+                <AuthInitializer>{children}</AuthInitializer>
+            </TooltipProvider>
         </Provider>
     );
 }

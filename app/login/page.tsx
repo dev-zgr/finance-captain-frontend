@@ -34,7 +34,6 @@ export default function LoginPage() {
         setPending(true);
         setSuccess(false);
         try {
-            console.log(API_ENDPOINTS.LOGIN)
             const response = await axios.post(API_ENDPOINTS.LOGIN, { email, password }, {
                 headers: { 'Content-Type': 'application/json' },
                 validateStatus: () => true,

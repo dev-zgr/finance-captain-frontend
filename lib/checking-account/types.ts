@@ -60,3 +60,20 @@ export type ApiErrorResponse = {
   errorDetails?: string;
   fieldErrors?: Record<string, string>;
 };
+
+export type ExtractedTransaction = {
+  date: string;
+  amount: number;
+  expenseCategory?: ExpenseCheckingCategory;
+  incomeCategory?: IncomeCheckingCategory;
+  description: string;
+};
+
+export type VlmExtractionResponse = {
+  date?: string;
+  amount?: number;
+  category?: string;
+  expenseCategory?: ExpenseCheckingCategory;
+  incomeCategory?: IncomeCheckingCategory;
+  description?: string;
+};

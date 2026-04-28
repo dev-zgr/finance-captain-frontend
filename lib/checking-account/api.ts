@@ -7,6 +7,8 @@ import type {
   CategorySuggestionContent,
   CategorySuggestionRequest,
   CreateCheckingTransactionRequest,
+  VlmExtractionResponse,
+  TransactionType,
 } from "@/lib/checking-account/types";
 
 export async function requestCategorySuggestion(token: string, payload: CategorySuggestionRequest) {
@@ -45,6 +47,29 @@ export async function createCheckingTransaction(token: string, payload: CreateCh
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+      },
+      validateStatus: () => true,
+    },
+  );
+}
+
+export async function extractTransactionFromImage(
+  token: string,
+  file: File,
+  transactionType: TransactionType
+) {
+  const formData = new FormData();
+  formData.append("imageFile", file);
+  formData.append("transactionTarget", "CHECKING");
+  formData.append("transactionType", transactionType);
+
+  return axios.post<ApiSuccessResponse<VlmExtractionResponse> | ApiErrorResponse>(
+    API_ENDPOINTS.VLM_EXTRACTION,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       validateStatus: () => true,
     },

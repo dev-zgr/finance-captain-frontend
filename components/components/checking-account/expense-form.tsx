@@ -26,6 +26,7 @@ import type {
   ExpenseFormFieldErrors,
   ExpenseFormValues,
   CategorySuggestionRequest,
+  ExtractedTransaction,
 } from "@/lib/checking-account/types";
 import {
   EXPENSE_CHECKING_CATEGORIES,
@@ -41,6 +42,7 @@ import {
   categorizeTransaction,
   createCheckingTransaction,
 } from "@/lib/checking-account/api";
+import { VlmUploadTab } from "./vlm-upload-tab";
 
 type PageStatus = "idle" | "submitting" | "ai-loading" | "success" | "error";
 
@@ -52,6 +54,8 @@ type ExpenseFormProps = {
 export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
   const [status, setStatus] = useState<PageStatus>("idle");
   const [showFadeOut, setShowFadeOut] = useState(false);
+  const [activeTab, setActiveTab] = useState("expense");
+  const [vlmSubmitError, setVlmSubmitError] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState<{
     type: "success" | "error";
@@ -118,16 +122,12 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         date: values.date ? toBackendDate(values.date) : undefined,
         transactionType: "EXPENSE",
       };
-      console.log("🤖 AI Categorize Request:", payload);
       const response = await categorizeTransaction(token, payload);
-      console.log("🤖 AI Categorize Response:", response.status, response.data);
 
       if (response.status === 200) {
         const data = response.data as { content?: { category?: string } };
-        console.log("🤖 Suggested Category Data:", data);
         if (data?.content?.category) {
           const suggested = data.content.category;
-          console.log("🤖 Setting category to:", suggested);
           setValues((prev) => ({ ...prev, category: suggested }));
           setAiMessage({
             type: "success",
@@ -138,7 +138,6 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
             setAiMessage(null);
           }, 3500);
         } else {
-          console.log("🤖 No category found in response");
           setAiMessage({
             type: "error",
             message: "Failed to determine category. Please select manually.",
@@ -251,6 +250,71 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
     }
   }, [values, token, onSuccess]);
 
+  const handleVlmConfirm = useCallback(async (extracted: ExtractedTransaction) => {
+    setStatus("submitting");
+    setFieldErrors({});
+    setGlobalError("");
+    setVlmSubmitError("");
+
+    try {
+      const payload = {
+        transactionType: "EXPENSE" as const,
+        transactionMethodType: "VLM" as const,
+        amount: extracted.amount,
+        date: extracted.date ? toBackendDate(extracted.date.split("T")[0]) : extracted.date,
+        expenseCategory: extracted.expenseCategory as typeof EXPENSE_CHECKING_CATEGORIES[number],
+        description: extracted.description || undefined,
+      };
+      const response = await createCheckingTransaction(token, payload);
+
+      if (response.status === 200) {
+        setStatus("success");
+        setTimeout(() => {
+          setShowFadeOut(true);
+          setTimeout(() => {
+            setStatus("idle");
+            setShowFadeOut(false);
+            setValues({ date: "", amount: "", description: "", category: "" });
+            setTouched(new Set());
+            setActiveTab("expense");
+            onSuccess?.();
+          }, 300);
+        }, 2500);
+      } else if (response.status === 400) {
+        const data = response.data as { fieldErrors?: Record<string, string>; message?: string };
+        const fieldErrs = data?.fieldErrors;
+        const globalMsg = data?.message;
+        setFieldErrors(mapBackendFieldErrors(fieldErrs));
+        setVlmSubmitError(globalMsg || "Validation error. Please check the extracted data.");
+        setStatus("idle");
+      } else if (response.status === 401) {
+        setVlmSubmitError("Your session expired. Please log in again.");
+        setStatus("idle");
+      } else if (response.status === 500) {
+        const data = response.data as { message?: string };
+        setVlmSubmitError(data?.message || "Internal server error. Please try again.");
+        setStatus("idle");
+      } else {
+        setVlmSubmitError("Unexpected error occurred. Please try again.");
+        setStatus("idle");
+      }
+    } catch {
+      setVlmSubmitError("Network error. Failed to create transaction.");
+      setStatus("idle");
+    }
+  }, [token, onSuccess]);
+
+  const handleVlmEdit = useCallback((extracted: ExtractedTransaction) => {
+    setValues({
+      date: extracted.date ? extracted.date.split("T")[0] : "",
+      amount: String(extracted.amount),
+      category: extracted.expenseCategory || "",
+      description: extracted.description,
+    });
+    setTouched(new Set());
+    setActiveTab("expense");
+  }, []);
+
   const isFormValid = !!(values.date && values.amount && values.category && values.description);
   const isSubmitDisabled = status !== "idle" || !isFormValid;
 
@@ -276,9 +340,10 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
         </div>
       )}
 
-      <Tabs defaultValue="expense" className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className={`w-full transition-opacity duration-300 ${(status === "submitting" || status === "success") && !showFadeOut ? "opacity-0" : "opacity-100"}`}>
         <TabsList variant="line" className="w-full mb-4">
           <TabsTrigger value="expense">Expense Form</TabsTrigger>
+          <TabsTrigger value="scan">Scan Receipt</TabsTrigger>
         </TabsList>
 
         <TabsContent value="expense" className="gap-4 p-2">
@@ -417,32 +482,44 @@ export function ExpenseForm({ token, onSuccess }: ExpenseFormProps) {
             </Field>
           </FieldGroup>
         </TabsContent>
+
+        <TabsContent value="scan" className="gap-4 p-2">
+          <VlmUploadTab
+            transactionType="EXPENSE"
+            token={token}
+            onConfirm={handleVlmConfirm}
+            onEdit={handleVlmEdit}
+            submitError={vlmSubmitError}
+          />
+        </TabsContent>
       </Tabs>
 
-      {/* Add Expense button at bottom */}
-      <div className="flex gap-3 pt-8 border-t mt-auto">
-        <Button
-          type="submit"
-          size="lg"
-          className="flex-1"
-          onClick={handleSubmit}
-          disabled={isSubmitDisabled}
-        >
-          {status === "submitting" ? (
-            <>
-              <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
-              Adding...
-            </>
-          ) : status === "success" ? (
-            <>
-              <CheckCircle2 className="size-4" data-icon="inline-start" />
-              Success
-            </>
-          ) : (
-            "Add Expense"
-          )}
-        </Button>
-      </div>
+      {/* Add Expense button at bottom — only shown on manual form tab */}
+      {activeTab === "expense" && (
+        <div className="flex gap-3 pt-8 border-t mt-auto">
+          <Button
+            type="submit"
+            size="lg"
+            className="flex-1"
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+          >
+            {status === "submitting" ? (
+              <>
+                <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+                Adding...
+              </>
+            ) : status === "success" ? (
+              <>
+                <CheckCircle2 className="size-4" data-icon="inline-start" />
+                Success
+              </>
+            ) : (
+              "Add Expense"
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
