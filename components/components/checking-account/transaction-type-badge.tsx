@@ -1,14 +1,16 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
-import { getTransactionTypeFromCategory } from "@/lib/checking-account/transaction-presentation";
+import { resolveTransactionType } from "@/lib/checking-account/transaction-presentation";
+import type { TransactionType } from "@/lib/checking-account/types";
 import { Badge } from "@/components/ui/badge";
 
 type TransactionTypeBadgeProps = {
   category: string;
+  transactionType?: TransactionType;
 };
 
-export function TransactionTypeBadge({ category }: TransactionTypeBadgeProps) {
-  const type = getTransactionTypeFromCategory(category);
+export function TransactionTypeBadge({ category, transactionType }: TransactionTypeBadgeProps) {
+  const type = resolveTransactionType(transactionType, category);
 
   return type === "INCOME" ? (
     <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/10">

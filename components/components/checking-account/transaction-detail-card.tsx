@@ -224,7 +224,7 @@ export function TransactionDetailCard({ transactionId }: TransactionDetailCardPr
                 >
                   {currencyFormatter.format(Math.abs(Number(transaction.amount ?? 0)))}
                 </p>
-                <TransactionTypeBadge category={transaction.category} />
+                <TransactionTypeBadge category={transaction.category} transactionType={transaction.transactionType} />
               </div>
 
               <Separator />

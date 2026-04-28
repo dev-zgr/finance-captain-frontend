@@ -13,7 +13,7 @@ import {
   EXPENSE_CATEGORIES_WITH_LABELS,
   INCOME_CATEGORIES_WITH_LABELS,
 } from "@/lib/checking-account/constants";
-import { getSignedAmountFromCategory, getTransactionTypeFromCategory } from "@/lib/checking-account/transaction-presentation";
+import { getSignedAmountFromTransaction, resolveTransactionType } from "@/lib/checking-account/transaction-presentation";
 import type { ApiErrorResponse, SortBy, TransactionRow, TransactionType } from "@/lib/checking-account/types";
 import type { RootState } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -231,7 +231,7 @@ export function CheckingTransactionsTable() {
       {
         id: "type",
         header: "Type",
-        cell: ({ row }) => <TransactionTypeBadge category={row.original.category} />,
+        cell: ({ row }) => <TransactionTypeBadge category={row.original.category} transactionType={row.original.transactionType} />,
       },
       {
         accessorKey: "category",
@@ -247,8 +247,8 @@ export function CheckingTransactionsTable() {
         accessorKey: "amount",
         header: "Amount",
         cell: ({ row }) => {
-          const transactionType = getTransactionTypeFromCategory(row.original.category);
-          const signedAmount = getSignedAmountFromCategory(Number(row.original.amount ?? 0), row.original.category);
+          const transactionType = resolveTransactionType(row.original.transactionType, row.original.category);
+          const signedAmount = getSignedAmountFromTransaction(Number(row.original.amount ?? 0), row.original.transactionType, row.original.category);
 
           return (
             <div className={cn("pr-4 tabular-nums font-medium", transactionType === "EXPENSE" ? "text-red-600" : "text-emerald-600")}>

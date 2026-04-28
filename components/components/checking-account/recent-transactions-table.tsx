@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 
 import { extractCheckingTransactionsResponse, getCheckingTransactions } from "@/lib/checking-account/api";
-import { getSignedAmountFromCategory, getTransactionTypeFromCategory } from "@/lib/checking-account/transaction-presentation";
+import { getSignedAmountFromTransaction, resolveTransactionType } from "@/lib/checking-account/transaction-presentation";
 import type {
   ApiErrorResponse,
   TransactionDTO,
@@ -183,8 +183,8 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
                 </TableRow>
               ) : (
                 displayRows.map((transaction) => {
-                  const transactionType = getTransactionTypeFromCategory(transaction.category);
-                  const signedAmount = getSignedAmountFromCategory(Number(transaction.amount ?? 0), transaction.category);
+                  const transactionType = resolveTransactionType(transaction.transactionType, transaction.category);
+                  const signedAmount = getSignedAmountFromTransaction(Number(transaction.amount ?? 0), transaction.transactionType, transaction.category);
 
                   return (
                     <TableRow key={transaction.transactionId}>
@@ -192,7 +192,7 @@ export function RecentTransactionsTable({ token }: RecentTransactionsTableProps)
                         #{transaction.transactionId}
                       </TableCell>
                       <TableCell>
-                        <TransactionTypeBadge category={transaction.category} />
+                        <TransactionTypeBadge category={transaction.category} transactionType={transaction.transactionType} />
                       </TableCell>
                       <TableCell>
                         <TransactionCategoryBadge category={transaction.category} />

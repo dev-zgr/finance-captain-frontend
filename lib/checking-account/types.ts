@@ -79,6 +79,7 @@ export interface TransactionRow {
   amount: number;
   category: string;
   description: string;
+  transactionType?: TransactionType;
 }
 
 export interface TransactionDetail {
@@ -94,6 +95,7 @@ export interface GetTransactionsResponse {
   transactions: TransactionRow[];
   totalPages: number;
   totalElements: number;
+  currentPage?: number;
 }
 
 // Backwards-compatible aliases for existing checking-account consumers.
