@@ -5,12 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: add income addition dialog and enhance expense form with AI categorization">
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/SKILL.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/agents/openai.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/assets/shadcn-small.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/assets/shadcn.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/cli.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/customization.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/evals/evals.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/mcp.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/rules/base-vs-radix.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/rules/composition.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/rules/forms.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/rules/icons.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/skills/shadcn/rules/styling.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/providers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/providers.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/add-income-sheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/add-income-sheet.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/expense-form.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/components/checking-account/income-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/income-form.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/checking-account/vlm-upload-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/vlm-upload-tab.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/checking-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +38,13 @@
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedChatMode">
-    <option name="chatModeId" value="Agent" />
+    <option name="chatModeId" value="Ask" />
+  </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="agent-panel" value="GPT-4.1" />
+      <entry key="chat-panel" value="GPT-4.1" />
+    </selectedModels>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -69,7 +90,7 @@
     "git-widget-placeholder": "24-feat-vlm-image-extraction-tab-for-checking-account-transaction-adding",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/components/components/layoutComponents",
+    "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/.claude/skills",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -82,6 +103,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/.claude/skills" />
       <recent name="$PROJECT_DIR$/components/components/layoutComponents" />
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -107,7 +129,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-WS-252.26830.93" />
+        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-WS-252.28539.21" />
       </set>
     </attachedChunks>
   </component>
@@ -122,6 +144,9 @@
       <workItem from="1775925438137" duration="1002000" />
       <workItem from="1776560315627" duration="3732000" />
       <workItem from="1776564607243" duration="687000" />
+      <workItem from="1777237950206" duration="110000" />
+      <workItem from="1777361406384" duration="585000" />
+      <workItem from="1777362033567" duration="5459000" />
     </task>
     <task id="LOCAL-00001" summary="feat: enhance dashboard layout with logout modal and breadcrumb navigation">
       <option name="closed" value="true" />
