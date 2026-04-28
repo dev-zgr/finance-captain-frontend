@@ -12,6 +12,7 @@ import type {
   GetTransactionsResponse,
   TimeSeriesPeriod,
   TimeSeriesResponse,
+  TransactionDetail,
   TransactionType,
   VlmExtractionResponse,
 } from "@/lib/checking-account/types";
@@ -143,6 +144,24 @@ export async function getCheckingTransactions(
       },
       validateStatus: () => true,
     }
+  );
+}
+
+export async function getCheckingTransactionById(
+  token: string,
+  transactionId: string,
+  signal?: AbortSignal
+) {
+  return axios.get<ApiSuccessResponse<TransactionDetail> | ApiErrorResponse>(
+    `${API_ENDPOINTS.CHECKING_TRANSACTION_BY_ID}/${transactionId}`,
+    {
+      signal,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      validateStatus: () => true,
+    },
   );
 }
 

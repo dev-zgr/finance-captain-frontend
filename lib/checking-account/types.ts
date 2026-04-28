@@ -81,6 +81,15 @@ export interface TransactionRow {
   description: string;
 }
 
+export interface TransactionDetail {
+  transactionId: number;
+  date: string;
+  amount: number;
+  category: string;
+  description: string | null;
+  transactionType?: TransactionType;
+}
+
 export interface GetTransactionsResponse {
   transactions: TransactionRow[];
   totalPages: number;
