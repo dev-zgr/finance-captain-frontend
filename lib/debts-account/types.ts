@@ -50,6 +50,7 @@ export type CreateDebtsTransactionResponseContent = {
 
 export type DebtsTransactionType = "DEBT" | "PAYMENT"
 export type DebtsSortBy = "date" | "amount"
+export type DebtsTimeSeriesPeriod = "DAY" | "WEEK" | "MONTH"
 
 export type GetDebtsTransactionsParams = {
   page?: number
@@ -71,6 +72,23 @@ export type GetDebtsTransactionsResponse = {
   totalPages: number
   totalElements: number
   currentPage?: number
+}
+
+export type DebtsTimeSeriesDataPoint = {
+  intervalLabel: string
+  totalDebts: number
+  totalPayments: number
+}
+
+export type DebtsTimeSeriesContent = {
+  aggregationPeriod: DebtsTimeSeriesPeriod
+  dataPoints: DebtsTimeSeriesDataPoint[]
+}
+
+export type DebtsTimeSeriesRequestParams = {
+  period: DebtsTimeSeriesPeriod
+  startDate: string
+  endDate: string
 }
 
 export type DebtsTransactionDetail = {
