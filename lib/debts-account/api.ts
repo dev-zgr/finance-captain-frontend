@@ -7,6 +7,8 @@ import type {
   DebtsAccountSummary,
   DebtsApiErrorResponse,
   DebtsApiSuccessResponse,
+  DebtsTimeSeriesContent,
+  DebtsTimeSeriesRequestParams,
   DebtsTransactionDetail,
   GetDebtsTransactionsParams,
   GetDebtsTransactionsResponse,
@@ -85,6 +87,24 @@ export async function getDebtsTransactions(
       page: params.page ?? 0,
       sortBy: params.sortBy ?? "date",
       sortDirection: params.sortDirection ?? "DESC",
+    },
+    validateStatus: () => true,
+  })
+}
+
+export async function getDebtsTimeSeriesData(
+  token: string,
+  params: DebtsTimeSeriesRequestParams,
+  signal?: AbortSignal
+) {
+  return axios.get<
+    DebtsApiSuccessResponse<DebtsTimeSeriesContent> | DebtsApiErrorResponse
+  >(API_ENDPOINTS.DEBTS_TIME_SERIES, {
+    params,
+    signal,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     validateStatus: () => true,
   })

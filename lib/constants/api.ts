@@ -12,4 +12,5 @@ export const API_ENDPOINTS = {
   CHECKING_SUMMARY: `${API_BASE_URL}/api/v1/checking/summary`,
   DEBTS_SUMMARY: `${API_BASE_URL}/api/v1/debts/summary`,
   DEBTS_TRANSACTIONS: `${API_BASE_URL}/api/v1/debts/transactions`,
+  DEBTS_TIME_SERIES: `${API_BASE_URL}/api/v1/debts/transactions/time-series`,
 }
