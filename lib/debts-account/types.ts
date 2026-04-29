@@ -47,3 +47,18 @@ export type CreateDebtsTransactionResponseContent = {
   linkedCheckingTransactionId?: number
   checkingAccountBalance?: number
 }
+
+export type DebtsTransactionType = "DEBT" | "PAYMENT"
+
+export type DebtsTransactionDetail = {
+  debtsTransactionId: number
+  debtsAccountId: number
+  transactionType: DebtsTransactionType
+  amount: number
+  date: string
+  debtCategory?: DebtCategory | null
+  description: string | null
+  createdAt: string
+  linkedCheckingTransactionId?: number | null
+  linkedCheckingTransactionCategory?: string | null
+}

@@ -7,12 +7,34 @@ import type {
   DebtsAccountSummary,
   DebtsApiErrorResponse,
   DebtsApiSuccessResponse,
+  DebtsTransactionDetail,
 } from "@/lib/debts-account/types"
 
-export async function getDebtsAccountSummary(token: string) {
+export async function getDebtsAccountSummary(
+  token: string,
+  signal?: AbortSignal
+) {
   return axios.get<
     DebtsApiSuccessResponse<DebtsAccountSummary> | DebtsApiErrorResponse
   >(API_ENDPOINTS.DEBTS_SUMMARY, {
+    signal,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    validateStatus: () => true,
+  })
+}
+
+export async function getDebtsTransactionById(
+  token: string,
+  transactionId: string,
+  signal?: AbortSignal
+) {
+  return axios.get<
+    DebtsApiSuccessResponse<DebtsTransactionDetail> | DebtsApiErrorResponse
+  >(`${API_ENDPOINTS.DEBTS_TRANSACTIONS}/${transactionId}`, {
+    signal,
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
