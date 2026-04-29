@@ -27,13 +27,29 @@ export type GetDebtFormValues = {
 export type GetDebtFormField = keyof GetDebtFormValues
 export type GetDebtFormFieldErrors = Partial<Record<GetDebtFormField, string>>
 
-export type CreateDebtsTransactionRequest = {
-  transactionType: "DEBT"
-  amount: number
+export type CreateDebtsTransactionRequest =
+  | {
+      transactionType: "DEBT"
+      amount: number
+      date: string
+      category: DebtCategory
+      description?: string
+    }
+  | {
+      transactionType: "PAYMENT"
+      amount: number
+      date: string
+      description: string
+    }
+
+export type PayDebtFormValues = {
   date: string
-  category: DebtCategory
-  description?: string
+  amount: string
+  description: string
 }
+
+export type PayDebtFormField = keyof PayDebtFormValues
+export type PayDebtFormFieldErrors = Partial<Record<PayDebtFormField, string>>
 
 export type CreateDebtsTransactionResponseContent = {
   debtsTransactionId: number

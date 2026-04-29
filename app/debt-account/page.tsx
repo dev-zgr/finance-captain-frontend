@@ -7,12 +7,14 @@ import { AuthenticatedDashboardLayout } from "@/components/dashboard/Authenticat
 import { DebtsActionsCard } from "@/components/components/debts-account/debts-actions-card"
 import { DebtsAccountSummaryCard } from "@/components/components/debts-account/debts-account-summary-card"
 import { GetDebtDialog } from "@/components/components/debts-account/get-debt-dialog"
+import { PayDebtDialog } from "@/components/components/debts-account/pay-debt-dialog"
 import { DebtsTimeSeriesChart } from "@/components/components/debts-account/debts-time-series-chart"
 import { RecentDebtsTransactionsTable } from "@/components/components/debts-account/recent-debts-transactions-table"
 import type { RootState } from "@/lib/store"
 
 export default function DebtAccountOverviewPage() {
   const [getDebtDialogOpen, setGetDebtDialogOpen] = useState(false)
+  const [payDebtDialogOpen, setPayDebtDialogOpen] = useState(false)
   const [summaryRefreshKey, setSummaryRefreshKey] = useState(0)
   const token = useSelector(
     (state: RootState) => state.auth.content?.token ?? ""
@@ -37,7 +39,7 @@ export default function DebtAccountOverviewPage() {
 
             <DebtsActionsCard
               onGetDebt={() => setGetDebtDialogOpen(true)}
-              onPayDebt={() => undefined}
+              onPayDebt={() => setPayDebtDialogOpen(true)}
             />
           </div>
         </div>
@@ -51,6 +53,13 @@ export default function DebtAccountOverviewPage() {
       <GetDebtDialog
         open={getDebtDialogOpen}
         onOpenChange={setGetDebtDialogOpen}
+        token={token}
+        onSuccess={handleDebtTransactionSuccess}
+      />
+
+      <PayDebtDialog
+        open={payDebtDialogOpen}
+        onOpenChange={setPayDebtDialogOpen}
         token={token}
         onSuccess={handleDebtTransactionSuccess}
       />
