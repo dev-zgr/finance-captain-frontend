@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: enhance sidebar navigation with account overview and transactions links">
+    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: refactor transaction handling with improved type resolution and signed amount calculation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/components/checking-account/checking-transactions-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/checking-transactions-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/components/checking-account/recent-transactions-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/recent-transactions-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/components/checking-account/transaction-detail-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/transaction-detail-card.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/components/checking-account/transaction-type-badge.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/checking-account/transaction-type-badge.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/transaction-presentation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/transaction-presentation.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/debt-account/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/debt-account/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/debt-accounts/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/debt-accounts/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/components/layoutComponents/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/components/layoutComponents/app-sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/dashboard/DashboardSidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/dashboard/DashboardSidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +72,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "36-add-debts-account-summary-card-to-debt-accounts-overview",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/.claude/skills",
@@ -133,6 +132,7 @@
       <workItem from="1777237950206" duration="110000" />
       <workItem from="1777361406384" duration="585000" />
       <workItem from="1777362033567" duration="5766000" />
+      <workItem from="1777450435940" duration="1606000" />
     </task>
     <task id="LOCAL-00001" summary="feat: enhance dashboard layout with logout modal and breadcrumb navigation">
       <option name="closed" value="true" />
@@ -214,7 +214,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777394144520</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="feat: refactor transaction handling with improved type resolution and signed amount calculation">
+      <option name="closed" value="true" />
+      <created>1777405559659</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1777405559659</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -230,7 +238,8 @@
     <MESSAGE value="feat: Update workspace configuration to enhance income and expense forms with VLM extraction support" />
     <MESSAGE value="feat: implement recent transactions data table and enhance date range picker functionality" />
     <MESSAGE value="feat: enhance sidebar navigation with account overview and transactions links" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: enhance sidebar navigation with account overview and transactions links" />
+    <MESSAGE value="feat: refactor transaction handling with improved type resolution and signed amount calculation" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: refactor transaction handling with improved type resolution and signed amount calculation" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

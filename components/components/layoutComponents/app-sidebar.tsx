@@ -48,7 +48,7 @@ const accountItems = [
     {
         title: "Debts Account",
         icon: Landmark,
-        overviewHref: "/debt-accounts",
+        overviewHref: "/debt-account",
         transactionsHref: "/debt-account/transactions",
     },
     {
