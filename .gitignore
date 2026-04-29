@@ -8,6 +8,8 @@
 !.yarn/releases
 !.yarn/versions
 
+
+
 # testing
 /coverage
 
@@ -21,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+
+# JetBrains IDE project files
+.idea/workspace.xml
 
 # debug
 npm-debug.log*
