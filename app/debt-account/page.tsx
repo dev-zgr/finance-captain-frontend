@@ -1,16 +1,30 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useState } from "react"
+import { useSelector } from "react-redux"
 
-import { AuthenticatedDashboardLayout } from "@/components/dashboard/AuthenticatedDashboardLayout";
-import { DebtsAccountSummaryCard } from "@/components/components/debts-account/debts-account-summary-card";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { RootState } from "@/lib/store";
+import { AuthenticatedDashboardLayout } from "@/components/dashboard/AuthenticatedDashboardLayout"
+import { DebtsActionsCard } from "@/components/components/debts-account/debts-actions-card"
+import { DebtsAccountSummaryCard } from "@/components/components/debts-account/debts-account-summary-card"
+import { GetDebtDialog } from "@/components/components/debts-account/get-debt-dialog"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import type { RootState } from "@/lib/store"
 
 export default function DebtAccountOverviewPage() {
-  const [summaryRefreshKey] = useState(0);
-  const token = useSelector((state: RootState) => state.auth.content?.token ?? "");
+  const [getDebtDialogOpen, setGetDebtDialogOpen] = useState(false)
+  const [summaryRefreshKey, setSummaryRefreshKey] = useState(0)
+  const token = useSelector(
+    (state: RootState) => state.auth.content?.token ?? ""
+  )
+
+  const handleDebtTransactionSuccess = () =>
+    setSummaryRefreshKey((key) => key + 1)
 
   return (
     <AuthenticatedDashboardLayout>
@@ -21,32 +35,43 @@ export default function DebtAccountOverviewPage() {
           <Card className="h-full min-h-[260px]">
             <CardHeader>
               <CardTitle>Debts Activity</CardTitle>
-              <CardDescription>Debt trend chart will be added in a follow-up issue.</CardDescription>
+              <CardDescription>
+                Debt trend chart will be added in a follow-up issue.
+              </CardDescription>
             </CardHeader>
             <CardContent>Chart</CardContent>
           </Card>
 
           <div className="grid gap-4">
-            <DebtsAccountSummaryCard token={token} refreshKey={summaryRefreshKey} />
+            <DebtsAccountSummaryCard
+              token={token}
+              refreshKey={summaryRefreshKey}
+            />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Debts Actions</CardTitle>
-                <CardDescription>Debt actions will be added in a follow-up issue.</CardDescription>
-              </CardHeader>
-              <CardContent>Actions</CardContent>
-            </Card>
+            <DebtsActionsCard
+              onGetDebt={() => setGetDebtDialogOpen(true)}
+              onPayDebt={() => undefined}
+            />
           </div>
         </div>
 
         <Card className="min-h-[180px]">
           <CardHeader>
             <CardTitle>Recent Debts Transactions</CardTitle>
-            <CardDescription>Recent debts transactions will be added in a follow-up issue.</CardDescription>
+            <CardDescription>
+              Recent debts transactions will be added in a follow-up issue.
+            </CardDescription>
           </CardHeader>
           <CardContent>Transactions</CardContent>
         </Card>
       </section>
+
+      <GetDebtDialog
+        open={getDebtDialogOpen}
+        onOpenChange={setGetDebtDialogOpen}
+        token={token}
+        onSuccess={handleDebtTransactionSuccess}
+      />
     </AuthenticatedDashboardLayout>
-  );
+  )
 }
