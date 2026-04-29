@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: update workspace configuration for debts account summary card and API integration">
-      <change afterPath="$PROJECT_DIR$/app/debt-account/transactions/[transactionId]/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-category-badge.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-transaction-detail-card.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-transaction-type-badge.tsx" afterDir="false" />
+    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: add recent debts transactions data table to debt accounts card">
+      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-time-series-chart.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/checking-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/debt-account/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/debt-account/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/debts-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/debts-account/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/debts-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/debts-account/types.ts" afterDir="false" />
     </list>
@@ -74,7 +72,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "42-build-the-debts-transaction-detail-page-debt-accounttransactionstransactionid-2",
+    "git-widget-placeholder": "40-add-debts-time-series-area-chart-gradient-chart-card-2",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/.claude/skills",
@@ -134,7 +132,7 @@
       <workItem from="1777237950206" duration="110000" />
       <workItem from="1777361406384" duration="585000" />
       <workItem from="1777362033567" duration="5766000" />
-      <workItem from="1777450435940" duration="5643000" />
+      <workItem from="1777450435940" duration="8306000" />
     </task>
     <task id="LOCAL-00001" summary="feat: enhance dashboard layout with logout modal and breadcrumb navigation">
       <option name="closed" value="true" />
@@ -280,11 +278,54 @@
       <option name="project" value="LOCAL" />
       <updated>1777459764355</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="feat: enhance debts API with transaction detail retrieval and abort signal support">
+      <option name="closed" value="true" />
+      <created>1777461205473</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1777461205473</updated>
+    </task>
+    <task id="LOCAL-00020" summary="feat: implement debts transaction detail page with category badges and linked transaction display">
+      <option name="closed" value="true" />
+      <created>1777461214080</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1777461214080</updated>
+    </task>
+    <task id="LOCAL-00021" summary="feat: add debts transactions API with response extraction and sorting parameters">
+      <option name="closed" value="true" />
+      <created>1777462020364</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1777462020364</updated>
+    </task>
+    <task id="LOCAL-00022" summary="feat: add recent debts transactions data table to debt accounts card">
+      <option name="closed" value="true" />
+      <created>1777462026468</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1777462026468</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: enhance dashboard layout with logout modal and breadcrumb navigation" />
@@ -304,7 +345,11 @@
     <MESSAGE value="feat: add debts transactions API and constants for debt categories" />
     <MESSAGE value="feat: add debts actions card and multi-step get debt wizard dialog" />
     <MESSAGE value="feat: update workspace configuration for debts account summary card and API integration" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: update workspace configuration for debts account summary card and API integration" />
+    <MESSAGE value="feat: enhance debts API with transaction detail retrieval and abort signal support" />
+    <MESSAGE value="feat: implement debts transaction detail page with category badges and linked transaction display" />
+    <MESSAGE value="feat: add debts transactions API with response extraction and sorting parameters" />
+    <MESSAGE value="feat: add recent debts transactions data table to debt accounts card" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add recent debts transactions data table to debt accounts card" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
