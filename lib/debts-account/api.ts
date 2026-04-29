@@ -87,6 +87,34 @@ export async function getDebtsTransactions(
       page: params.page ?? 0,
       sortBy: params.sortBy ?? "date",
       sortDirection: params.sortDirection ?? "DESC",
+      ...(params.startDate && { startDate: params.startDate }),
+      ...(params.endDate && { endDate: params.endDate }),
+      ...(params.category &&
+        params.category.length > 0 && { category: params.category }),
+      ...(params.transactionType && {
+        transactionType: params.transactionType,
+      }),
+    },
+    paramsSerializer: {
+      serialize: (queryParams) => {
+        const searchParams = new URLSearchParams()
+        Object.entries(queryParams).forEach(([key, value]) => {
+          if (value === undefined || value === null) {
+            return
+          }
+
+          if (Array.isArray(value)) {
+            value.forEach((item) => {
+              searchParams.append(key, String(item))
+            })
+            return
+          }
+
+          searchParams.append(key, String(value))
+        })
+
+        return searchParams.toString()
+      },
     },
     validateStatus: () => true,
   })
