@@ -10,4 +10,5 @@ export const API_ENDPOINTS = {
     CATEGORIZE: `${API_BASE_URL}/api/v1/ai/categorize`,
     VLM_EXTRACTION: `${API_BASE_URL}/api/v1/ai/vlm`,
     CHECKING_SUMMARY: `${API_BASE_URL}/api/v1/checking/summary`,
+    DEBTS_SUMMARY: `${API_BASE_URL}/api/v1/debts/summary`,
 };
