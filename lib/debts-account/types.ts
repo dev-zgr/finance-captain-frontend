@@ -56,6 +56,10 @@ export type GetDebtsTransactionsParams = {
   page?: number
   sortBy?: DebtsSortBy
   sortDirection?: "ASC" | "DESC"
+  startDate?: string
+  endDate?: string
+  category?: DebtCategory[]
+  transactionType?: DebtsTransactionType
 }
 
 export type DebtsTransactionRow = {
