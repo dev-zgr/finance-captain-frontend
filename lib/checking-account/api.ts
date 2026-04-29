@@ -89,10 +89,11 @@ export async function createCheckingTransaction(token: string, payload: CreateCh
   );
 }
 
-export async function getAccountSummary(token: string) {
+export async function getAccountSummary(token: string, signal?: AbortSignal) {
   return axios.get<ApiSuccessResponse<AccountSummary> | ApiErrorResponse>(
     API_ENDPOINTS.CHECKING_SUMMARY,
     {
+      signal,
       headers: { Authorization: `Bearer ${token}` },
       validateStatus: () => true,
     },
