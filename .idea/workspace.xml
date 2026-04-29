@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: add debts account summary card to debts account overview page">
+    <list default="true" id="8a58524f-a574-44b9-a12d-27bab386f5b4" name="Changes" comment="feat: update workspace configuration for debts account summary card and API integration">
+      <change afterPath="$PROJECT_DIR$/app/debt-account/transactions/[transactionId]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-category-badge.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-transaction-detail-card.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/components/debts-account/debts-transaction-type-badge.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/debt-account/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/debt-account/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/constants/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/checking-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/checking-account/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/debts-account/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/debts-account/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/debts-account/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/debts-account/types.ts" afterDir="false" />
     </list>
@@ -71,7 +74,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "37-add-debts-actions-card-with-multi-step-get-debt-wizard-dialog",
+    "git-widget-placeholder": "42-build-the-debts-transaction-detail-page-debt-accounttransactionstransactionid-2",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "last_opened_file_path": "/Users/ozgurkamali/WebstormProjects/finance_captain_frontend/.claude/skills",
@@ -131,7 +134,7 @@
       <workItem from="1777237950206" duration="110000" />
       <workItem from="1777361406384" duration="585000" />
       <workItem from="1777362033567" duration="5766000" />
-      <workItem from="1777450435940" duration="3558000" />
+      <workItem from="1777450435940" duration="5643000" />
     </task>
     <task id="LOCAL-00001" summary="feat: enhance dashboard layout with logout modal and breadcrumb navigation">
       <option name="closed" value="true" />
@@ -237,7 +240,47 @@
       <option name="project" value="LOCAL" />
       <updated>1777456322469</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="feat: add validation functions for GetDebt form and error mapping">
+      <option name="closed" value="true" />
+      <created>1777459725651</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1777459725651</updated>
+    </task>
+    <task id="LOCAL-00015" summary="feat: extend debts types with GetDebt form and transaction request/response structures">
+      <option name="closed" value="true" />
+      <created>1777459730525</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1777459730525</updated>
+    </task>
+    <task id="LOCAL-00016" summary="feat: add debts transactions API and constants for debt categories">
+      <option name="closed" value="true" />
+      <created>1777459736259</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1777459736259</updated>
+    </task>
+    <task id="LOCAL-00017" summary="feat: add debts actions card and multi-step get debt wizard dialog">
+      <option name="closed" value="true" />
+      <created>1777459751561</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1777459751561</updated>
+    </task>
+    <task id="LOCAL-00018" summary="feat: update workspace configuration for debts account summary card and API integration">
+      <option name="closed" value="true" />
+      <created>1777459764355</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1777459764355</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -256,7 +299,12 @@
     <MESSAGE value="feat: refactor transaction handling with improved type resolution and signed amount calculation" />
     <MESSAGE value="feat: add debts account summary API and types for debt accounts overview" />
     <MESSAGE value="feat: add debts account summary card to debts account overview page" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add debts account summary card to debts account overview page" />
+    <MESSAGE value="feat: add validation functions for GetDebt form and error mapping" />
+    <MESSAGE value="feat: extend debts types with GetDebt form and transaction request/response structures" />
+    <MESSAGE value="feat: add debts transactions API and constants for debt categories" />
+    <MESSAGE value="feat: add debts actions card and multi-step get debt wizard dialog" />
+    <MESSAGE value="feat: update workspace configuration for debts account summary card and API integration" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: update workspace configuration for debts account summary card and API integration" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
