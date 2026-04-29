@@ -538,7 +538,10 @@ export function DebtsTransactionDetailCard({
                         <Tag className="size-4" />
                         Category
                       </span>
-                      <DebtsCategoryBadge category={transaction.debtCategory} />
+                      <DebtsCategoryBadge
+                        category={transaction.debtCategory}
+                        transactionType={transaction.transactionType}
+                      />
                     </div>
                   ) : null}
 

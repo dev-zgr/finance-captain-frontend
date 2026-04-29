@@ -1,10 +1,10 @@
 import {
+  Banknote,
   CircleHelp,
+  Coins,
   CreditCard,
-  HandCoins,
   Home,
-  Landmark,
-  Receipt,
+  Users,
   type LucideIcon,
 } from "lucide-react"
 
@@ -13,36 +13,42 @@ import {
   DEBT_CATEGORY_DISPLAY_MAP,
   isDebtCategory,
 } from "@/lib/debts-account/constants"
+import type { DebtsTransactionType } from "@/lib/debts-account/types"
 
 type DebtsCategoryBadgeProps = {
-  category: string
+  category?: string | null
+  transactionType: DebtsTransactionType
 }
 
 const CATEGORY_STYLES: Record<string, { icon: LucideIcon; className: string }> =
   {
     LOAN: {
-      icon: Landmark,
-      className: "border-red-500/30 bg-red-500/10 text-red-700",
+      icon: Banknote,
+      className: "border-amber-500/30 bg-amber-500/10 text-amber-700",
     },
     CREDIT_CARD_ADVANCE: {
       icon: CreditCard,
-      className: "border-orange-500/30 bg-orange-500/10 text-orange-700",
+      className: "border-pink-500/30 bg-pink-500/10 text-pink-700",
     },
     MORTGAGE: {
       icon: Home,
-      className: "border-sky-500/30 bg-sky-500/10 text-sky-700",
+      className: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700",
     },
     PERSONAL_BORROWING: {
-      icon: HandCoins,
-      className: "border-violet-500/30 bg-violet-500/10 text-violet-700",
+      icon: Users,
+      className: "border-purple-500/30 bg-purple-500/10 text-purple-700",
     },
     OTHER: {
-      icon: Receipt,
+      icon: CircleHelp,
       className: "border-zinc-500/30 bg-zinc-500/10 text-zinc-700",
     },
   }
 
-function normalizeCategory(category: string): string {
+function normalizeCategory(category: string | null | undefined): string {
+  if (!category) {
+    return "OTHER"
+  }
+
   return category.trim().toUpperCase()
 }
 
@@ -53,22 +59,34 @@ function toTitleCase(value: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
-function getCategoryLabel(category: string): string {
+function getCategoryLabel(category: string | null | undefined): string {
   const normalized = normalizeCategory(category)
 
   if (isDebtCategory(normalized)) {
     return DEBT_CATEGORY_DISPLAY_MAP[normalized]
   }
 
-  return toTitleCase(category)
+  return toTitleCase(category ?? "Other")
 }
 
-export function DebtsCategoryBadge({ category }: DebtsCategoryBadgeProps) {
-  const normalized = normalizeCategory(category)
-  const categoryVisuals = CATEGORY_STYLES[normalized] ?? {
-    icon: CircleHelp,
-    className: "border-zinc-500/30 bg-zinc-500/10 text-zinc-700",
+export function DebtsCategoryBadge({
+  category,
+  transactionType,
+}: DebtsCategoryBadgeProps) {
+  if (transactionType === "PAYMENT") {
+    return (
+      <Badge
+        variant="outline"
+        className="border-zinc-500/30 bg-zinc-500/10 text-zinc-700"
+      >
+        <Coins data-icon="inline-start" />
+        Payment
+      </Badge>
+    )
   }
+
+  const normalized = normalizeCategory(category)
+  const categoryVisuals = CATEGORY_STYLES[normalized] ?? CATEGORY_STYLES.OTHER
   const CategoryIcon = categoryVisuals.icon
 
   return (

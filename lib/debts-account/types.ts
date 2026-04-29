@@ -49,6 +49,29 @@ export type CreateDebtsTransactionResponseContent = {
 }
 
 export type DebtsTransactionType = "DEBT" | "PAYMENT"
+export type DebtsSortBy = "date" | "amount"
+
+export type GetDebtsTransactionsParams = {
+  page?: number
+  sortBy?: DebtsSortBy
+  sortDirection?: "ASC" | "DESC"
+}
+
+export type DebtsTransactionRow = {
+  debtsTransactionId: number
+  transactionType: DebtsTransactionType
+  amount: number
+  date: string
+  debtCategory?: DebtCategory | null
+  description?: string | null
+}
+
+export type GetDebtsTransactionsResponse = {
+  transactions: DebtsTransactionRow[]
+  totalPages: number
+  totalElements: number
+  currentPage?: number
+}
 
 export type DebtsTransactionDetail = {
   debtsTransactionId: number
