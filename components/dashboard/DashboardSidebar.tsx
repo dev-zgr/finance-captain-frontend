@@ -50,7 +50,7 @@ const accountGroups = [
   {
     title: "Debts Account",
     icon: RiSecurePaymentLine,
-    overviewHref: "/debt-accounts",
+    overviewHref: "/debt-account",
     transactionsHref: "/debt-account/transactions",
   },
   {
