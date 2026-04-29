@@ -7,6 +7,7 @@ import { AuthenticatedDashboardLayout } from "@/components/dashboard/Authenticat
 import { DebtsActionsCard } from "@/components/components/debts-account/debts-actions-card"
 import { DebtsAccountSummaryCard } from "@/components/components/debts-account/debts-account-summary-card"
 import { GetDebtDialog } from "@/components/components/debts-account/get-debt-dialog"
+import { RecentDebtsTransactionsTable } from "@/components/components/debts-account/recent-debts-transactions-table"
 import {
   Card,
   CardContent,
@@ -55,15 +56,10 @@ export default function DebtAccountOverviewPage() {
           </div>
         </div>
 
-        <Card className="min-h-[180px]">
-          <CardHeader>
-            <CardTitle>Recent Debts Transactions</CardTitle>
-            <CardDescription>
-              Recent debts transactions will be added in a follow-up issue.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>Transactions</CardContent>
-        </Card>
+        <RecentDebtsTransactionsTable
+          token={token}
+          refreshKey={summaryRefreshKey}
+        />
       </section>
 
       <GetDebtDialog
