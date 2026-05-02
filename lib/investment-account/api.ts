@@ -1,0 +1,188 @@
+import axios from "axios"
+
+import { INVESTMENT_API } from "@/lib/constants/api"
+import type {
+  GetInvestmentPositionsParams,
+  GetInvestmentTransactionsParams,
+  InvestmentApiErrorResponse,
+  InvestmentApiSuccessResponse,
+  InvestmentCashTransactionRequest,
+  InvestmentNewsResponse,
+  InvestmentPagedResponse,
+  InvestmentSummary,
+  InvestmentTradeRequest,
+  InvestmentTransactionDTO,
+  PositionDTO,
+  StockDetailsDTO,
+} from "@/lib/investment-account/types"
+
+function authHeaders(token: string) {
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  }
+}
+
+export async function getInvestmentSummary(token: string, signal?: AbortSignal) {
+  return axios.get<
+    InvestmentApiSuccessResponse<InvestmentSummary> | InvestmentApiErrorResponse
+  >(INVESTMENT_API.SUMMARY, {
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getInvestmentPositions(
+  token: string,
+  params: GetInvestmentPositionsParams = {},
+  signal?: AbortSignal
+) {
+  return axios.get<
+    | InvestmentPagedResponse<PositionDTO>
+    | InvestmentApiSuccessResponse<InvestmentPagedResponse<PositionDTO>>
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.POSITIONS, {
+    params,
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getInvestmentPositionById(
+  token: string,
+  positionId: string,
+  signal?: AbortSignal
+) {
+  return axios.get<
+    InvestmentApiSuccessResponse<PositionDTO> | InvestmentApiErrorResponse
+  >(INVESTMENT_API.POSITION_BY_ID(positionId), {
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getInvestmentTransactions(
+  token: string,
+  params: GetInvestmentTransactionsParams = {},
+  signal?: AbortSignal
+) {
+  return axios.get<
+    | InvestmentPagedResponse<InvestmentTransactionDTO>
+    | InvestmentApiSuccessResponse<
+        InvestmentPagedResponse<InvestmentTransactionDTO>
+      >
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.TRANSACTIONS, {
+    params,
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getInvestmentTransactionById(
+  token: string,
+  transactionId: number,
+  signal?: AbortSignal
+) {
+  return axios.get<
+    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.TRANSACTION_BY_ID(transactionId), {
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function depositInvestmentCash(
+  token: string,
+  payload: InvestmentCashTransactionRequest
+) {
+  return axios.post<
+    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.DEPOSIT, payload, {
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function withdrawInvestmentCash(
+  token: string,
+  payload: InvestmentCashTransactionRequest
+) {
+  return axios.post<
+    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.WITHDRAW, payload, {
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function buyInvestmentPosition(
+  token: string,
+  payload: InvestmentTradeRequest
+) {
+  return axios.post<
+    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.BUY, payload, {
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function sellInvestmentPosition(
+  token: string,
+  payload: InvestmentTradeRequest
+) {
+  return axios.post<
+    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiErrorResponse
+  >(INVESTMENT_API.SELL, payload, {
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getStockDetails(
+  token: string,
+  ticker: string,
+  signal?: AbortSignal
+) {
+  return axios.get<
+    InvestmentApiSuccessResponse<StockDetailsDTO> | InvestmentApiErrorResponse
+  >(INVESTMENT_API.STOCK_DETAILS(ticker), {
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getInvestmentNews(token: string, signal?: AbortSignal) {
+  return axios.get<
+    InvestmentApiSuccessResponse<InvestmentNewsResponse> | InvestmentApiErrorResponse
+  >(INVESTMENT_API.NEWS, {
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function refreshInvestmentNews(token: string) {
+  return axios.post<
+    InvestmentApiSuccessResponse<InvestmentNewsResponse> | InvestmentApiErrorResponse
+  >(
+    INVESTMENT_API.NEWS_REFRESH,
+    {},
+    {
+      headers: authHeaders(token),
+      validateStatus: () => true,
+    }
+  )
+}

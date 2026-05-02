@@ -58,14 +58,13 @@ export default function LoginPage() {
             } else {
                 setErrors({ general: 'Unexpected error occurred.' });
             }
-        } catch (err) {
+        } catch {
             setErrors({ general: 'Network error. Please try again.' });
         } finally {
             setPending(false);
         }
     };
 
-  // @ts-ignore
     return (
     <AppShell>
       <div className="flex flex-col items-center justify-center p-6 md:p-10">

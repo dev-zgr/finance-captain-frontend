@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   Landmark,
   Loader2,
-  MoveRight,
   Wallet,
   ArrowUpToLine,
 } from "lucide-react"
