@@ -7,6 +7,7 @@ import type {
   InvestmentApiErrorResponse,
   InvestmentApiSuccessResponse,
   InvestmentCashTransactionRequest,
+  InvestmentCashTransactionResponseContent,
   InvestmentNewsResponse,
   InvestmentPagedResponse,
   InvestmentSummary,
@@ -103,7 +104,7 @@ export async function depositInvestmentCash(
   payload: InvestmentCashTransactionRequest
 ) {
   return axios.post<
-    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiSuccessResponse<InvestmentCashTransactionResponseContent>
     | InvestmentApiErrorResponse
   >(INVESTMENT_API.DEPOSIT, payload, {
     headers: authHeaders(token),
@@ -116,13 +117,16 @@ export async function withdrawInvestmentCash(
   payload: InvestmentCashTransactionRequest
 ) {
   return axios.post<
-    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiSuccessResponse<InvestmentCashTransactionResponseContent>
     | InvestmentApiErrorResponse
   >(INVESTMENT_API.WITHDRAW, payload, {
     headers: authHeaders(token),
     validateStatus: () => true,
   })
 }
+
+export const apiDeposit = depositInvestmentCash
+export const apiWithdraw = withdrawInvestmentCash
 
 export async function buyInvestmentPosition(
   token: string,
