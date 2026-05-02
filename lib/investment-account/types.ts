@@ -111,8 +111,13 @@ export type GetInvestmentTransactionsParams = GetInvestmentPositionsParams & {
 
 export type InvestmentCashTransactionRequest = {
   amount: number
-  date: string
-  description?: string
+  description: string | null
+}
+
+export type InvestmentCashTransactionResponseContent = {
+  transaction: InvestmentTransactionDTO
+  investmentAccountBalance: number
+  checkingAccountBalance: number
 }
 
 export type InvestmentTradeRequest = {

@@ -1,4 +1,4 @@
-import { InvestmentOverviewSkeletonShell } from "@/components/components/investment-account/investment-skeleton-shells"
+import { InvestmentOverviewClient } from "@/components/components/investment-account/overview/InvestmentOverviewClient"
 import { PageHeader } from "@/components/components/investment-account/page-header"
 
 export default function InvestmentOverviewPage() {
@@ -8,7 +8,7 @@ export default function InvestmentOverviewPage() {
         title="Investment Account Overview"
         description="Track performance, balances, holdings, market news, and recent investment activity."
       />
-      <InvestmentOverviewSkeletonShell />
+      <InvestmentOverviewClient />
     </section>
   )
 }
