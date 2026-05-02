@@ -12,7 +12,7 @@ export default function TermsOfServicePage() {
                     <h2 className="text-xl font-semibold text-gray-800 mb-2">1. Acceptance of Terms</h2>
                     <p className="text-gray-700 mb-1">
                         Welcome to Finance Captain! By accessing or using our platform, you agree to comply with these Terms of
-                        Service ("Terms") and all applicable laws and regulations. If you do not agree with any of these
+                        Service (&quot;Terms&quot;) and all applicable laws and regulations. If you do not agree with any of these
                         terms, you are prohibited from using or accessing this site.
                     </p>
                 </section>

@@ -3,15 +3,19 @@
 import React from "react"
 import Link from "next/link"
 import { useDispatch, useSelector } from "react-redux"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
     ArrowLeftRight,
+    ArrowRightLeft,
+    Briefcase,
     Building2,
     ChevronRight,
     Landmark,
     LayoutDashboard,
     LineChart,
+    Newspaper,
     Wallet,
+    type LucideIcon,
 } from "lucide-react"
 
 
@@ -54,14 +58,54 @@ const accountItems = [
     {
         title: "Investment Account",
         icon: LineChart,
-        overviewHref: "#",
-        transactionsHref: "#",
+        items: [
+            {
+                title: "Overview",
+                href: "/investment-account/overview",
+                icon: LayoutDashboard,
+            },
+            {
+                title: "Portfolio",
+                href: "/investment-account/portfolio",
+                icon: Briefcase,
+            },
+            {
+                title: "News",
+                href: "/investment-account/news",
+                icon: Newspaper,
+            },
+            {
+                title: "Trade",
+                href: "/investment-account/trade",
+                icon: LineChart,
+            },
+            {
+                title: "Transactions",
+                href: "/investment-account/transactions",
+                icon: ArrowRightLeft,
+            },
+        ],
     },
-]
+] satisfies {
+    title: string
+    icon: LucideIcon
+    overviewHref?: string
+    transactionsHref?: string
+    items?: {
+        title: string
+        href: string
+        icon: LucideIcon
+    }[]
+}[]
+
+function isRouteActive(pathname: string, href: string) {
+    return pathname === href || pathname.startsWith(`${href}/`)
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const dispatch = useDispatch()
     const router = useRouter()
+    const pathname = usePathname()
     const { content } = useSelector((state: RootState) => state.auth)
     const [isLoggingOut, setIsLoggingOut] = React.useState(false)
 
@@ -93,7 +137,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton asChild isActive>
+                                    <SidebarMenuButton asChild isActive={isRouteActive(pathname, "/dashboard")}>
                                         <Link href="/dashboard">
                                             <LayoutDashboard />
                                             <span>Dashboard</span>
@@ -108,33 +152,57 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarGroupLabel>Account</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {accountItems.map(({ title, icon: Icon, overviewHref, transactionsHref }) => (
-                                    <Collapsible key={title} className="group/collapsible" asChild>
-                                        <SidebarMenuItem>
-                                            <CollapsibleTrigger asChild>
-                                                <SidebarMenuButton>
-                                                    <Icon />
-                                                    <span>{title}</span>
-                                                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                                </SidebarMenuButton>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent>
-                                                <SidebarMenuSub>
-                                                    <SidebarMenuSubItem>
-                                                        <SidebarMenuSubButton asChild>
-                                                            <Link href={overviewHref}>Overview</Link>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                    <SidebarMenuSubItem>
-                                                        <SidebarMenuSubButton asChild>
-                                                            <Link href={transactionsHref}>Transactions</Link>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                </SidebarMenuSub>
-                                            </CollapsibleContent>
-                                        </SidebarMenuItem>
-                                    </Collapsible>
-                                ))}
+                                {accountItems.map(({ title, icon: Icon, overviewHref, transactionsHref, items }) => {
+                                    const subItems =
+                                        items ??
+                                        [
+                                            {
+                                                title: "Overview",
+                                                href: overviewHref ?? "#",
+                                            },
+                                            {
+                                                title: "Transactions",
+                                                href: transactionsHref ?? "#",
+                                            },
+                                        ]
+                                    const isAccountActive = subItems.some((item) => isRouteActive(pathname, item.href))
+
+                                    return (
+                                        <Collapsible
+                                            key={title}
+                                            className="group/collapsible"
+                                            defaultOpen={isAccountActive}
+                                            asChild
+                                        >
+                                            <SidebarMenuItem>
+                                                <CollapsibleTrigger asChild>
+                                                    <SidebarMenuButton isActive={isAccountActive}>
+                                                        <Icon />
+                                                        <span>{title}</span>
+                                                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                    </SidebarMenuButton>
+                                                </CollapsibleTrigger>
+                                                <CollapsibleContent>
+                                                    <SidebarMenuSub>
+                                                        {subItems.map((item) => (
+                                                            <SidebarMenuSubItem key={item.title}>
+                                                                <SidebarMenuSubButton
+                                                                    asChild
+                                                                    isActive={isRouteActive(pathname, item.href)}
+                                                                >
+                                                                    <Link href={item.href}>
+                                                                        {"icon" in item && item.icon ? <item.icon /> : null}
+                                                                        <span>{item.title}</span>
+                                                                    </Link>
+                                                                </SidebarMenuSubButton>
+                                                            </SidebarMenuSubItem>
+                                                        ))}
+                                                    </SidebarMenuSub>
+                                                </CollapsibleContent>
+                                            </SidebarMenuItem>
+                                        </Collapsible>
+                                    )
+                                })}
                                 <SidebarMenuItem>
                                     <SidebarMenuButton asChild>
                                         <Link href="#">
