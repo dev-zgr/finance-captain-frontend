@@ -1,6 +1,7 @@
 "use client"
 
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Calendar, TrendingDown, TrendingUp, Wallet, BarChart3 } from "lucide-react"
+import { format, parseISO } from "date-fns"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -64,21 +65,6 @@ function getInvestmentTransactionsContent(data: unknown) {
   )
 }
 
-function SummaryMetric({
-  label,
-  value,
-}: {
-  label: string
-  value: string
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="font-medium tabular-nums">{value}</span>
-    </div>
-  )
-}
-
 function InvestmentSummaryCard({
   loading,
   error,
@@ -91,50 +77,121 @@ function InvestmentSummaryCard({
   const investmentSummary = useSelector(
     (state: RootState) => state.investmentAccount.summary
   )
-  const checkingSummary = useSelector(
-    (state: RootState) => state.checkingAccount.summary
-  )
+
+  const getPLColor = (value: number) => {
+    if (value > 0) return "text-emerald-600 dark:text-emerald-500"
+    if (value < 0) return "text-rose-600 dark:text-rose-500"
+    return "text-muted-foreground"
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Summary</CardTitle>
-        <CardDescription>Balances across linked accounts.</CardDescription>
+        <CardTitle>Account Summary</CardTitle>
+        <CardDescription>Your investment account at a glance.</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex min-h-[180px] items-center justify-center">
+          <div className="flex min-h-[200px] items-center justify-center">
             <Spinner />
           </div>
         ) : error ? (
-          <div className="flex min-h-[180px] flex-col items-center justify-center gap-3">
-            <AlertCircle className="text-destructive" />
+          <div className="flex min-h-[200px] flex-col items-center justify-center gap-3">
+            <AlertCircle className="size-8 text-destructive" />
             <p className="text-sm text-muted-foreground">{error}</p>
             <Button variant="outline" size="sm" type="button" onClick={onRetry}>
               Retry
             </Button>
           </div>
+        ) : !investmentSummary?.hasAccount ? (
+          <div className="flex min-h-[200px] items-center justify-center">
+            <p className="text-center text-sm text-muted-foreground">
+              You haven't started investing yet. Deposit funds to begin.
+            </p>
+          </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            <SummaryMetric
-              label="Investment Cash"
-              // TODO: Replace this fallback once the Investment Account Summary
-              // endpoint is available; until then the balance can display as $0.00.
-              value={formatCurrency(investmentSummary?.accountBalance ?? 0)}
-            />
-            <SummaryMetric
-              label="Portfolio Value"
-              value={formatCurrency(investmentSummary?.totalPortfolioValue ?? 0)}
-            />
-            <SummaryMetric
-              label="Checking Balance"
-              value={formatCurrency(checkingSummary?.accountBalance ?? 0)}
-            />
+          <div className="flex flex-col gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Account Value</p>
+              <p className="text-2xl font-semibold tracking-tight">
+                {formatCurrency(investmentSummary?.accountValue ?? 0)}
+              </p>
+            </div>
+
             <Separator />
-            <SummaryMetric
-              label="Total Gain/Loss"
-              value={formatCurrency(investmentSummary?.totalGainLoss ?? 0)}
-            />
+
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Wallet className="size-4 text-muted-foreground" />
+                  Cash Available to Trade
+                </span>
+                <span className="text-sm font-medium tabular-nums">
+                  {formatCurrency(investmentSummary?.cashBalance ?? 0)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <BarChart3 className="size-4 text-muted-foreground" />
+                  Market Value
+                </span>
+                <span className="text-sm font-medium tabular-nums">
+                  {formatCurrency(investmentSummary?.marketValue ?? 0)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingUp
+                    className={`size-4 ${investmentSummary?.unrealizedPnl ?? 0 >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
+                  />
+                  Unrealized P/L
+                </span>
+                <span
+                  className={`text-sm font-medium tabular-nums ${getPLColor(investmentSummary?.unrealizedPnl ?? 0)}`}
+                >
+                  {formatCurrency(investmentSummary?.unrealizedPnl ?? 0)} (
+                  {(investmentSummary?.unrealizedPnlPercent ?? 0).toFixed(2)}%)
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingDown className="size-4 text-muted-foreground" />
+                  This Month Net P/L
+                </span>
+                <span
+                  className={`text-sm font-medium tabular-nums ${getPLColor(investmentSummary?.thisMonthNetPnl ?? 0)}`}
+                >
+                  {formatCurrency(investmentSummary?.thisMonthNetPnl ?? 0)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingUp className="size-4 text-muted-foreground" />
+                  Month-over-Month Growth
+                </span>
+                <span
+                  className={`text-sm font-medium tabular-nums ${getPLColor(investmentSummary?.portfolioGrowthRatePercent ?? 0)}`}
+                >
+                  {(investmentSummary?.portfolioGrowthRatePercent ?? 0).toFixed(2)}%
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="size-4 text-muted-foreground" />
+                  Account opened
+                </span>
+                <span className="text-sm font-medium tabular-nums">
+                  {investmentSummary?.openingDate
+                    ? format(parseISO(investmentSummary.openingDate), "MMM d, yyyy")
+                    : "—"}
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>

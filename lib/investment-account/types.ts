@@ -24,13 +24,18 @@ export type InvestmentTransactionType =
 export type NewsGenerationStatus = "READY" | "PENDING"
 
 export type InvestmentSummary = {
-  accountBalance: number
-  totalPortfolioValue: number
-  totalGainLoss: number
-  totalGainLossPercentage: number
+  hasAccount: boolean
+  openingDate: string
   cashBalance: number
-  investedAmount: number
-  accountOpeningDate: string | null
+  marketValue: number
+  accountValue: number
+  totalCostBasis: number
+  unrealizedPnl: number
+  unrealizedPnlPercent: number
+  thisMonthNetPnl: number
+  previousMonthNetPnl: number
+  portfolioGrowthRatePercent: number | null
+  priceDataPartial: boolean
 }
 
 export type PositionDTO = {

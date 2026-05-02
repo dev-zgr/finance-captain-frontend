@@ -187,7 +187,7 @@ export function InvestmentCashTransferDialog({
     (state: RootState) => state.checkingAccount.summary?.accountBalance ?? 0
   )
   const investmentBalance = useSelector(
-    (state: RootState) => state.investmentAccount.summary?.accountBalance ?? 0
+    (state: RootState) => state.investmentAccount.summary?.cashBalance ?? 0
   )
   const [step, setStep] = useState<Step>(1)
   const [status, setStatus] = useState<SubmissionStatus>("idle")

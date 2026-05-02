@@ -73,17 +73,22 @@ const investmentAccountSlice = createSlice({
     },
     setInvestmentBalance(state, action: PayloadAction<number>) {
       if (state.summary) {
-        state.summary.accountBalance = action.payload
         state.summary.cashBalance = action.payload
+        state.summary.accountValue = action.payload + state.summary.marketValue
       } else {
         state.summary = {
-          accountBalance: action.payload,
-          totalPortfolioValue: 0,
-          totalGainLoss: 0,
-          totalGainLossPercentage: 0,
+          hasAccount: true,
+          openingDate: new Date().toISOString(),
           cashBalance: action.payload,
-          investedAmount: 0,
-          accountOpeningDate: null,
+          marketValue: 0,
+          accountValue: action.payload,
+          totalCostBasis: 0,
+          unrealizedPnl: 0,
+          unrealizedPnlPercent: 0,
+          thisMonthNetPnl: 0,
+          previousMonthNetPnl: 0,
+          portfolioGrowthRatePercent: null,
+          priceDataPartial: false,
         }
       }
     },
