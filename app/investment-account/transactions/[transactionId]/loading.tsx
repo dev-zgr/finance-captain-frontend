@@ -1,13 +1,9 @@
 import { InvestmentSingleCardSkeletonShell } from "@/components/components/investment-account/investment-skeleton-shells"
-import { PageHeader } from "@/components/components/investment-account/page-header"
 
 export default function InvestmentTransactionDetailsLoading() {
   return (
-    <section className="flex flex-col gap-6">
-      <PageHeader
-        title="Transaction Details"
-        description="Review the selected investment transaction details."
-      />
+    <section className="space-y-6">
+      <h1 className="text-2xl font-semibold tracking-tight">Transaction Details</h1>
       <InvestmentSingleCardSkeletonShell
         title="Transaction Details"
         description="Selected investment transaction details will appear here."

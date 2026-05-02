@@ -1,13 +1,9 @@
 import { InvestmentSingleCardSkeletonShell } from "@/components/components/investment-account/investment-skeleton-shells"
-import { PageHeader } from "@/components/components/investment-account/page-header"
 
 export default function InvestmentNewsLoading() {
   return (
-    <section className="flex flex-col gap-6">
-      <PageHeader
-        title="Investment News"
-        description="Review generated market news and account-level investment context."
-      />
+    <section className="space-y-6">
+      <h1 className="text-2xl font-semibold tracking-tight">Investment News</h1>
       <InvestmentSingleCardSkeletonShell
         title="Market News"
         description="News summaries and generated insight will appear here."
