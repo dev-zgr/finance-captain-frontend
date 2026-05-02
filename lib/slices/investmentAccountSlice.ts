@@ -10,12 +10,15 @@ import type {
   StockDetailsDTO,
 } from "@/lib/investment-account/types"
 
+type TradeStatus = "idle" | "submitting" | "success" | "error"
+
 type InvestmentStatusState = {
   summary: InvestmentAccountStatus
   positions: InvestmentAccountStatus
   transactions: InvestmentAccountStatus
   news: InvestmentAccountStatus
   stock: InvestmentAccountStatus
+  trade: TradeStatus
 }
 
 type InvestmentErrorState = {
@@ -24,6 +27,7 @@ type InvestmentErrorState = {
   transactions: string | null
   news: string | null
   stock: string | null
+  trade: string | null
 }
 
 interface InvestmentAccountState {
@@ -42,6 +46,7 @@ const initialStatus: InvestmentStatusState = {
   transactions: "idle",
   news: "idle",
   stock: "idle",
+  trade: "idle",
 }
 
 const initialError: InvestmentErrorState = {
@@ -50,6 +55,7 @@ const initialError: InvestmentErrorState = {
   transactions: null,
   news: null,
   stock: null,
+  trade: null,
 }
 
 const initialState: InvestmentAccountState = {
@@ -127,10 +133,15 @@ const investmentAccountSlice = createSlice({
       state,
       action: PayloadAction<{
         key: keyof InvestmentStatusState
-        status: InvestmentAccountStatus
+        status: InvestmentAccountStatus | TradeStatus
       }>
     ) {
-      state.status[action.payload.key] = action.payload.status
+      if (action.payload.key === "trade") {
+        state.status.trade = action.payload.status as TradeStatus
+      } else {
+        state.status[action.payload.key as Exclude<keyof InvestmentStatusState, "trade">] =
+          action.payload.status as InvestmentAccountStatus
+      }
     },
     setInvestmentError(
       state,
@@ -141,7 +152,23 @@ const investmentAccountSlice = createSlice({
     ) {
       state.error[action.payload.key] = action.payload.error
       if (action.payload.error) {
-        state.status[action.payload.key] = "failed"
+        if (action.payload.key === "trade") {
+          state.status.trade = "error"
+        } else {
+          state.status[action.payload.key as Exclude<keyof InvestmentStatusState, "trade">] = "failed"
+        }
+      }
+    },
+    setSelectedStock(state, action: PayloadAction<StockDetailsDTO | null>) {
+      state.selectedStock = action.payload
+    },
+    setTradeStatus(state, action: PayloadAction<TradeStatus>) {
+      state.status.trade = action.payload
+    },
+    clearTradeError(state) {
+      state.error.trade = null
+      if (state.status.trade === "error") {
+        state.status.trade = "idle"
       }
     },
   },
@@ -149,11 +176,14 @@ const investmentAccountSlice = createSlice({
 
 export const {
   addInvestmentTransaction,
+  clearTradeError,
   setInvestmentBalance,
   setInvestmentError,
   setInvestmentStatus,
   setInvestmentSummary,
   setInvestmentTransactions,
+  setSelectedStock,
+  setTradeStatus,
 } = investmentAccountSlice.actions
 export type { InvestmentAccountState }
 export default investmentAccountSlice.reducer

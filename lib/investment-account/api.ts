@@ -15,6 +15,7 @@ import type {
   InvestmentTransactionDTO,
   PositionDTO,
   StockDetailsDTO,
+  TradeTransactionResponse,
 } from "@/lib/investment-account/types"
 
 function authHeaders(token: string) {
@@ -128,26 +129,36 @@ export async function withdrawInvestmentCash(
 export const apiDeposit = depositInvestmentCash
 export const apiWithdraw = withdrawInvestmentCash
 
+/**
+ * Executes a buy transaction for a specified investment.
+ * @param token - Authentication token
+ * @param payload - { ticker, quantity, description? }
+ * @returns Buy transaction response with transaction details, updated position, and account balance
+ */
 export async function buyInvestmentPosition(
   token: string,
   payload: InvestmentTradeRequest
 ) {
   return axios.post<
-    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
-    | InvestmentApiErrorResponse
+    TradeTransactionResponse | InvestmentApiErrorResponse
   >(INVESTMENT_API.BUY, payload, {
     headers: authHeaders(token),
     validateStatus: () => true,
   })
 }
 
+/**
+ * Executes a sell transaction for a specified investment.
+ * @param token - Authentication token
+ * @param payload - { ticker, quantity, description? }
+ * @returns Sell transaction response with transaction details, updated position, and account balance
+ */
 export async function sellInvestmentPosition(
   token: string,
   payload: InvestmentTradeRequest
 ) {
   return axios.post<
-    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
-    | InvestmentApiErrorResponse
+    TradeTransactionResponse | InvestmentApiErrorResponse
   >(INVESTMENT_API.SELL, payload, {
     headers: authHeaders(token),
     validateStatus: () => true,
