@@ -62,6 +62,10 @@ function isPositiveCategory(category: InvestmentTransactionCategory): boolean {
   return category === "DEPOSIT" || category === "SELL"
 }
 
+function isGreenAmountCategory(category: InvestmentTransactionCategory): boolean {
+  return category === "DEPOSIT" || category === "BUY"
+}
+
 function formatSignedAmount(
   amount: number,
   category: InvestmentTransactionCategory
@@ -248,7 +252,7 @@ export function RecentInvestmentTransactionsCard() {
                 displayRows.map((transaction) => {
                   const amount = Number(transaction.amount ?? 0)
                   const description = transaction.description?.trim() || "—"
-                  const isPositive = isPositiveCategory(
+                  const isAmountGreen = isGreenAmountCategory(
                     transaction.investmentTransactionCategory
                   )
                   const quantity =
@@ -285,7 +289,7 @@ export function RecentInvestmentTransactionsCard() {
                       <TableCell
                         className={cn(
                           "pr-4 font-medium tabular-nums",
-                          isPositive ? "text-emerald-600" : "text-rose-600"
+                          isAmountGreen ? "text-emerald-600" : "text-rose-600"
                         )}
                       >
                         {formatSignedAmount(

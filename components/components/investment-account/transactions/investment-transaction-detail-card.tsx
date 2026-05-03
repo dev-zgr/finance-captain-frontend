@@ -569,9 +569,11 @@ export function InvestmentTransactionDetailCard({
                   <p
                     className={cn(
                       "text-3xl font-semibold tracking-tight tabular-nums",
-                      category === "DEPOSIT" || category === "SELL"
-                        ? "text-green-600 dark:text-green-500"
-                        : "text-red-600 dark:text-red-500"
+                      category === "SELL"
+                        ? "text-red-600 dark:text-red-500"
+                        : category === "BUY" || category === "DEPOSIT"
+                          ? "text-green-600 dark:text-green-500"
+                          : "text-red-600 dark:text-red-500"
                     )}
                   >
                     {isTransfer
