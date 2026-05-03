@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { Provider, useDispatch } from 'react-redux';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from "@/components/ui/sonner";
 
 import { store } from '@/lib/store';
 import { setAuthFromStorage } from '@/lib/slices/authSlice';
@@ -26,6 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <Provider store={store}>
             <TooltipProvider>
                 <AuthInitializer>{children}</AuthInitializer>
+                <Toaster />
             </TooltipProvider>
         </Provider>
     );
