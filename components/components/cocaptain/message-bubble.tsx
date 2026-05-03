@@ -24,6 +24,23 @@ type MessageBubbleProps = {
   ) => void
 }
 
+function stripArtifactMarkers(text: string): string {
+  return text.replace(/\[[a-zA-Z0-9_-]+\]/g, " ").replace(/\s+/g, " ").trim()
+}
+
+function compactCaption(text: string, maxLength = 80): string {
+  const cleaned = stripArtifactMarkers(text)
+  if (!cleaned) {
+    return ""
+  }
+
+  if (cleaned.length <= maxLength) {
+    return cleaned
+  }
+
+  return `${cleaned.slice(0, maxLength - 1).trimEnd()}…`
+}
+
 async function copyToClipboard(text: string): Promise<boolean> {
   if (typeof navigator !== "undefined" && navigator.clipboard && window.isSecureContext) {
     await navigator.clipboard.writeText(text)
@@ -81,6 +98,21 @@ export function MessageBubble({
     })
     .join("\n")
     .trim()
+  const artifactSegments = message.segments.filter((segment) => segment.type === "artifact")
+  const hasArtifacts = artifactSegments.length > 0
+  const rawTextSegments = message.segments.filter((segment) => segment.type === "text")
+  const combinedRawText = rawTextSegments.map((segment) => segment.content).join(" ").trim()
+  const cleanedCaption = compactCaption(combinedRawText)
+  const artifactTypeSet = new Set(artifactSegments.map((segment) => segment.artifact.type.toLowerCase()))
+  const normalizedCaption = cleanedCaption.toLowerCase().replace(/\s+/g, "_")
+  const isLabelOnlyCaption =
+    Boolean(normalizedCaption) &&
+    (artifactTypeSet.has(normalizedCaption) ||
+      artifactTypeSet.has(normalizedCaption.replace(/^here_are_your_/, "")))
+  const artifactCaption =
+    !cleanedCaption || isLabelOnlyCaption
+      ? "Here are your account details:"
+      : cleanedCaption
 
   const toolCallSegments = message.segments.filter((segment) => segment.type === "tool-call")
 
@@ -112,25 +144,12 @@ export function MessageBubble({
       <div className="flex w-full flex-col items-stretch gap-1">
         <Card className="min-h-10">
           <CardContent className="flex flex-col gap-3 py-3">
-            {message.segments.map((segment) => {
-              if (segment.type === "text") {
-                if (!segment.content) {
-                  return null
-                }
-
-                return (
-                  <p key={segment.id} className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {segment.content}
-                  </p>
-                )
-              }
-
-              if (segment.type === "tool-call") {
-                return null
-              }
-
-              if (segment.type === "artifact") {
-                return (
+            {hasArtifacts ? (
+              <>
+                {artifactCaption ? (
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{artifactCaption}</p>
+                ) : null}
+                {artifactSegments.map((segment) => (
                   <ArtifactRenderer
                     key={segment.id}
                     token={token}
@@ -140,20 +159,65 @@ export function MessageBubble({
                       onDraftActionSuccess(message.id, artifact, outcome)
                     }
                   />
-                )
-              }
+                ))}
+                {message.segments
+                  .filter((segment) => segment.type === "error")
+                  .map((segment) => (
+                    <div
+                      key={segment.id}
+                      className={cn(
+                        "rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 text-sm text-destructive",
+                      )}
+                    >
+                      {segment.message}
+                    </div>
+                  ))}
+              </>
+            ) : (
+              message.segments.map((segment) => {
+                if (segment.type === "text") {
+                  const cleanedText = stripArtifactMarkers(segment.content)
+                  if (!cleanedText) {
+                    return null
+                  }
 
-              return (
-                <div
-                  key={segment.id}
-                  className={cn(
-                    "rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 text-sm text-destructive",
-                  )}
-                >
-                  {segment.message}
-                </div>
-              )
-            })}
+                  return (
+                    <p key={segment.id} className="whitespace-pre-wrap text-sm leading-relaxed">
+                      {cleanedText}
+                    </p>
+                  )
+                }
+
+                if (segment.type === "tool-call") {
+                  return null
+                }
+
+                if (segment.type === "artifact") {
+                  return (
+                    <ArtifactRenderer
+                      key={segment.id}
+                      token={token}
+                      artifact={segment.artifact}
+                      onArtifactChange={(artifact) => onArtifactChange(message.id, artifact)}
+                      onDraftActionSuccess={(artifact, outcome) =>
+                        onDraftActionSuccess(message.id, artifact, outcome)
+                      }
+                    />
+                  )
+                }
+
+                return (
+                  <div
+                    key={segment.id}
+                    className={cn(
+                      "rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 text-sm text-destructive",
+                    )}
+                  >
+                    {segment.message}
+                  </div>
+                )
+              })
+            )}
 
             {showThinking ? <ThinkingIndicator /> : null}
 

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { AlertTriangle, KeyRound, Mail, MapPinned, Phone, RefreshCw, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
 import { AuthenticatedDashboardLayout } from "@/components/dashboard/AuthenticatedDashboardLayout";
+import { AccountRow } from "@/components/components/account/account-row";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { clearPersistedAuth } from "@/lib/auth/session";
@@ -100,26 +101,6 @@ function normalizeUser(rawUser: unknown): MyAccountUser | null {
           }
         : null,
   };
-}
-
-function AccountRow({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
-}) {
-  return (
-    <div className="grid gap-1 border-b px-4 py-3 last:border-b-0">
-      <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {icon ? <span className="text-muted-foreground">{icon}</span> : null}
-        {label}
-      </p>
-      <p className="text-sm font-medium">{value || "—"}</p>
-    </div>
-  );
 }
 
 function ServerErrorView({ message, onRetry }: { message: string; onRetry: () => void }) {
