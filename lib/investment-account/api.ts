@@ -19,6 +19,8 @@ import type {
   InvestmentPositionDetailContent,
   StockDetailsDTO,
   TradeTransactionResponse,
+  InvestmentChartsContent,
+  InvestmentChartsParams,
 } from "@/lib/investment-account/types"
 
 function authHeaders(token: string) {
@@ -206,6 +208,25 @@ export async function getInvestmentSummary(token: string, signal?: AbortSignal) 
   >(INVESTMENT_API.SUMMARY, {
     signal,
     headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
+export async function getInvestmentCharts(
+  token: string,
+  params: InvestmentChartsParams,
+  signal?: AbortSignal
+) {
+  return axios.get<
+    InvestmentApiSuccessResponse<InvestmentChartsContent> | InvestmentApiErrorResponse
+  >(INVESTMENT_API.CHARTS, {
+    signal,
+    headers: authHeaders(token),
+    params: {
+      period: params.period,
+      ...(params.startDate ? { startDate: params.startDate } : {}),
+      ...(params.endDate ? { endDate: params.endDate } : {}),
+    },
     validateStatus: () => true,
   })
 }

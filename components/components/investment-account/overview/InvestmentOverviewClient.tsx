@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { ActionsCard } from "@/components/components/investment-account/overview/ActionsCard"
+import { InvestmentChartsCard } from "@/components/components/investment-account/overview/investment-charts-card"
 import { InvestmentPositionsPreviewCard } from "@/components/components/investment-account/overview/investment-positions-preview-card"
 import { OverviewAiNewsCard } from "@/components/components/investment-account/overview/overview-ai-news-card"
 import { DepositFundsDialog } from "@/components/components/investment-account/transactions/DepositFundsDialog"
@@ -251,19 +252,7 @@ export function InvestmentOverviewClient() {
   return (
     <>
       <div className="grid grid-cols-12 gap-6">
-        <Card className="col-span-8 max-lg:col-span-12">
-          <CardHeader>
-            <CardTitle>Charts</CardTitle>
-            <CardDescription>
-              Investment performance charts will appear here.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex min-h-[240px] items-center justify-center rounded-lg border bg-muted/30 text-sm text-muted-foreground">
-              Performance chart data will appear here.
-            </div>
-          </CardContent>
-        </Card>
+        <InvestmentChartsCard token={token} />
 
         <div className="col-span-4 flex flex-col gap-6 max-lg:col-span-12">
           <InvestmentSummaryCard

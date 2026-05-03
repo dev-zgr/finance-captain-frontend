@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
 
 export const INVESTMENT_API = {
   SUMMARY: `${API_BASE_URL}/api/v1/investment/summary`,
+  CHARTS: `${API_BASE_URL}/api/v1/investment/charts`,
   POSITIONS: `${API_BASE_URL}/api/v1/investment/positions`,
   POSITION_BY_ID: (id: string) =>
     `${API_BASE_URL}/api/v1/investment/positions/${id}`,

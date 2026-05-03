@@ -42,6 +42,53 @@ export type InvestmentSummary = {
   priceDataPartial: boolean
 }
 
+export type InvestmentChartsPeriod =
+  | "DAY"
+  | "WEEK"
+  | "MONTH"
+  | "QUARTER"
+  | "YEAR"
+  | "ALL"
+
+export type InvestmentChartsUiPeriod = "DAY" | "WEEK" | "MONTH"
+
+export type InvestmentChartsParams = {
+  period: InvestmentChartsPeriod
+  startDate?: string
+  endDate?: string
+}
+
+export type PortfolioValuePoint = {
+  intervalLabel: string
+  portfolioValue: number | string
+}
+
+export type ProfitLossPoint = {
+  intervalLabel: string
+  realizedPnl: number | string
+  unrealizedPnlChange: number | string
+  totalPnl: number | string
+}
+
+export type DistributionSlice = {
+  ticker: string
+  label: string
+  marketValue: number | string
+  percent: number | string
+  color: string
+}
+
+export type InvestmentChartsContent = {
+  aggregationPeriod: InvestmentChartsPeriod
+  rangeStart: string
+  rangeEnd: string
+  priceDataPartial: boolean
+  totalAccountValue: number | string
+  portfolioValueSeries: PortfolioValuePoint[]
+  profitLossSeries: ProfitLossPoint[]
+  distribution: DistributionSlice[]
+}
+
 export type PositionDTO = {
   positionId: string
   ticker: string
