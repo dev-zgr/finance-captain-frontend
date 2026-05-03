@@ -14,6 +14,7 @@ import {
     LayoutDashboard,
     LineChart,
     Newspaper,
+    Sparkles,
     Wallet,
     type LucideIcon,
 } from "lucide-react"
@@ -127,7 +128,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Sidebar collapsible="icon" variant="sidebar" {...props}>
                 <SidebarHeader>
                     <div className="flex items-center gap-2 overflow-hidden rounded-lg border bg-card px-3 py-2 text-sm font-semibold text-card-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
-                        <Building2 className="size-4" />
+                        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm bg-muted/70">
+                            <Building2 className="size-4" />
+                        </span>
                         <span className="truncate group-data-[collapsible=icon]:hidden">Finance Captain</span>
                     </div>
                 </SidebarHeader>
@@ -141,6 +144,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         <Link href="/dashboard">
                                             <LayoutDashboard />
                                             <span>Dashboard</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild isActive={isRouteActive(pathname, "/co-captain")}>
+                                        <Link href="/co-captain">
+                                            <Sparkles className="ai-shimmer text-violet-500 transition-transform duration-200 group-hover/menu-button:scale-105 group-hover/menu-button:text-pink-500" />
+                                            <span>CoCaptain</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

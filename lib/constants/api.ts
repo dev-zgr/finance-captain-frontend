@@ -13,6 +13,10 @@ export const API_ENDPOINTS = {
   DEBTS_SUMMARY: `${API_BASE_URL}/api/v1/debts/summary`,
   DEBTS_TRANSACTIONS: `${API_BASE_URL}/api/v1/debts/transactions`,
   DEBTS_TIME_SERIES: `${API_BASE_URL}/api/v1/debts/transactions/time-series`,
+  COCAPTAIN_CHAT_RESET: `${API_BASE_URL}/api/v1/cocaptain/chat/reset`,
+  COCAPTAIN_CHAT_MESSAGES: `${API_BASE_URL}/api/v1/cocaptain/chat/messages`,
+  COCAPTAIN_CHAT_ARTIFACT_BY_ID: (artifactId: string) =>
+    `${API_BASE_URL}/api/v1/cocaptain/chat/artifacts/${artifactId}`,
 }
 
 export const INVESTMENT_API = {
