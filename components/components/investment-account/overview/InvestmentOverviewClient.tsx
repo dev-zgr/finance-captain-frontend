@@ -1,8 +1,9 @@
 "use client"
 
 import { AlertCircle, Calendar, TrendingDown, TrendingUp, Wallet, BarChart3 } from "lucide-react"
+import { RecentInvestmentTransactionsCard } from "@/components/components/investment-account/overview/recent-investment-transactions-card"
 import { format, parseISO } from "date-fns"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { ActionsCard } from "@/components/components/investment-account/overview/ActionsCard"
@@ -22,22 +23,16 @@ import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { getAccountSummary } from "@/lib/checking-account/api"
 import type { AccountSummary } from "@/lib/checking-account/types"
-import {
-  getInvestmentSummary,
-  getInvestmentTransactions,
-} from "@/lib/investment-account/api"
+import { getInvestmentSummary } from "@/lib/investment-account/api"
 import type {
   InvestmentApiSuccessResponse,
-  InvestmentPagedResponse,
   InvestmentSummary,
-  InvestmentTransactionDTO,
 } from "@/lib/investment-account/types"
 import { setCheckingSummary } from "@/lib/slices/checkingAccountSlice"
 import {
   setInvestmentError,
   setInvestmentStatus,
   setInvestmentSummary,
-  setInvestmentTransactions,
 } from "@/lib/slices/investmentAccountSlice"
 import type { AppDispatch, RootState } from "@/lib/store"
 
@@ -54,17 +49,6 @@ function getWrappedContent<T>(data: unknown): T | null {
 
   const wrapped = data as InvestmentApiSuccessResponse<T>
   return wrapped.content ?? wrapped.data ?? null
-}
-
-function getInvestmentTransactionsContent(data: unknown) {
-  const direct = data as InvestmentPagedResponse<InvestmentTransactionDTO>
-  if (Array.isArray(direct?.items)) {
-    return direct
-  }
-
-  return getWrappedContent<InvestmentPagedResponse<InvestmentTransactionDTO>>(
-    data
-  )
 }
 
 function InvestmentSummaryCard({
@@ -108,7 +92,7 @@ function InvestmentSummaryCard({
         ) : !investmentSummary?.hasAccount ? (
           <div className="flex min-h-[200px] items-center justify-center">
             <p className="text-center text-sm text-muted-foreground">
-              You haven't started investing yet. Deposit funds to begin.
+              You have not started investing yet. Deposit funds to begin.
             </p>
           </div>
         ) : (
@@ -201,51 +185,6 @@ function InvestmentSummaryCard({
   )
 }
 
-function RecentInvestmentTransactionsCard() {
-  const transactions = useSelector(
-    (state: RootState) => state.investmentAccount.transactions?.items ?? []
-  )
-  const displayTransactions = useMemo(
-    () => transactions.slice(0, 5),
-    [transactions]
-  )
-
-  return (
-    <Card className="col-span-12">
-      <CardHeader>
-        <CardTitle>Recent Transactions</CardTitle>
-        <CardDescription>Latest investment account activity.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {displayTransactions.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No recent investment transactions found.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {displayTransactions.map((transaction) => (
-              <div
-                key={transaction.transactionId}
-                className="flex items-center justify-between gap-4 rounded-lg border p-3"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium">{transaction.transactionType}</p>
-                  <p className="truncate text-sm text-muted-foreground">
-                    {transaction.description || "No description"}
-                  </p>
-                </div>
-                <span className="font-medium tabular-nums">
-                  {formatCurrency(Number(transaction.amount ?? 0))}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
 export function InvestmentOverviewClient() {
   const dispatch = useDispatch<AppDispatch>()
   const token = useSelector((state: RootState) => state.auth.content?.token ?? "")
@@ -264,15 +203,9 @@ export function InvestmentOverviewClient() {
     setLoading(true)
     setError(null)
     dispatch(setInvestmentStatus({ key: "summary", status: "loading" }))
-    dispatch(setInvestmentStatus({ key: "transactions", status: "loading" }))
-
     try {
-      const [investmentSummaryResponse, checkingSummaryResponse, transactionsResponse] =
-        await Promise.all([
-          getInvestmentSummary(token),
-          getAccountSummary(token),
-          getInvestmentTransactions(token, { page: 0, size: 10 }),
-        ])
+      const [investmentSummaryResponse, checkingSummaryResponse] =
+        await Promise.all([getInvestmentSummary(token), getAccountSummary(token)])
 
       const investmentSummary =
         investmentSummaryResponse.status === 200
@@ -282,15 +215,9 @@ export function InvestmentOverviewClient() {
         checkingSummaryResponse.status === 200
           ? getWrappedContent<AccountSummary>(checkingSummaryResponse.data)
           : null
-      const transactions =
-        transactionsResponse.status === 200
-          ? getInvestmentTransactionsContent(transactionsResponse.data)
-          : null
 
       dispatch(setInvestmentSummary(investmentSummary))
       dispatch(setCheckingSummary(checkingSummary))
-      dispatch(setInvestmentTransactions(transactions))
-
       if (!investmentSummary || !checkingSummary) {
         setError("Could not load account balances. Please try again.")
         dispatch(
