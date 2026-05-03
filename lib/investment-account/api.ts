@@ -2,6 +2,7 @@ import axios from "axios"
 
 import { INVESTMENT_API } from "@/lib/constants/api"
 import type {
+  GetInvestmentTransactionsResponse,
   GetInvestmentPositionsParams,
   GetInvestmentTransactionsParams,
   InvestmentApiErrorResponse,
@@ -10,6 +11,7 @@ import type {
   InvestmentCashTransactionResponseContent,
   InvestmentNewsResponse,
   InvestmentPagedResponse,
+  InvestmentTransactionRow,
   InvestmentSummary,
   InvestmentTradeRequest,
   InvestmentTransactionDTO,
@@ -23,6 +25,78 @@ function authHeaders(token: string) {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   }
+}
+
+function isGetInvestmentTransactionsResponse(
+  value: unknown
+): value is GetInvestmentTransactionsResponse {
+  if (!value || typeof value !== "object") {
+    return false
+  }
+
+  const payload = value as Partial<GetInvestmentTransactionsResponse>
+  return (
+    Array.isArray(payload.items) &&
+    typeof payload.page === "number" &&
+    typeof payload.size === "number" &&
+    typeof payload.totalElements === "number" &&
+    typeof payload.totalPages === "number"
+  )
+}
+
+function normalizeTransactionRow(
+  item: InvestmentTransactionRow & {
+    id?: number | null
+    date?: string | null
+    logoUrl?: string | null
+    companyLogoUrl?: string | null
+    transactionType?: InvestmentTransactionRow["investmentTransactionType"] | null
+    category?: InvestmentTransactionRow["investmentTransactionCategory"] | null
+  }
+): InvestmentTransactionRow {
+  return {
+    ...item,
+    transactionId: item.transactionId ?? item.id ?? 0,
+    transactionDate: item.transactionDate ?? item.date ?? "",
+    investmentTransactionType:
+      item.investmentTransactionType ?? item.transactionType ?? "TRADE",
+    investmentTransactionCategory:
+      item.investmentTransactionCategory ?? item.category ?? "BUY",
+    companyLogoUrl: item.companyLogoUrl ?? item.symbolUrl ?? item.logoUrl ?? null,
+    symbolUrl: item.symbolUrl ?? item.companyLogoUrl ?? item.logoUrl ?? null,
+  }
+}
+
+export function extractInvestmentTransactionsResponse(
+  data: unknown
+): GetInvestmentTransactionsResponse | null {
+  if (isGetInvestmentTransactionsResponse(data)) {
+    return {
+      ...data,
+      items: data.items.map((item) => normalizeTransactionRow(item)),
+    }
+  }
+
+  if (!data || typeof data !== "object") {
+    return null
+  }
+
+  const wrapped = data as InvestmentApiSuccessResponse<GetInvestmentTransactionsResponse>
+  if (isGetInvestmentTransactionsResponse(wrapped.content)) {
+    return {
+      ...wrapped.content,
+      items: wrapped.content.items.map((item) => normalizeTransactionRow(item)),
+    }
+  }
+
+  if (isGetInvestmentTransactionsResponse(wrapped.data)) {
+    return {
+      ...wrapped.data,
+      items: wrapped.data.items.map((item) => normalizeTransactionRow(item)),
+    }
+  }
+
+  return null
 }
 
 export async function getInvestmentSummary(token: string, signal?: AbortSignal) {
@@ -71,18 +145,35 @@ export async function getInvestmentTransactions(
   params: GetInvestmentTransactionsParams = {},
   signal?: AbortSignal
 ) {
-  return axios.get<
-    | InvestmentPagedResponse<InvestmentTransactionDTO>
-    | InvestmentApiSuccessResponse<
-        InvestmentPagedResponse<InvestmentTransactionDTO>
-      >
+  return axios.post<
+    | GetInvestmentTransactionsResponse
+    | InvestmentApiSuccessResponse<GetInvestmentTransactionsResponse>
     | InvestmentApiErrorResponse
-  >(INVESTMENT_API.TRANSACTIONS, {
-    params,
+  >(
+    INVESTMENT_API.TRANSACTIONS,
+    {
+      page: params.page ?? 0,
+      ...(typeof params.size === "number" && { size: params.size }),
+      sortBy: params.sortBy ?? "date",
+      sortDirection: params.sortDirection ?? "DESC",
+      ...(params.transactionTypes &&
+        params.transactionTypes.length > 0 && {
+          transactionTypes: params.transactionTypes,
+        }),
+      ...(params.categories &&
+        params.categories.length > 0 && { categories: params.categories }),
+      ...(params.tickers &&
+        params.tickers.length > 0 && { tickers: params.tickers }),
+      ...(params.startDate && { startDate: params.startDate }),
+      ...(params.endDate && { endDate: params.endDate }),
+      ...(params.q && { q: params.q }),
+    },
+    {
     signal,
     headers: authHeaders(token),
     validateStatus: () => true,
-  })
+    }
+  )
 }
 
 export async function getInvestmentTransactionById(
