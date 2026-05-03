@@ -380,12 +380,20 @@ export async function getStockDetails(
   })
 }
 
-export async function getInvestmentNews(token: string, signal?: AbortSignal) {
+export async function getInvestmentNews(
+  token: string,
+  params: { page?: number; size?: number } = {},
+  signal?: AbortSignal
+) {
   return axios.get<
     InvestmentApiSuccessResponse<InvestmentNewsResponse> | InvestmentApiErrorResponse
   >(INVESTMENT_API.NEWS, {
     signal,
     headers: authHeaders(token),
+    params: {
+      page: params.page ?? 0,
+      size: params.size ?? 5,
+    },
     validateStatus: () => true,
   })
 }
