@@ -15,8 +15,8 @@ import type {
   InvestmentSummary,
   InvestmentTradeRequest,
   InvestmentTransactionDetailContent,
-  PositionDTO,
   PositionEnrichedDTO,
+  InvestmentPositionDetailContent,
   StockDetailsDTO,
   TradeTransactionResponse,
 } from "@/lib/investment-account/types"
@@ -183,6 +183,23 @@ export function extractInvestmentPositionsContent(
   return null
 }
 
+export function extractInvestmentPositionDetailContent(
+  data: unknown
+): InvestmentPositionDetailContent | null {
+  if (!data || typeof data !== "object") {
+    return null
+  }
+
+  const wrapped = data as InvestmentApiSuccessResponse<InvestmentPositionDetailContent>
+  const payload = wrapped.content ?? wrapped.data ?? null
+
+  if (!payload?.position || !Array.isArray(payload.transactions)) {
+    return null
+  }
+
+  return payload
+}
+
 export async function getInvestmentSummary(token: string, signal?: AbortSignal) {
   return axios.get<
     InvestmentApiSuccessResponse<InvestmentSummary> | InvestmentApiErrorResponse
@@ -224,7 +241,8 @@ export async function getInvestmentPositionById(
   signal?: AbortSignal
 ) {
   return axios.get<
-    InvestmentApiSuccessResponse<PositionDTO> | InvestmentApiErrorResponse
+    | InvestmentApiSuccessResponse<InvestmentPositionDetailContent>
+    | InvestmentApiErrorResponse
   >(INVESTMENT_API.POSITION_BY_ID(positionId), {
     signal,
     headers: authHeaders(token),

@@ -305,3 +305,55 @@ export type TradeTransactionResponseContent = {
 export type TradeTransactionResponse = InvestmentApiSuccessResponse<TradeTransactionResponseContent> & {
   message?: string
 }
+
+export type InvestmentPositionDetailTransactionType =
+  | "TRADE"
+  | "DIVIDEND"
+  | "STOCK_SPLIT"
+  | "CORPORATE_ACTION"
+
+export type InvestmentPositionDetailTransactionCategory =
+  | "BUY"
+  | "SELL"
+  | "DIVIDEND"
+  | "REINVEST"
+
+export type PositionDetail = {
+  status: string
+  ticker: string
+  companyName: string
+  logoUrl: string | null
+  industry: string | null
+  quantity: number
+  averageBuyPrice: number
+  totalCostBasis: number
+  currentPrice: number
+  marketValue: number
+  unrealizedPnl: number
+  unrealizedPnlPercent: number
+  realizedPnlToDate: number | null
+  openedAt: string
+  closedAt: string | null
+}
+
+export type PositionDetailTransaction = {
+  id: number
+  investmentTransactionType: InvestmentPositionDetailTransactionType
+  investmentTransactionCategory: InvestmentPositionDetailTransactionCategory
+  quantity: number
+  pricePerShare: number
+  amount: number
+  realizedProfitLoss: number | null
+  transactionDate: string
+  description: string
+  currentPrice: number
+  marketValueAtCurrentPrice: number
+  unrealizedPnlAtCurrentPrice: number
+  unrealizedPnlPercentAtCurrentPrice: number
+}
+
+export type InvestmentPositionDetailContent = {
+  position: PositionDetail
+  transactions: PositionDetailTransaction[]
+  priceDataPartial: boolean
+}
