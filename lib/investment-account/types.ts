@@ -188,6 +188,59 @@ export type GetInvestmentPositionsParams = {
   sortDirection?: "ASC" | "DESC"
 }
 
+export type InvestmentPositionsSortBy =
+  | "ticker"
+  | "companyName"
+  | "currentPrice"
+  | "previousClose"
+  | "dayChange"
+  | "dayChangePercent"
+  | "quantity"
+  | "averageBuyPrice"
+  | "totalCostBasis"
+  | "marketValue"
+  | "unrealizedPnl"
+  | "unrealizedPnlPercent"
+  | "openedAt"
+
+export type GainLossFilter = "ALL" | "GAINERS" | "LOSERS"
+
+export type GetInvestmentPositionsRequestBody = {
+  sortBy?: InvestmentPositionsSortBy
+  sortDirection?: "ASC" | "DESC"
+  q?: string
+  gainLossFilter?: GainLossFilter
+}
+
+export type PositionEnrichedDTO = {
+  id: number
+  ticker: string
+  companyName: string
+  logoUrl?: string | null
+  quantity: number
+  averageBuyPrice: number
+  totalCostBasis: number
+  currentPrice: number
+  previousClose: number
+  dayChange: number
+  dayChangePercent: number
+  marketValue: number
+  unrealizedPnl: number
+  unrealizedPnlPercent: number
+  openedAt: string
+}
+
+export type InvestmentPositionsContent = {
+  priceDataPartial: boolean
+  positions: PositionEnrichedDTO[]
+}
+
+export type PositionTableRow = PositionEnrichedDTO & {
+  positionId: string
+  totalGainLoss: number
+  totalGainLossPercent: number
+}
+
 export type GetInvestmentTransactionsParams = {
   page?: number
   size?: number
