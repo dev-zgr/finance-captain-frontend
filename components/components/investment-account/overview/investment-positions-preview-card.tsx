@@ -155,7 +155,7 @@ export function InvestmentPositionsPreviewCard() {
   const displayRows = useMemo(() => positions.slice(0, PREVIEW_LIMIT), [positions])
 
   return (
-    <Card className="col-span-8 max-lg:col-span-12">
+    <Card className="col-span-8 max-lg:col-span-12" data-overview-positions-card>
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>

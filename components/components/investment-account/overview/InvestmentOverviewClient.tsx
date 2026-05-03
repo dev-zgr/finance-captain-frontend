@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { ActionsCard } from "@/components/components/investment-account/overview/ActionsCard"
 import { InvestmentPositionsPreviewCard } from "@/components/components/investment-account/overview/investment-positions-preview-card"
+import { OverviewAiNewsCard } from "@/components/components/investment-account/overview/overview-ai-news-card"
 import { DepositFundsDialog } from "@/components/components/investment-account/transactions/DepositFundsDialog"
 import { WithdrawFundsDialog } from "@/components/components/investment-account/transactions/WithdrawFundsDialog"
 import { Button } from "@/components/ui/button"
@@ -350,6 +351,7 @@ export function InvestmentOverviewClient() {
         </div>
 
         <InvestmentPositionsPreviewCard />
+        <OverviewAiNewsCard />
 
         <RecentInvestmentTransactionsCard />
       </div>
