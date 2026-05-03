@@ -1,15 +1,15 @@
-import { InvestmentSingleCardSkeletonShell } from "@/components/components/investment-account/investment-skeleton-shells"
+"use client"
+
+import { useParams } from "next/navigation"
+
+import { InvestmentPositionDetailCard } from "@/components/components/investment-account/portfolio/investment-position-detail-card"
 
 export default function InvestmentPositionDetailsPage() {
+  const { positionId } = useParams<{ positionId: string }>()
+
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Position Details</h1>
-      <InvestmentSingleCardSkeletonShell
-        title="Position Details"
-        description="Selected position details will appear here."
-        centered
-        variant="detail"
-      />
+      <InvestmentPositionDetailCard positionId={positionId} />
     </section>
   )
 }
