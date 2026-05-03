@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { ActionsCard } from "@/components/components/investment-account/overview/ActionsCard"
+import { InvestmentPositionsPreviewCard } from "@/components/components/investment-account/overview/investment-positions-preview-card"
 import { DepositFundsDialog } from "@/components/components/investment-account/transactions/DepositFundsDialog"
 import { WithdrawFundsDialog } from "@/components/components/investment-account/transactions/WithdrawFundsDialog"
 import { Button } from "@/components/ui/button"
@@ -347,6 +348,8 @@ export function InvestmentOverviewClient() {
             onWithdrawFunds={() => setWithdrawDialogOpen(true)}
           />
         </div>
+
+        <InvestmentPositionsPreviewCard />
 
         <RecentInvestmentTransactionsCard />
       </div>
