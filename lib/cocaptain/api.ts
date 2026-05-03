@@ -170,14 +170,16 @@ function dispatchSseEvent(
       return
     }
     case "artifact": {
-      if (!isRecord(data) || !isRecord(data.artifact)) {
+      if (!isRecord(data)) {
         return
       }
 
-      const artifactId = readString(data.artifact, "artifactId")
-      const kind = readString(data.artifact, "kind")
-      const type = readString(data.artifact, "type")
-      const state = readString(data.artifact, "state")
+      const candidate = isRecord(data.artifact) ? data.artifact : data
+
+      const artifactId = readString(candidate, "artifactId")
+      const kind = readString(candidate, "kind")
+      const type = readString(candidate, "type")
+      const state = readString(candidate, "state")
 
       if (!artifactId || !kind || !type || !state) {
         return
@@ -189,11 +191,11 @@ function dispatchSseEvent(
           artifactId,
           kind: kind as "DATA" | "DRAFT",
           type,
-          version: Number(data.artifact.version ?? 1),
+          version: Number(candidate.version ?? 1),
           state: state as "PUBLISHED" | "PENDING" | "ACCEPTED" | "REJECTED",
-          payload: data.artifact.payload,
+          payload: candidate.payload,
           producedByToolCallId:
-            readString(data.artifact, "producedByToolCallId") ?? null,
+            readString(candidate, "producedByToolCallId") ?? null,
         },
       })
       return
