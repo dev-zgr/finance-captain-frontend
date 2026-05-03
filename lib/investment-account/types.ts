@@ -157,13 +157,13 @@ export type StockDetailsDTO = {
 }
 
 export type NewsItemDTO = {
-  id: string
   title: string
-  summary: string
-  source: string
-  url: string
+  aiSummary: string
+  link: string
+  imageUrl: string | null
+  sourceName: string
   publishedAt: string
-  relatedTickers?: string[]
+  relevantTicker: string | null
 }
 
 export type InvestmentPagedResponse<T> = {
@@ -175,10 +175,16 @@ export type InvestmentPagedResponse<T> = {
 }
 
 export type InvestmentNewsResponse = {
-  items: NewsItemDTO[]
-  overallSummary: string | null
-  generationStatus: NewsGenerationStatus | null
+  generationStatus: NewsGenerationStatus
+  jobId: string | null
   generatedAt: string | null
+  tickerSetHash: string | null
+  overallSummary: string | null
+  items: NewsItemDTO[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
 }
 
 export type GetInvestmentPositionsParams = {
