@@ -83,6 +83,30 @@ export type InvestmentTransactionRow = {
   companyLogoUrl?: string | null
 }
 
+export type InvestmentBalancesSnapshot = {
+  investmentAccountBalance?: number | null
+  checkingAccountBalance?: number | null
+}
+
+export type InvestmentTransactionDetailContent = {
+  transaction: InvestmentTransactionRow
+  linkedCheckingTransaction?: {
+    transactionId?: number | null
+    id?: number | null
+    date?: string | null
+    transactionDate?: string | null
+    amount?: number | null
+    category?: string | null
+    description?: string | null
+    transactionType?: string | null
+  } | null
+  linkedPosition?: PositionSnapshot | null
+  balances?: InvestmentBalancesSnapshot | null
+  costBasisUsed?: number | null
+  realizedProfitLoss?: number | null
+  priceDataPartial?: boolean | null
+}
+
 export type GetInvestmentTransactionsResponse = {
   items: InvestmentTransactionRow[]
   page: number

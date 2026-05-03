@@ -14,7 +14,7 @@ import type {
   InvestmentTransactionRow,
   InvestmentSummary,
   InvestmentTradeRequest,
-  InvestmentTransactionDTO,
+  InvestmentTransactionDetailContent,
   PositionDTO,
   StockDetailsDTO,
   TradeTransactionResponse,
@@ -97,6 +97,38 @@ export function extractInvestmentTransactionsResponse(
   }
 
   return null
+}
+
+export function extractInvestmentTransactionDetailContent(
+  data: unknown
+): InvestmentTransactionDetailContent | null {
+  if (!data || typeof data !== "object") {
+    return null
+  }
+
+  const wrapped = data as InvestmentApiSuccessResponse<InvestmentTransactionDetailContent>
+  const payload = wrapped.content ?? wrapped.data ?? null
+  if (!payload?.transaction) {
+    return null
+  }
+
+  return {
+    ...payload,
+    transaction: normalizeTransactionRow(payload.transaction),
+    linkedCheckingTransaction: payload.linkedCheckingTransaction
+      ? {
+          ...payload.linkedCheckingTransaction,
+          transactionId:
+            payload.linkedCheckingTransaction.transactionId ??
+            payload.linkedCheckingTransaction.id ??
+            null,
+          date:
+            payload.linkedCheckingTransaction.date ??
+            payload.linkedCheckingTransaction.transactionDate ??
+            null,
+        }
+      : null,
+  }
 }
 
 export async function getInvestmentSummary(token: string, signal?: AbortSignal) {
@@ -182,7 +214,7 @@ export async function getInvestmentTransactionById(
   signal?: AbortSignal
 ) {
   return axios.get<
-    | InvestmentApiSuccessResponse<InvestmentTransactionDTO>
+    | InvestmentApiSuccessResponse<InvestmentTransactionDetailContent>
     | InvestmentApiErrorResponse
   >(INVESTMENT_API.TRANSACTION_BY_ID(transactionId), {
     signal,
