@@ -3,19 +3,20 @@ import axios from "axios"
 import { INVESTMENT_API } from "@/lib/constants/api"
 import type {
   GetInvestmentTransactionsResponse,
-  GetInvestmentPositionsParams,
+  GetInvestmentPositionsRequestBody,
+  InvestmentPositionsContent,
   GetInvestmentTransactionsParams,
   InvestmentApiErrorResponse,
   InvestmentApiSuccessResponse,
   InvestmentCashTransactionRequest,
   InvestmentCashTransactionResponseContent,
   InvestmentNewsResponse,
-  InvestmentPagedResponse,
   InvestmentTransactionRow,
   InvestmentSummary,
   InvestmentTradeRequest,
   InvestmentTransactionDetailContent,
   PositionDTO,
+  PositionEnrichedDTO,
   StockDetailsDTO,
   TradeTransactionResponse,
 } from "@/lib/investment-account/types"
@@ -131,6 +132,57 @@ export function extractInvestmentTransactionDetailContent(
   }
 }
 
+function isPositionEnrichedDTO(value: unknown): value is PositionEnrichedDTO {
+  if (!value || typeof value !== "object") {
+    return false
+  }
+
+  const payload = value as Partial<PositionEnrichedDTO>
+  return (
+    typeof payload.id === "number" &&
+    typeof payload.ticker === "string" &&
+    typeof payload.companyName === "string"
+  )
+}
+
+function isInvestmentPositionsContent(
+  value: unknown
+): value is InvestmentPositionsContent {
+  if (!value || typeof value !== "object") {
+    return false
+  }
+
+  const payload = value as Partial<InvestmentPositionsContent>
+  return (
+    typeof payload.priceDataPartial === "boolean" &&
+    Array.isArray(payload.positions) &&
+    payload.positions.every((position) => isPositionEnrichedDTO(position))
+  )
+}
+
+export function extractInvestmentPositionsContent(
+  data: unknown
+): InvestmentPositionsContent | null {
+  if (isInvestmentPositionsContent(data)) {
+    return data
+  }
+
+  if (!data || typeof data !== "object") {
+    return null
+  }
+
+  const wrapped = data as InvestmentApiSuccessResponse<InvestmentPositionsContent>
+  if (isInvestmentPositionsContent(wrapped.content)) {
+    return wrapped.content
+  }
+
+  if (isInvestmentPositionsContent(wrapped.data)) {
+    return wrapped.data
+  }
+
+  return null
+}
+
 export async function getInvestmentSummary(token: string, signal?: AbortSignal) {
   return axios.get<
     InvestmentApiSuccessResponse<InvestmentSummary> | InvestmentApiErrorResponse
@@ -143,19 +195,27 @@ export async function getInvestmentSummary(token: string, signal?: AbortSignal) 
 
 export async function getInvestmentPositions(
   token: string,
-  params: GetInvestmentPositionsParams = {},
+  payload: GetInvestmentPositionsRequestBody = {},
   signal?: AbortSignal
 ) {
-  return axios.get<
-    | InvestmentPagedResponse<PositionDTO>
-    | InvestmentApiSuccessResponse<InvestmentPagedResponse<PositionDTO>>
+  return axios.post<
+    | InvestmentPositionsContent
+    | InvestmentApiSuccessResponse<InvestmentPositionsContent>
     | InvestmentApiErrorResponse
-  >(INVESTMENT_API.POSITIONS, {
-    params,
+  >(
+    INVESTMENT_API.POSITIONS,
+    {
+      sortBy: payload.sortBy ?? "openedAt",
+      sortDirection: payload.sortDirection ?? "ASC",
+      gainLossFilter: payload.gainLossFilter ?? "ALL",
+      ...(payload.q ? { q: payload.q } : {}),
+    },
+    {
     signal,
     headers: authHeaders(token),
     validateStatus: () => true,
-  })
+    }
+  )
 }
 
 export async function getInvestmentPositionById(
