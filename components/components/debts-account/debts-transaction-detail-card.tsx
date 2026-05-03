@@ -43,20 +43,16 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-  getAccountSummary,
   getCheckingTransactionById,
 } from "@/lib/checking-account/api"
 import type {
-  AccountSummary,
   ApiSuccessResponse,
   TransactionDetail,
 } from "@/lib/checking-account/types"
 import {
-  getDebtsAccountSummary,
   getDebtsTransactionById,
 } from "@/lib/debts-account/api"
 import type {
-  DebtsAccountSummary,
   DebtsApiSuccessResponse,
   DebtsTransactionDetail,
   DebtsTransactionType,
@@ -66,13 +62,6 @@ import { cn } from "@/lib/utils"
 
 type DebtsTransactionDetailCardProps = {
   transactionId: string
-}
-
-type BalanceState = {
-  debts: DebtsAccountSummary | null
-  checking: AccountSummary | null
-  loading: boolean
-  error: string | null
 }
 
 type LinkedTransactionState = {
@@ -125,15 +114,6 @@ function getDebtsPayload<T>(
   return payload.data ?? payload.content ?? null
 }
 
-function getWrappedContent<T>(data: unknown): T | null {
-  if (!data || typeof data !== "object") {
-    return null
-  }
-
-  const wrapped = data as ApiSuccessResponse<T> & { data?: T }
-  return wrapped.content ?? wrapped.data ?? null
-}
-
 function TransactionDetailsSkeleton() {
   return (
     <div className="flex flex-col gap-6">
@@ -183,7 +163,6 @@ export function DebtsTransactionDetailCard({
     (state: RootState) => state.auth.content?.token ?? ""
   )
   const detailAbortControllerRef = useRef<AbortController | null>(null)
-  const balancesAbortControllerRef = useRef<AbortController | null>(null)
   const linkedAbortControllerRef = useRef<AbortController | null>(null)
   const [transaction, setTransaction] = useState<DebtsTransactionDetail | null>(
     null
@@ -192,12 +171,6 @@ export function DebtsTransactionDetailCard({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [sessionExpired, setSessionExpired] = useState(false)
   const [notFound, setNotFound] = useState(false)
-  const [balances, setBalances] = useState<BalanceState>({
-    debts: null,
-    checking: null,
-    loading: true,
-    error: null,
-  })
   const [linkedTransaction, setLinkedTransaction] =
     useState<LinkedTransactionState>({
       transaction: null,
@@ -268,57 +241,6 @@ export function DebtsTransactionDetailCard({
     }
   }, [token, transactionId])
 
-  const fetchBalances = useCallback(async () => {
-    balancesAbortControllerRef.current?.abort()
-    const controller = new AbortController()
-    balancesAbortControllerRef.current = controller
-
-    setBalances((current) => ({ ...current, loading: true, error: null }))
-
-    try {
-      const [debtsResponse, checkingResponse] = await Promise.all([
-        getDebtsAccountSummary(token, controller.signal),
-        getAccountSummary(token, controller.signal),
-      ])
-
-      if (controller.signal.aborted) {
-        return
-      }
-
-      if (debtsResponse.status === 401 || checkingResponse.status === 401) {
-        setSessionExpired(true)
-      }
-
-      setBalances({
-        debts:
-          debtsResponse.status === 200
-            ? getDebtsPayload<DebtsAccountSummary>(
-                debtsResponse.data as DebtsApiSuccessResponse<DebtsAccountSummary>
-              )
-            : null,
-        checking:
-          checkingResponse.status === 200
-            ? getWrappedContent<AccountSummary>(checkingResponse.data)
-            : null,
-        loading: false,
-        error:
-          debtsResponse.status === 200 && checkingResponse.status === 200
-            ? null
-            : "Balance unavailable.",
-      })
-    } catch {
-      if (controller.signal.aborted) {
-        return
-      }
-
-      setBalances((current) => ({
-        ...current,
-        loading: false,
-        error: "Balance unavailable.",
-      }))
-    }
-  }, [token])
-
   const fetchLinkedTransaction = useCallback(
     async (linkedCheckingTransactionId: number) => {
       linkedAbortControllerRef.current?.abort()
@@ -381,8 +303,7 @@ export function DebtsTransactionDetailCard({
 
   useEffect(() => {
     void fetchTransactionDetails()
-    void fetchBalances()
-  }, [fetchBalances, fetchTransactionDetails])
+  }, [fetchTransactionDetails])
 
   useEffect(() => {
     const linkedCheckingTransactionId = transaction?.linkedCheckingTransactionId
@@ -403,7 +324,6 @@ export function DebtsTransactionDetailCard({
   useEffect(() => {
     return () => {
       detailAbortControllerRef.current?.abort()
-      balancesAbortControllerRef.current?.abort()
       linkedAbortControllerRef.current?.abort()
     }
   }, [])
@@ -419,7 +339,8 @@ export function DebtsTransactionDetailCard({
             description: "Source of borrowed funds",
             icon: Landmark,
             iconClassName: "text-red-600 dark:text-red-500",
-            balance: balances.debts?.currentDebtsAccountBalance,
+            amount: transaction?.amount ?? 0,
+            isIncome: false,
           },
           {
             key: "checking",
@@ -427,7 +348,8 @@ export function DebtsTransactionDetailCard({
             description: "Destination checking balance",
             icon: Wallet,
             iconClassName: "text-primary",
-            balance: balances.checking?.accountBalance,
+            amount: transaction?.amount ?? 0,
+            isIncome: true,
           },
         ]
       : [
@@ -437,7 +359,8 @@ export function DebtsTransactionDetailCard({
             description: "Source checking balance",
             icon: Wallet,
             iconClassName: "text-primary",
-            balance: balances.checking?.accountBalance,
+            amount: transaction?.amount ?? 0,
+            isIncome: false,
           },
           {
             key: "debts",
@@ -445,7 +368,8 @@ export function DebtsTransactionDetailCard({
             description: "Payment reduces liabilities",
             icon: Landmark,
             iconClassName: "text-red-600 dark:text-red-500",
-            balance: balances.debts?.currentDebtsAccountBalance,
+            amount: transaction?.amount ?? 0,
+            isIncome: true,
           },
         ]
 
@@ -615,17 +539,17 @@ export function DebtsTransactionDetailCard({
                             </ItemDescription>
                           </ItemContent>
                           <ItemActions>
-                            {balances.loading ? (
-                              <Skeleton className="h-5 w-24" />
-                            ) : item.balance === undefined ? (
-                              <span className="text-right text-sm text-muted-foreground">
-                                —
-                              </span>
-                            ) : (
-                              <span className="text-right text-sm font-medium tabular-nums">
-                                {currencyFormatter.format(item.balance)}
-                              </span>
-                            )}
+                            <span
+                              className={cn(
+                                "text-right text-sm font-medium tabular-nums",
+                                item.isIncome
+                                  ? "text-green-600 dark:text-green-500"
+                                  : "text-red-600 dark:text-red-500"
+                              )}
+                            >
+                              {item.isIncome ? "+" : "−"}
+                              {formatCurrency(item.amount)}
+                            </span>
                           </ItemActions>
                         </Item>
 
@@ -636,20 +560,6 @@ export function DebtsTransactionDetailCard({
                     )
                   })}
                 </ItemGroup>
-                {balances.error ? (
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    <p className="text-sm text-muted-foreground">
-                      {balances.error}
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => void fetchBalances()}
-                    >
-                      Retry
-                    </Button>
-                  </div>
-                ) : null}
               </CardContent>
             </Card>
 
