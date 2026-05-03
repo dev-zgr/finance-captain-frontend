@@ -16,10 +16,14 @@ export type InvestmentAccountStatus =
   | "failed"
 
 export type InvestmentTransactionType =
+  | "TRANSFER"
+  | "TRADE"
+export type InvestmentTransactionCategory =
   | "DEPOSIT"
   | "WITHDRAW"
   | "BUY"
   | "SELL"
+export type InvestmentSortBy = "date" | "amount"
 
 export type NewsGenerationStatus = "READY" | "PENDING"
 
@@ -61,6 +65,30 @@ export type InvestmentTransactionDTO = {
   amount: number
   date: string
   description?: string | null
+}
+
+export type InvestmentTransactionRow = {
+  transactionId: number
+  investmentTransactionType: InvestmentTransactionType
+  investmentTransactionCategory: InvestmentTransactionCategory
+  amount: number
+  transactionDate: string
+  description?: string | null
+  ticker?: string | null
+  quantity?: number | null
+  pricePerShare?: number | null
+  realizedProfitLoss?: number | null
+  linkedCheckingTransactionId?: number | null
+  symbolUrl?: string | null
+  companyLogoUrl?: string | null
+}
+
+export type GetInvestmentTransactionsResponse = {
+  items: InvestmentTransactionRow[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
 }
 
 export type StockDetailsDTO = {
@@ -136,11 +164,17 @@ export type GetInvestmentPositionsParams = {
   sortDirection?: "ASC" | "DESC"
 }
 
-export type GetInvestmentTransactionsParams = GetInvestmentPositionsParams & {
+export type GetInvestmentTransactionsParams = {
+  page?: number
+  size?: number
+  sortBy?: InvestmentSortBy
+  sortDirection?: "ASC" | "DESC"
+  transactionTypes?: InvestmentTransactionType[]
+  categories?: InvestmentTransactionCategory[]
+  tickers?: string[]
   startDate?: string
   endDate?: string
-  transactionType?: InvestmentTransactionType
-  ticker?: string
+  q?: string
 }
 
 export type InvestmentCashTransactionRequest = {
