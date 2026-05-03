@@ -235,6 +235,23 @@ export async function getInvestmentPositions(
   )
 }
 
+export async function getInvestmentPositionsWithoutBody(
+  token: string,
+  signal?: AbortSignal
+) {
+  return axios.request<
+    | InvestmentPositionsContent
+    | InvestmentApiSuccessResponse<InvestmentPositionsContent>
+    | InvestmentApiErrorResponse
+  >({
+    method: "POST",
+    url: INVESTMENT_API.POSITIONS,
+    signal,
+    headers: authHeaders(token),
+    validateStatus: () => true,
+  })
+}
+
 export async function getInvestmentPositionById(
   token: string,
   positionId: string,
