@@ -1,14 +1,15 @@
-import { InvestmentSingleCardSkeletonShell } from "@/components/components/investment-account/investment-skeleton-shells"
+"use client"
+
+import { useParams } from "next/navigation"
+
+import { InvestmentTransactionDetailCard } from "@/components/components/investment-account/transactions/investment-transaction-detail-card"
 
 export default function InvestmentTransactionDetailsPage() {
+  const { transactionId } = useParams<{ transactionId: string }>()
+
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Transaction Details</h1>
-      <InvestmentSingleCardSkeletonShell
-        title="Transaction Details"
-        description="Selected investment transaction details will appear here."
-        variant="detail"
-      />
+      <InvestmentTransactionDetailCard transactionId={transactionId} />
     </section>
   )
 }
