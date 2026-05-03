@@ -97,8 +97,8 @@ function formatSignedDebtsAmount(
   return `${transactionType === "PAYMENT" ? "+" : "−"}${formatCurrency(amount)}`
 }
 
-function formatCheckingOutflowAmount(amount: number): string {
-  return `−${formatCurrency(amount)}`
+function formatSignedCheckingAmount(amount: number, isIncome: boolean): string {
+  return `${isIncome ? "+" : "−"}${formatCurrency(amount)}`
 }
 
 function formatTransactionDate(value: string): string {
@@ -123,6 +123,15 @@ function getDebtsPayload<T>(
   const payload = data as DebtsApiSuccessResponse<T>
 
   return payload.data ?? payload.content ?? null
+}
+
+function getWrappedContent<T>(data: unknown): T | null {
+  if (!data || typeof data !== "object") {
+    return null
+  }
+
+  const wrapped = data as ApiSuccessResponse<T> & { data?: T }
+  return wrapped.content ?? wrapped.data ?? null
 }
 
 function TransactionDetailsSkeleton() {
@@ -289,8 +298,7 @@ export function DebtsTransactionDetailCard({
             : null,
         checking:
           checkingResponse.status === 200
-            ? ((checkingResponse.data as ApiSuccessResponse<AccountSummary>)
-                .content ?? null)
+            ? getWrappedContent<AccountSummary>(checkingResponse.data)
             : null,
         loading: false,
         error:
@@ -401,6 +409,7 @@ export function DebtsTransactionDetailCard({
   }, [])
 
   const transactionType = transaction?.transactionType ?? "DEBT"
+  const linkedCheckingIsIncome = transactionType === "DEBT"
   const accountItems =
     transactionType === "DEBT"
       ? [
@@ -677,11 +686,14 @@ export function DebtsTransactionDetailCard({
                       <span
                         className={cn(
                           "text-right text-sm font-medium tabular-nums",
-                          "text-red-600 dark:text-red-500"
+                          linkedCheckingIsIncome
+                            ? "text-green-600 dark:text-green-500"
+                            : "text-red-600 dark:text-red-500"
                         )}
                       >
-                        {formatCheckingOutflowAmount(
-                          linkedTransaction.transaction.amount
+                        {formatSignedCheckingAmount(
+                          linkedTransaction.transaction.amount,
+                          linkedCheckingIsIncome
                         )}
                       </span>
                       <Button variant="ghost" size="sm" asChild>
