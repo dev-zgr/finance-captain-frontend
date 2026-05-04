@@ -35,8 +35,6 @@ import {
 } from "@/components/ui/card"
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -92,11 +90,7 @@ const portfolioValueConfig = {
 const pnlConfig = {
   realizedPnl: {
     label: "Realized",
-    color: "var(--chart-1)",
-  },
-  unrealizedPnlChange: {
-    label: "Unrealized",
-    color: "var(--chart-2)",
+    color: "#16a34a",
   },
 } satisfies ChartConfig
 
@@ -244,7 +238,6 @@ export function InvestmentChartsCard({ token }: InvestmentChartsCardProps) {
     Array<{
       intervalLabel: string
       realizedPnl: number
-      unrealizedPnlChange: number
       totalPnl: number
     }>
   >([])
@@ -517,61 +510,77 @@ export function InvestmentChartsCard({ token }: InvestmentChartsCardProps) {
                     </EmptyHeader>
                   </Empty>
                 ) : (
-                  <ChartContainer
-                    config={pnlConfig}
-                    className="h-full min-h-[260px] w-full flex-1"
-                  >
-                    <BarChart accessibilityLayer data={profitLossSeries}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis
-                        dataKey="intervalLabel"
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        minTickGap={24}
-                        tickFormatter={(label) => getXAxisLabel(String(label), period)}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => compactCurrencyFormatter.format(Number(value))}
-                      />
-                      <ChartTooltip
-                        content={
-                          <ChartTooltipContent
-                            labelFormatter={(label) =>
-                              getTooltipIntervalLabel(String(label), period)
-                            }
-                            formatter={(value, name) => (
-                              <div className="flex w-full items-center justify-between gap-3">
-                                <span className="text-muted-foreground">
-                                  {name === "realizedPnl" ? "Realized" : "Unrealized"}
-                                </span>
-                                <span className="font-mono font-medium tabular-nums">
-                                  {fullCurrencyFormatter.format(Number(value))}
-                                </span>
-                              </div>
-                            )}
-                          />
-                        }
-                      />
-                      <ChartLegend content={<ChartLegendContent />} />
-                      <Bar
-                        dataKey="realizedPnl"
-                        stackId="pnl"
-                        fill="var(--color-realizedPnl)"
-                        name="Realized"
-                        isAnimationActive={!prefersReducedMotion}
-                      />
-                      <Bar
-                        dataKey="unrealizedPnlChange"
-                        stackId="pnl"
-                        fill="var(--color-unrealizedPnlChange)"
-                        name="Unrealized"
-                        isAnimationActive={!prefersReducedMotion}
-                      />
-                    </BarChart>
-                  </ChartContainer>
+                  <div className="h-full min-h-[260px] w-full flex-1">
+                    <ChartContainer
+                      config={pnlConfig}
+                      className="h-full min-h-[260px] w-full flex-1"
+                    >
+                      <BarChart accessibilityLayer data={profitLossSeries}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="intervalLabel"
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          minTickGap={24}
+                          tickFormatter={(label) => getXAxisLabel(String(label), period)}
+                        />
+                        <YAxis
+                          tickLine={false}
+                          axisLine={false}
+                          tickFormatter={(value) => compactCurrencyFormatter.format(Number(value))}
+                        />
+                        <ChartTooltip
+                          content={
+                            <ChartTooltipContent
+                              labelFormatter={(label) =>
+                                getTooltipIntervalLabel(String(label), period)
+                              }
+                              formatter={(value, name) => (
+                                <div className="flex w-full items-center justify-between gap-3">
+                                  <span className="text-muted-foreground">
+                                    {name === "realizedPnl" ? "Realized" : String(name)}
+                                  </span>
+                                  <span className="font-mono font-medium tabular-nums">
+                                    {fullCurrencyFormatter.format(Number(value))}
+                                  </span>
+                                </div>
+                              )}
+                            />
+                          }
+                        />
+                        <Bar
+                          dataKey="realizedPnl"
+                          fill="var(--color-realizedPnl)"
+                          name="Realized"
+                          isAnimationActive={!prefersReducedMotion}
+                        >
+                          {profitLossSeries.map((point) => (
+                            <Cell
+                              key={`realized-${point.intervalLabel}`}
+                              fill={point.realizedPnl < 0 ? "#dc2626" : "#16a34a"}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ChartContainer>
+                    <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="inline-block h-2.5 w-2.5 rounded-[2px]"
+                          style={{ backgroundColor: "#16a34a" }}
+                        />
+                        <span className="text-muted-foreground">Realized Profit</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="inline-block h-2.5 w-2.5 rounded-[2px]"
+                          style={{ backgroundColor: "#dc2626" }}
+                        />
+                        <span className="text-muted-foreground">Realized Loss</span>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </section>
             ) : null}
