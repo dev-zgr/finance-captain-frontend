@@ -305,14 +305,14 @@ export function DebtsTimeSeriesChart({ token }: DebtsTimeSeriesChartProps) {
   return (
     <Card className="h-full min-w-0">
       <CardHeader>
-        <div className="flex items-start justify-between gap-4">
+        <div className="space-y-4">
           <div>
             <CardTitle>Debts &amp; Payments Trend</CardTitle>
             <CardDescription>
               Track how your debts grow and shrink over time.
             </CardDescription>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 max-md:flex-col max-md:items-stretch">
             <Select
               value={period}
               onValueChange={(value) =>
