@@ -13,6 +13,9 @@ export const API_ENDPOINTS = {
   DEBTS_SUMMARY: `${API_BASE_URL}/api/v1/debts/summary`,
   DEBTS_TRANSACTIONS: `${API_BASE_URL}/api/v1/debts/transactions`,
   DEBTS_TIME_SERIES: `${API_BASE_URL}/api/v1/debts/transactions/time-series`,
+  REPORTS: `${API_BASE_URL}/api/v1/reports`,
+  REPORTS_BY_ID: (id: number) => `${API_BASE_URL}/api/v1/reports/${id}`,
+  REPORTS_FILE: (id: number) => `${API_BASE_URL}/api/v1/reports/${id}/file`,
 }
 
 export const INVESTMENT_API = {

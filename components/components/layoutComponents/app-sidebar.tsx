@@ -5,11 +5,11 @@ import Link from "next/link"
 import { useDispatch, useSelector } from "react-redux"
 import { usePathname, useRouter } from "next/navigation"
 import {
-    ArrowLeftRight,
     ArrowRightLeft,
     Briefcase,
     Building2,
     ChevronRight,
+    FileText,
     Landmark,
     LayoutDashboard,
     LineChart,
@@ -149,7 +149,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarGroup>
 
                     <SidebarGroup>
-                        <SidebarGroupLabel>Account</SidebarGroupLabel>
+                        <SidebarGroupLabel>Accounts</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {accountItems.map(({ title, icon: Icon, overviewHref, transactionsHref, items }) => {
@@ -203,11 +203,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         </Collapsible>
                                     )
                                 })}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Insights</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton asChild>
-                                        <Link href="#">
-                                            <ArrowLeftRight />
-                                            <span>Transfer Money</span>
+                                    <SidebarMenuButton asChild isActive={isRouteActive(pathname, "/reports")}>
+                                        <Link href="/reports">
+                                            <FileText />
+                                            <span>Reports</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
