@@ -1,189 +1,32 @@
 "use client"
 
-import { AlertCircle, Calendar, TrendingDown, TrendingUp, Wallet, BarChart3 } from "lucide-react"
-import { RecentInvestmentTransactionsCard } from "@/components/components/investment-account/overview/recent-investment-transactions-card"
-import { format, parseISO } from "date-fns"
 import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { ActionsCard } from "@/components/components/investment-account/overview/ActionsCard"
 import { InvestmentChartsCard } from "@/components/components/investment-account/overview/investment-charts-card"
 import { InvestmentPositionsPreviewCard } from "@/components/components/investment-account/overview/investment-positions-preview-card"
+import { InvestmentSummaryCard } from "@/components/components/investment-account/overview/investment-summary-card"
 import { OverviewAiNewsCard } from "@/components/components/investment-account/overview/overview-ai-news-card"
+import { RecentInvestmentTransactionsCard } from "@/components/components/investment-account/overview/recent-investment-transactions-card"
 import { DepositFundsDialog } from "@/components/components/investment-account/transactions/DepositFundsDialog"
 import { WithdrawFundsDialog } from "@/components/components/investment-account/transactions/WithdrawFundsDialog"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Spinner } from "@/components/ui/spinner"
 import { getAccountSummary } from "@/lib/checking-account/api"
-import type { AccountSummary } from "@/lib/checking-account/types"
-import { getInvestmentSummary } from "@/lib/investment-account/api"
 import type {
-  InvestmentApiSuccessResponse,
-  InvestmentSummary,
-} from "@/lib/investment-account/types"
+  AccountSummary,
+  ApiSuccessResponse,
+} from "@/lib/checking-account/types"
 import { setCheckingSummary } from "@/lib/slices/checkingAccountSlice"
-import {
-  setInvestmentError,
-  setInvestmentStatus,
-  setInvestmentSummary,
-} from "@/lib/slices/investmentAccountSlice"
 import type { AppDispatch, RootState } from "@/lib/store"
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value)
-
-function getWrappedContent<T>(data: unknown): T | null {
+function getCheckingContent(data: unknown): AccountSummary | null {
   if (!data || typeof data !== "object") {
     return null
   }
-
-  const wrapped = data as InvestmentApiSuccessResponse<T>
-  return wrapped.content ?? wrapped.data ?? null
-}
-
-function InvestmentSummaryCard({
-  loading,
-  error,
-  onRetry,
-}: {
-  loading: boolean
-  error: string | null
-  onRetry: () => void
-}) {
-  const investmentSummary = useSelector(
-    (state: RootState) => state.investmentAccount.summary
-  )
-
-  const getPLColor = (value: number) => {
-    if (value > 0) return "text-emerald-600 dark:text-emerald-500"
-    if (value < 0) return "text-rose-600 dark:text-rose-500"
-    return "text-muted-foreground"
+  const wrapped = data as ApiSuccessResponse<AccountSummary> & {
+    data?: AccountSummary
   }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Account Summary</CardTitle>
-        <CardDescription>Your investment account at a glance.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <div className="flex min-h-[200px] items-center justify-center">
-            <Spinner />
-          </div>
-        ) : error ? (
-          <div className="flex min-h-[200px] flex-col items-center justify-center gap-3">
-            <AlertCircle className="size-8 text-destructive" />
-            <p className="text-sm text-muted-foreground">{error}</p>
-            <Button variant="outline" size="sm" type="button" onClick={onRetry}>
-              Retry
-            </Button>
-          </div>
-        ) : !investmentSummary?.hasAccount ? (
-          <div className="flex min-h-[200px] items-center justify-center">
-            <p className="text-center text-sm text-muted-foreground">
-              You have not started investing yet. Deposit funds to begin.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Account Value</p>
-              <p className="text-2xl font-semibold tracking-tight">
-                {formatCurrency(investmentSummary?.accountValue ?? 0)}
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Wallet className="size-4 text-muted-foreground" />
-                  Cash Available to Trade
-                </span>
-                <span className="text-sm font-medium tabular-nums">
-                  {formatCurrency(investmentSummary?.cashBalance ?? 0)}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <BarChart3 className="size-4 text-muted-foreground" />
-                  Market Value
-                </span>
-                <span className="text-sm font-medium tabular-nums">
-                  {formatCurrency(investmentSummary?.marketValue ?? 0)}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <TrendingUp
-                    className={`size-4 ${investmentSummary?.unrealizedPnl ?? 0 >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
-                  />
-                  Unrealized P/L
-                </span>
-                <span
-                  className={`text-sm font-medium tabular-nums ${getPLColor(investmentSummary?.unrealizedPnl ?? 0)}`}
-                >
-                  {formatCurrency(investmentSummary?.unrealizedPnl ?? 0)} (
-                  {(investmentSummary?.unrealizedPnlPercent ?? 0).toFixed(2)}%)
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <TrendingDown className="size-4 text-muted-foreground" />
-                  This Month Net P/L
-                </span>
-                <span
-                  className={`text-sm font-medium tabular-nums ${getPLColor(investmentSummary?.thisMonthNetPnl ?? 0)}`}
-                >
-                  {formatCurrency(investmentSummary?.thisMonthNetPnl ?? 0)}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <TrendingUp className="size-4 text-muted-foreground" />
-                  Month-over-Month Growth
-                </span>
-                <span
-                  className={`text-sm font-medium tabular-nums ${getPLColor(investmentSummary?.portfolioGrowthRatePercent ?? 0)}`}
-                >
-                  {(investmentSummary?.portfolioGrowthRatePercent ?? 0).toFixed(2)}%
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="size-4 text-muted-foreground" />
-                  Account opened
-                </span>
-                <span className="text-sm font-medium tabular-nums">
-                  {investmentSummary?.openingDate
-                    ? format(parseISO(investmentSummary.openingDate), "MMM d, yyyy")
-                    : "—"}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
+  return wrapped.content ?? wrapped.data ?? null
 }
 
 export function InvestmentOverviewClient() {
@@ -192,58 +35,22 @@ export function InvestmentOverviewClient() {
   const [depositDialogOpen, setDepositDialogOpen] = useState(false)
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false)
   const [summaryRefreshKey, setSummaryRefreshKey] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  const fetchOverviewData = useCallback(async () => {
-    if (!token) {
-      setLoading(false)
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-    dispatch(setInvestmentStatus({ key: "summary", status: "loading" }))
+  const fetchCheckingSummary = useCallback(async () => {
+    if (!token) return
     try {
-      const [investmentSummaryResponse, checkingSummaryResponse] =
-        await Promise.all([getInvestmentSummary(token), getAccountSummary(token)])
-
-      const investmentSummary =
-        investmentSummaryResponse.status === 200
-          ? getWrappedContent<InvestmentSummary>(investmentSummaryResponse.data)
-          : null
+      const response = await getAccountSummary(token)
       const checkingSummary =
-        checkingSummaryResponse.status === 200
-          ? getWrappedContent<AccountSummary>(checkingSummaryResponse.data)
-          : null
-
-      dispatch(setInvestmentSummary(investmentSummary))
+        response.status === 200 ? getCheckingContent(response.data) : null
       dispatch(setCheckingSummary(checkingSummary))
-      if (!investmentSummary || !checkingSummary) {
-        setError("Could not load account balances. Please try again.")
-        dispatch(
-          setInvestmentError({
-            key: "summary",
-            error: "Could not load account balances. Please try again.",
-          })
-        )
-      }
     } catch {
-      setError("Could not load account balances. Please try again.")
-      dispatch(
-        setInvestmentError({
-          key: "summary",
-          error: "Could not load account balances. Please try again.",
-        })
-      )
-    } finally {
-      setLoading(false)
+      dispatch(setCheckingSummary(null))
     }
   }, [dispatch, token])
 
   useEffect(() => {
-    void fetchOverviewData()
-  }, [fetchOverviewData, summaryRefreshKey])
+    void fetchCheckingSummary()
+  }, [fetchCheckingSummary, summaryRefreshKey])
 
   const handleTransferSuccess = useCallback(() => {
     setSummaryRefreshKey((currentKey) => currentKey + 1)
@@ -255,11 +62,7 @@ export function InvestmentOverviewClient() {
         <InvestmentChartsCard token={token} />
 
         <div className="col-span-4 flex flex-col gap-6 max-lg:col-span-12">
-          <InvestmentSummaryCard
-            loading={loading}
-            error={error}
-            onRetry={fetchOverviewData}
-          />
+          <InvestmentSummaryCard token={token} refreshKey={summaryRefreshKey} />
           <ActionsCard
             onDepositFunds={() => setDepositDialogOpen(true)}
             onWithdrawFunds={() => setWithdrawDialogOpen(true)}

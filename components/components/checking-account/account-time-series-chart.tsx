@@ -272,12 +272,12 @@ export function AccountTimeSeriesChart({ token }: AccountTimeSeriesChartProps) {
   return (
     <Card className="h-full">
       <CardHeader>
-        <div className="flex items-start justify-between gap-4">
+        <div className="space-y-4">
           <div>
             <CardTitle>Income &amp; Expense Trend</CardTitle>
             <CardDescription>Track your cash flow over time.</CardDescription>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 max-md:flex-col max-md:items-stretch">
             <Select value={period} onValueChange={(value) => setPeriod(value as TimeSeriesPeriod)}>
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Period" />
@@ -331,7 +331,7 @@ export function AccountTimeSeriesChart({ token }: AccountTimeSeriesChartProps) {
               {/* TODO: sticky Y-axis */}
               <ChartContainer
                 config={chartConfig}
-                className="min-h-[280px] w-full"
+                className="aspect-auto h-[280px] w-full"
                 style={{ minWidth: chartMinWidth }}
               >
                 <AreaChart
