@@ -5,6 +5,23 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-cat-food: var(--cat-food);
+  --color-cat-transport: var(--cat-transport);
+  --color-cat-utilities: var(--cat-utilities);
+  --color-cat-rent: var(--cat-rent);
+  --color-cat-healthcare: var(--cat-healthcare);
+  --color-cat-entertainment: var(--cat-entertainment);
+  --color-cat-shopping: var(--cat-shopping);
+  --color-cat-transfers: var(--cat-transfers);
+  --color-cat-salary: var(--cat-salary);
+  --color-cat-investment: var(--cat-investment);
+  --color-cat-rental: var(--cat-rental);
+  --color-cat-other: var(--cat-other);
+  --color-ai-from: var(--ai-from);
+  --color-ai-via: var(--ai-via);
+  --color-ai-to: var(--ai-to);
+  --color-marketing-grid: var(--marketing-grid);
+  --color-marketing-beam: var(--marketing-beam);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   /* Use the variable injected by next/font/google for Inter */
@@ -49,6 +66,29 @@
 }
 
 :root {
+  /* Category color tokens */
+  --cat-food:           oklch(0.66 0.18 25);
+  --cat-transport:      oklch(0.70 0.13 230);
+  --cat-utilities:      oklch(0.72 0.15 145);
+  --cat-rent:           oklch(0.55 0.16 285);
+  --cat-healthcare:     oklch(0.74 0.14 195);
+  --cat-entertainment:  oklch(0.70 0.18 320);
+  --cat-shopping:       oklch(0.74 0.16 75);
+  --cat-transfers:      oklch(0.65 0.04 260);
+  --cat-salary:         oklch(0.72 0.15 145);
+  --cat-investment:     oklch(0.68 0.14 280);
+  --cat-rental:         oklch(0.72 0.13 175);
+  --cat-other:          oklch(0.70 0.02 260);
+
+  /* AI accent (mirrors AiOverviewCard purple/blue gradient) */
+  --ai-from: oklch(0.93 0.04 300);
+  --ai-via:  oklch(0.94 0.03 250);
+  --ai-to:   oklch(0.93 0.04 300);
+
+  /* Marketing-only accents */
+  --marketing-grid: oklch(0.92 0.01 260);
+  --marketing-beam: oklch(0.65 0.20 280);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -84,6 +124,24 @@
 }
 
 .dark {
+  --cat-food:           oklch(0.55 0.20 25);
+  --cat-transport:      oklch(0.55 0.16 230);
+  --cat-utilities:      oklch(0.58 0.16 145);
+  --cat-rent:           oklch(0.45 0.16 285);
+  --cat-healthcare:     oklch(0.58 0.14 195);
+  --cat-entertainment:  oklch(0.55 0.18 320);
+  --cat-shopping:       oklch(0.58 0.16 75);
+  --cat-transfers:      oklch(0.52 0.04 260);
+  --cat-salary:         oklch(0.58 0.16 145);
+  --cat-investment:     oklch(0.55 0.14 280);
+  --cat-rental:         oklch(0.58 0.13 175);
+  --cat-other:          oklch(0.56 0.02 260);
+  --ai-from: oklch(0.30 0.06 300 / 0.25);
+  --ai-via:  oklch(0.30 0.05 250 / 0.25);
+  --ai-to:   oklch(0.30 0.06 300 / 0.25);
+  --marketing-grid: oklch(0.25 0.01 260);
+  --marketing-beam: oklch(0.55 0.22 280);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -134,6 +192,21 @@
   }
 }
 
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes beam-h {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+
+@keyframes beam-v {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(200%); }
+}
+
 @keyframes gradient-shift {
   0% {
     background-position: 0% 50%;
@@ -150,5 +223,17 @@
   .animate-gradient {
     background-size: 200% 200%;
     animation: gradient-shift 6s ease infinite;
+  }
+  .animate-marquee {
+    animation: marquee-scroll 40s linear infinite;
+  }
+  .animate-marquee-paused {
+    animation-play-state: paused;
+  }
+  .animate-beam-h {
+    animation: beam-h 12s linear infinite;
+  }
+  .animate-beam-v {
+    animation: beam-v 12s linear 6s infinite;
   }
 }
