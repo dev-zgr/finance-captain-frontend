@@ -3,10 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { sendMessage, openStream } from "@/lib/co-captain/api"
-import type { ArtifactData, ChatMessage, SseNamedEvent } from "@/lib/co-captain/types"
+import type {
+  Artifact,
+  ArtifactKind,
+  ArtifactStatus,
+  ChatMessage,
+  SseNamedEvent,
+  SseToolEndData,
+  SseToolStartData,
+  ToolCallState,
+} from "@/lib/co-captain/types"
 import { ChatMessageBubble } from "./chat-message-bubble"
 import { ChatInput } from "./chat-input"
-import { ArtifactPanel } from "./artifact-panel"
 
 type Props = {
   token: string
@@ -27,7 +35,6 @@ const PHRASE_GRADIENTS = [
   "linear-gradient(to right,#10b981,#2dd4bf)",
   "linear-gradient(to right,#6366f1,#60a5fa)",
 ]
-
 
 function RotatingPhrase() {
   const [index, setIndex] = useState(0)
@@ -62,7 +69,6 @@ function RotatingPhrase() {
 function WelcomeScreen() {
   return (
     <div className="flex w-full flex-col items-center gap-10 text-center">
-      {/* Hero title */}
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,14 +111,88 @@ function parseSseChunk(chunk: string): SseNamedEvent[] {
     if (!eventName || !rawData) continue
     try {
       results.push({ event: eventName, data: JSON.parse(rawData) } as SseNamedEvent)
-    } catch { /* skip malformed blocks */ }
+    } catch {
+      // skip malformed blocks
+    }
   }
   return results
 }
 
+function normalizeArtifact(raw: unknown): Artifact | null {
+  if (!raw || typeof raw !== "object") {
+    return null
+  }
+
+  const source = raw as Record<string, unknown>
+
+  const id = source.id
+  const type = source.type
+  if (typeof id !== "number" || typeof type !== "string") {
+    return null
+  }
+
+  const kind = (source.kind === "POST_DRAFT" ? "POST_DRAFT" : "GET") as ArtifactKind
+  const allowedStatuses: ArtifactStatus[] = ["RENDERED", "DRAFT", "ACCEPTED", "REJECTED", "FAILED"]
+  const status = allowedStatuses.includes(source.status as ArtifactStatus)
+    ? (source.status as ArtifactStatus)
+    : "RENDERED"
+
+  return {
+    id,
+    type,
+    kind,
+    status,
+    payload: source.payload ?? {},
+  }
+}
+
+function startToolCall(toolStart: SseToolStartData): ToolCallState {
+  return {
+    callId: toolStart.callId ?? crypto.randomUUID(),
+    tool: toolStart.tool,
+    status: "running",
+    arguments: toolStart.arguments,
+  }
+}
+
+function endToolCall(toolCalls: ToolCallState[], toolEnd: SseToolEndData): ToolCallState[] {
+  const ok = toolEnd.ok ?? toolEnd.success ?? false
+  const targetCallId = toolEnd.callId
+
+  let targetIndex = -1
+
+  if (targetCallId) {
+    targetIndex = toolCalls.findIndex((call) => call.callId === targetCallId)
+  }
+
+  if (targetIndex < 0) {
+    targetIndex = toolCalls.findLastIndex(
+      (call) => call.tool === toolEnd.tool && call.status === "running",
+    )
+  }
+
+  if (targetIndex < 0) {
+    return toolCalls
+  }
+
+  return toolCalls.map((call, index) => {
+    if (index !== targetIndex) {
+      return call
+    }
+
+    return {
+      ...call,
+      callId: call.callId || toolEnd.callId || crypto.randomUUID(),
+      status: ok ? "ok" : "failed",
+      durationMs: toolEnd.durationMs,
+      errorCode: toolEnd.errorCode,
+      errorMessage: toolEnd.errorMessage ?? toolEnd.error,
+    }
+  })
+}
+
 export function CoCaptainChat({ token }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [artifacts, setArtifacts] = useState<ArtifactData[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -133,7 +213,13 @@ export function CoCaptainChat({ token }: Props) {
 
       const userMsg: ChatMessage = { id: crypto.randomUUID(), role: "user", content: text }
       const assistantId = crypto.randomUUID()
-      const assistantMsg: ChatMessage = { id: assistantId, role: "assistant", content: "" }
+      const assistantMsg: ChatMessage = {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        toolCalls: [],
+        artifacts: [],
+      }
 
       setMessages((prev) => [...prev, userMsg, assistantMsg])
       setIsLoading(true)
@@ -166,7 +252,7 @@ export function CoCaptainChat({ token }: Props) {
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantId
-                      ? { ...m, toolCalls: [...(m.toolCalls ?? []), { tool: named.data.tool, status: "running" }] }
+                      ? { ...m, toolCalls: [...(m.toolCalls ?? []), startToolCall(named.data)] }
                       : m,
                   ),
                 )
@@ -175,28 +261,43 @@ export function CoCaptainChat({ token }: Props) {
               case "tool_end":
                 setMessages((prev) =>
                   prev.map((m) => {
-                    if (m.id !== assistantId) return m
+                    if (m.id !== assistantId) {
+                      return m
+                    }
+
                     return {
                       ...m,
-                      toolCalls: (m.toolCalls ?? []).map((tc) =>
-                        tc.tool === named.data.tool && tc.status === "running"
-                          ? { ...tc, status: named.data.success ? "success" : "error", error: named.data.error }
-                          : tc,
-                      ),
+                      toolCalls: endToolCall(m.toolCalls ?? [], named.data),
                     }
                   }),
                 )
                 break
 
               case "artifact":
-              case "draft":
-                setArtifacts((prev) => {
-                  const exists = prev.some((a) => a.id === named.data.id)
-                  return exists
-                    ? prev.map((a) => (a.id === named.data.id ? named.data : a))
-                    : [...prev, named.data]
-                })
+              case "draft": {
+                const artifact = normalizeArtifact(named.data)
+                if (!artifact) {
+                  break
+                }
+
+                setMessages((prev) =>
+                  prev.map((m) => {
+                    if (m.id !== assistantId) {
+                      return m
+                    }
+
+                    const existing = m.artifacts ?? []
+                    const exists = existing.some((item) => item.id === artifact.id)
+                    return {
+                      ...m,
+                      artifacts: exists
+                        ? existing.map((item) => (item.id === artifact.id ? artifact : item))
+                        : [...existing, artifact],
+                    }
+                  }),
+                )
                 break
+              }
 
               case "error":
                 setMessages((prev) =>
@@ -226,22 +327,14 @@ export function CoCaptainChat({ token }: Props) {
     [token],
   )
 
-  const handleArtifactUpdate = useCallback((updated: ArtifactData) => {
-    setArtifacts((prev) => prev.map((a) => (a.id === updated.id ? updated : a)))
-  }, [])
-
   const hasMessages = messages.length > 0
 
   return (
     <div className="flex h-full">
-      {/* Chat column */}
       <div className="flex flex-1 flex-col overflow-hidden p-4 md:p-6">
-        {/* Page title — matches other pages */}
         <h1 className="mb-4 text-2xl font-semibold tracking-tight">Co-Captain</h1>
 
-        {/* Single bordered container: messages + input */}
         <div className="flex flex-1 flex-col overflow-hidden rounded-xl border bg-background shadow-sm">
-          {/* Message list — flex-col so the welcome div can flex-1 to fill height */}
           <div ref={scrollRef} className="flex flex-1 flex-col overflow-y-auto px-4 py-6 md:px-8">
             <AnimatePresence initial={false}>
               {!hasMessages && (
@@ -266,20 +359,13 @@ export function CoCaptainChat({ token }: Props) {
                 return (
                   <div
                     key={msg.id}
-                    className={[
-                      i === 0 ? "" : "mt-4",
-                      roleChanged ? "pt-2" : "",
-                    ]
+                    className={[i === 0 ? "" : "mt-4", roleChanged ? "pt-2" : ""]
                       .filter(Boolean)
                       .join(" ")}
                   >
                     <ChatMessageBubble
                       message={msg}
-                      isStreaming={
-                        isLoading &&
-                        i === messages.length - 1 &&
-                        msg.role === "assistant"
-                      }
+                      isStreaming={isLoading && i === messages.length - 1 && msg.role === "assistant"}
                     />
                   </div>
                 )
@@ -287,20 +373,7 @@ export function CoCaptainChat({ token }: Props) {
             </div>
           </div>
 
-          {/* Input inside the same box */}
           <ChatInput onSubmit={handleSubmit} disabled={isLoading} />
-        </div>
-      </div>
-
-      {/* Artifact panel */}
-      <div className="hidden w-72 shrink-0 flex-col border-l bg-background lg:flex">
-        <div className="border-b px-4 py-3 text-sm font-semibold">Artifacts</div>
-        <div className="flex-1 overflow-y-auto">
-          <ArtifactPanel
-            artifacts={artifacts}
-            token={token}
-            onArtifactUpdate={handleArtifactUpdate}
-          />
         </div>
       </div>
     </div>

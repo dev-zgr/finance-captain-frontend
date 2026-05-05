@@ -1,51 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import {
-  RiCheckLine,
-  RiCloseLine,
-  RiFileCopyLine,
-  RiLoader4Line,
-  RiRobot2Line,
-  RiToolsLine,
-} from "@remixicon/react"
-import { Badge } from "@/components/ui/badge"
+import { RiCheckLine, RiFileCopyLine, RiRobot2Line } from "@remixicon/react"
+import { ArtifactRenderer } from "./ArtifactRenderer"
+import { ToolCallList } from "./ToolCallList"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item"
-import type { ChatMessage, ToolCallRecord } from "@/lib/co-captain/types"
-
-function ToolStatusBadge({ status, error }: { status: ToolCallRecord["status"]; error?: string }) {
-  if (status === "running") {
-    return (
-      <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-blue-700">
-        <RiLoader4Line data-icon="inline-start" className="animate-spin" />
-        Running
-      </Badge>
-    )
-  }
-  if (status === "success") {
-    return (
-      <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700">
-        <RiCheckLine data-icon="inline-start" />
-        Done
-      </Badge>
-    )
-  }
-  return (
-    <Badge variant="outline" className="border-red-500/30 bg-red-500/10 text-red-700" title={error}>
-      <RiCloseLine data-icon="inline-start" />
-      Failed
-    </Badge>
-  )
-}
+import type { ChatMessage } from "@/lib/co-captain/types"
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
@@ -105,42 +66,31 @@ export function ChatMessageBubble({ message, isStreaming }: Props) {
     <div className="flex w-full items-start gap-3">
       {avatarAI}
       <div className="w-full max-w-[75%] min-w-0">
-        <div
-          className={[
-            "w-full overflow-hidden rounded-xl border bg-card px-4 py-3 text-sm leading-relaxed text-card-foreground shadow-sm break-words [overflow-wrap:anywhere]",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-        >
-          {isStreaming && !message.content ? (
-            <Spinner className="size-4 text-blue-500" />
-          ) : (
-            message.content
-          )}
+        <div className="w-full overflow-hidden rounded-xl border bg-card px-4 py-3 text-sm leading-relaxed text-card-foreground shadow-sm break-words [overflow-wrap:anywhere]">
+          {isStreaming && !message.content ? <Spinner className="size-4 text-blue-500" /> : message.content}
 
-          {message.toolCalls && message.toolCalls.length > 0 && (
-            <>
-              <Separator className="mt-3 mb-0" />
-              <ItemGroup className="mt-2">
-                {message.toolCalls.map((tc, i) => (
-                  <Item key={i} variant="outline" size="xs">
-                    <ItemMedia variant="icon">
-                      <RiToolsLine className="text-muted-foreground" />
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle className="font-mono text-xs">{tc.tool}</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ToolStatusBadge status={tc.status} error={tc.error} />
-                    </ItemActions>
-                  </Item>
+          {message.artifacts && message.artifacts.length > 0 ? (
+            <div className="mt-4">
+              <Separator />
+              <div className="mt-4 space-y-3">
+                {message.artifacts.map((artifact) => (
+                  <ArtifactRenderer key={artifact.id} artifact={artifact} />
                 ))}
-              </ItemGroup>
-            </>
-          )}
+              </div>
+            </div>
+          ) : null}
+
+          {message.toolCalls && message.toolCalls.length > 0 ? (
+            <div className="mt-4">
+              <Separator />
+              <div className="mt-4">
+                <ToolCallList toolCalls={message.toolCalls} />
+              </div>
+            </div>
+          ) : null}
         </div>
 
-        {message.content && <CopyButton text={message.content} />}
+        {message.content ? <CopyButton text={message.content} /> : null}
       </div>
     </div>
   )

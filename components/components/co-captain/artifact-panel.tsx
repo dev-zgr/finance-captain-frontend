@@ -4,12 +4,12 @@ import { useState } from "react"
 import { RiCheckLine, RiCloseLine, RiFileTextLine } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
 import { acceptDraft, rejectDraft } from "@/lib/co-captain/api"
-import type { ArtifactData } from "@/lib/co-captain/types"
+import type { Artifact } from "@/lib/co-captain/types"
 
 type Props = {
-  artifacts: ArtifactData[]
+  artifacts: Artifact[]
   token: string
-  onArtifactUpdate: (updated: ArtifactData) => void
+  onArtifactUpdate: (updated: Artifact) => void
 }
 
 function ArtifactCard({
@@ -17,9 +17,9 @@ function ArtifactCard({
   token,
   onUpdate,
 }: {
-  artifact: ArtifactData
+  artifact: Artifact
   token: string
-  onUpdate: (updated: ArtifactData) => void
+  onUpdate: (updated: Artifact) => void
 }) {
   const [isPending, setIsPending] = useState(false)
 
