@@ -19,6 +19,14 @@ export const API_ENDPOINTS = {
   DASHBOARD_TRANSACTIONS: `${API_BASE_URL}/api/v1/dashboard/transactions`,
 }
 
+export const CO_CAPTAIN_API = {
+  SESSION: `${API_BASE_URL}/api/v1/co-captain/session`,
+  MESSAGES: `${API_BASE_URL}/api/v1/co-captain/messages`,
+  STREAM: `${API_BASE_URL}/api/v1/co-captain/stream`,
+  ARTIFACT_ACCEPT: (id: number) => `${API_BASE_URL}/api/v1/co-captain/artifacts/${id}/accept`,
+  ARTIFACT_REJECT: (id: number) => `${API_BASE_URL}/api/v1/co-captain/artifacts/${id}/reject`,
+} as const
+
 export const INVESTMENT_API = {
   SUMMARY: `${API_BASE_URL}/api/v1/investment/summary`,
   CHARTS: `${API_BASE_URL}/api/v1/investment/charts`,

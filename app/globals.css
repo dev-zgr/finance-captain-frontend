@@ -65,6 +65,16 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+@keyframes hue-spin {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
+}
+
 :root {
   /* Category color tokens */
   --cat-food:           oklch(0.66 0.18 25);

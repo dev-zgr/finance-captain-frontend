@@ -18,7 +18,13 @@ import {
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useRequireAuth } from "@/lib/auth/use-require-auth";
 
-export function AuthenticatedDashboardLayout({ children }: { children: React.ReactNode }) {
+export function AuthenticatedDashboardLayout({
+  children,
+  fullHeight = false,
+}: {
+  children: React.ReactNode
+  fullHeight?: boolean
+}) {
   const { isAuthorized } = useRequireAuth();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
@@ -71,7 +77,7 @@ export function AuthenticatedDashboardLayout({ children }: { children: React.Rea
             </Breadcrumb>
           </div>
         </div>
-        <main className="min-w-0 max-w-full flex-1 overflow-x-hidden p-4 md:p-6">
+        <main className={fullHeight ? "flex min-w-0 flex-1 flex-col overflow-hidden" : "min-w-0 max-w-full flex-1 overflow-x-hidden p-4 md:p-6"}>
           {children}
         </main>
         <footer className="relative z-0 border-t bg-background">
