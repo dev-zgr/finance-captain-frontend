@@ -26,6 +26,37 @@ export type SendMessageContent = {
 
 export type SendMessageResponse = ApiSuccessEnvelope<SendMessageContent>
 
+// ── Artifacts ────────────────────────────────────────────────────────────────
+
+export type ArtifactKind = "GET" | "POST_DRAFT"
+
+export type ArtifactStatus = "RENDERED" | "DRAFT" | "ACCEPTED" | "REJECTED" | "FAILED"
+
+export type Artifact<T = unknown> = {
+  id: number
+  type: string
+  kind: ArtifactKind
+  status: ArtifactStatus
+  payload: T
+}
+
+export type ArtifactRendererProps<T = unknown> = {
+  artifact: Artifact<T>
+  onUpdate?: (next: Artifact<T>) => void
+}
+
+export type ToolCallStatus = "running" | "ok" | "failed"
+
+export type ToolCallState = {
+  callId: string
+  tool: string
+  status: ToolCallStatus
+  arguments?: unknown
+  durationMs?: number
+  errorCode?: string
+  errorMessage?: string
+}
+
 // ── SSE events (named events over text/event-stream) ─────────────────────────
 
 export type SseTextDeltaData = {
@@ -33,23 +64,20 @@ export type SseTextDeltaData = {
 }
 
 export type SseToolStartData = {
+  callId?: string
   tool: string
+  arguments?: unknown
 }
 
 export type SseToolEndData = {
+  callId?: string
   tool: string
-  success: boolean
+  ok?: boolean
+  success?: boolean
+  durationMs?: number
+  errorCode?: string
+  errorMessage?: string
   error?: string
-}
-
-export type ArtifactStatus = "RENDERED" | "DRAFT" | "ACCEPTED" | "REJECTED"
-
-export type ArtifactData = {
-  id: number
-  type: string
-  kind: string
-  status: ArtifactStatus
-  payload: Record<string, unknown>
 }
 
 export type SseErrorData = {
@@ -65,8 +93,8 @@ export type SseNamedEvent =
   | { event: "text_delta"; data: SseTextDeltaData }
   | { event: "tool_start"; data: SseToolStartData }
   | { event: "tool_end"; data: SseToolEndData }
-  | { event: "artifact"; data: ArtifactData }
-  | { event: "draft"; data: ArtifactData }
+  | { event: "artifact"; data: Artifact }
+  | { event: "draft"; data: Artifact }
   | { event: "error"; data: SseErrorData }
   | { event: "done"; data: SseDoneData }
 
@@ -96,15 +124,10 @@ export type RejectDraftResponse = ApiSuccessEnvelope<RejectDraftContent>
 
 // ── Local UI types ────────────────────────────────────────────────────────────
 
-export type ToolCallRecord = {
-  tool: string
-  status: "running" | "success" | "error"
-  error?: string
-}
-
 export type ChatMessage = {
   id: string
   role: "user" | "assistant"
   content: string
-  toolCalls?: ToolCallRecord[]
+  toolCalls?: ToolCallState[]
+  artifacts?: Artifact[]
 }
