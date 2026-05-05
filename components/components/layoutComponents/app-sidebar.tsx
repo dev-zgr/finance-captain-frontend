@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { usePathname, useRouter } from "next/navigation"
 import {
     ArrowRightLeft,
+    Bot,
     Briefcase,
     Building2,
     ChevronRight,
@@ -215,6 +216,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         <Link href="/reports">
                                             <FileText />
                                             <span>Reports</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>AI</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild isActive={isRouteActive(pathname, "/co-captain")}>
+                                        <Link href="/co-captain">
+                                            <Bot />
+                                            <span>Co-Captain</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
