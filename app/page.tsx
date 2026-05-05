@@ -1,28 +1,30 @@
-import React from 'react';
-import Link from 'next/link';
+"use client";
 
-import { AppShell } from '@/components/layout/AppShell';
-import { Button } from '@/components/ui/button';
+import { LazyMotion, domAnimation } from "motion/react";
+import { MarketingHeader } from "@/components/marketing/marketing-header";
+import { Hero } from "@/components/marketing/hero/hero";
+import { CategoryStrip } from "@/components/marketing/category-strip";
+import { FeaturesGrid } from "@/components/marketing/features/features-grid";
+import { HowItWorks } from "@/components/marketing/how-it-works";
+import { AuthSection } from "@/components/marketing/auth-section";
+import { MarketingCta } from "@/components/marketing/marketing-cta";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
 
 export default function HomePage() {
-    return (
-        <AppShell>
-            <section className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">Welcome to Finance Captain</h1>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        Manage your personal finances with a secure, modern dashboard.
-                    </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                    <Button asChild>
-                        <Link href="/dashboard">Go to dashboard</Link>
-                    </Button>
-                    <Button variant="outline" asChild>
-                        <Link href="/login">Login</Link>
-                    </Button>
-                </div>
-            </section>
-        </AppShell>
-    );
+  return (
+    <LazyMotion features={domAnimation}>
+      <div className="flex min-h-screen flex-col bg-background">
+        <MarketingHeader />
+        <main>
+          <Hero />
+          <CategoryStrip />
+          <FeaturesGrid />
+          <HowItWorks />
+          <AuthSection />
+          <MarketingCta />
+        </main>
+        <MarketingFooter />
+      </div>
+    </LazyMotion>
+  );
 }
