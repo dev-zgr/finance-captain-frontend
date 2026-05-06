@@ -12,6 +12,10 @@ import { InvestmentPositionListArtifact } from "@/components/components/co-capta
 import { InvestmentSummaryArtifact } from "@/components/components/co-captain/artifacts/InvestmentSummaryArtifact"
 import { InvestmentNewsListArtifact } from "@/components/components/co-captain/artifacts/InvestmentNewsListArtifact"
 import { InvestmentTransactionListArtifact } from "@/components/components/co-captain/artifacts/InvestmentTransactionListArtifact"
+import { InvestmentDepositDraftArtifact } from "@/components/components/co-captain/artifacts/InvestmentDepositDraftArtifact"
+import { InvestmentWithdrawDraftArtifact } from "@/components/components/co-captain/artifacts/InvestmentWithdrawDraftArtifact"
+import { InvestmentBuyDraftArtifact } from "@/components/components/co-captain/artifacts/InvestmentBuyDraftArtifact"
+import { InvestmentSellDraftArtifact } from "@/components/components/co-captain/artifacts/InvestmentSellDraftArtifact"
 import { ServerTimeArtifact } from "@/components/components/co-captain/artifacts/ServerTimeArtifact"
 import type { ArtifactRendererProps } from "@/lib/co-captain/types"
 
@@ -34,5 +38,9 @@ export const ARTIFACT_RENDERERS: Record<string, FC<ArtifactRendererProps<unknown
   "investment.news": InvestmentNewsListArtifact,
   "investment.news_list": InvestmentNewsListArtifact,
   "investments.news": InvestmentNewsListArtifact,
+  "investment.deposit_draft": InvestmentDepositDraftArtifact,
+  "investment.withdraw_draft": InvestmentWithdrawDraftArtifact,
+  "investment.buy_draft": InvestmentBuyDraftArtifact,
+  "investment.sell_draft": InvestmentSellDraftArtifact,
   "server_time": ServerTimeArtifact,
 }
