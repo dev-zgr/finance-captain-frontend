@@ -53,6 +53,13 @@ export type CheckingSummaryPayload = {
   accountOpenedAt: string
 }
 
+export type DebtsSummaryPayload = {
+  currentBalance: number
+  totalDebtsThisMonth: number
+  totalPaymentsThisMonth: number
+  accountOpenedAt: string
+}
+
 export type CheckingTransactionListPayload = {
   totalCount: number
   displayedCount: number
