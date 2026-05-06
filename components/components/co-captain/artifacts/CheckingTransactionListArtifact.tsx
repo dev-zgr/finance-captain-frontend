@@ -15,13 +15,8 @@ const buildFilterSummary = (filters: {
 }) => {
   const parts: string[] = []
 
-  if (filters.transactionType) {
-    parts.push(filters.transactionType)
-  }
-
-  if (filters.category) {
-    parts.push(filters.category)
-  }
+  if (filters.transactionType) parts.push(filters.transactionType)
+  if (filters.category) parts.push(filters.category)
 
   if (filters.startDate && filters.endDate) {
     const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
@@ -38,9 +33,7 @@ const buildFilterSummary = (filters: {
   return parts.length > 0 ? parts.join(" • ") : "All transactions"
 }
 
-export function CheckingTransactionListArtifact({
-  artifact,
-}: ArtifactRendererProps<unknown>) {
+export function CheckingTransactionListArtifact({ artifact }: ArtifactRendererProps<unknown>) {
   const [open, setOpen] = useState(false)
 
   const payload = useMemo(() => {
@@ -84,18 +77,20 @@ export function CheckingTransactionListArtifact({
             Checking Transactions
           </Badge>
 
-          <div className="flex items-start gap-2 pr-14">
+          <div className="flex items-start justify-between gap-2 pr-28">
             <div className="flex min-w-0 items-start gap-1.5">
-              <ListChecks className="mt-0.5 size-3.5 text-muted-foreground" />
+              <ListChecks className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
               <div className="min-w-0 space-y-0">
-                <p className="truncate text-[11px] font-semibold">
-                  {payload.displayedCount} transaction{payload.displayedCount !== 1 ? "s" : ""}
-                </p>
-                <p className="truncate text-[10px] font-medium text-muted-foreground">
-                  {filterSummary}
-                </p>
+                <p className="truncate text-[11px] font-semibold">Checking Transactions</p>
+                <p className="truncate text-[10px] font-medium text-muted-foreground">{filterSummary}</p>
               </div>
             </div>
+            <p className="shrink-0 text-sm font-semibold leading-tight tabular-nums">
+              {payload.displayedCount}
+              {payload.totalCount > payload.displayedCount && (
+                <span className="text-[10px] font-normal text-muted-foreground"> of {payload.totalCount}</span>
+              )}
+            </p>
           </div>
         </CardContent>
       </Card>

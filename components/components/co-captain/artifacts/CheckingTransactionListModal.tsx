@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { ChevronRight, ArrowRight } from "lucide-react"
+import { ArrowRight, ChevronDown, InboxIcon, ListFilter, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Pagination,
   PaginationContent,
@@ -19,60 +20,35 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationEllipsis
+  PaginationEllipsis,
 } from "@/components/ui/pagination"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { TransactionTypeBadge } from "@/components/components/checking-account/transaction-type-badge"
 import { TransactionCategoryBadge } from "@/components/components/checking-account/transaction-category-badge"
+import {
+  EXPENSE_CATEGORIES_WITH_LABELS,
+  INCOME_CATEGORIES_WITH_LABELS,
+} from "@/lib/checking-account/constants"
+import { cn } from "@/lib/utils"
 import type { CheckingTransactionListPayload } from "@/lib/co-captain/types"
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value)
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-}
-
-const getSignedAmount = (amount: number, type: string) => {
-  return type === "INCOME" ? amount : -amount
-}
-
-const amountColorClass = (transactionType: string) => {
-  if (transactionType === "INCOME") return "text-emerald-600 dark:text-emerald-500"
-  return "text-red-600 dark:text-red-500"
-}
-
-const buildAppliedFiltersText = (filters: {
-  transactionType: string | null
-  category: string | null
-  startDate: string | null
-  endDate: string | null
-}) => {
-  const parts: string[] = []
-
-  if (filters.transactionType) {
-    parts.push(`Type: ${filters.transactionType}`)
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  } catch {
+    return dateString
   }
-
-  if (filters.category) {
-    parts.push(`Category: ${filters.category}`)
-  }
-
-  if (filters.startDate && filters.endDate) {
-    const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    const end = new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-    parts.push(`${start} – ${end}`)
-  } else if (filters.startDate) {
-    const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    parts.push(`from ${start}`)
-  } else if (filters.endDate) {
-    const end = new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    parts.push(`until ${end}`)
-  }
-
-  return parts.length > 0 ? parts.join(" • ") : undefined
 }
+
+const getSignedAmount = (amount: number, type: string) =>
+  type === "INCOME" ? amount : -amount
 
 const buildQueryParams = (filters: {
   transactionType: string | null
@@ -81,20 +57,32 @@ const buildQueryParams = (filters: {
   endDate: string | null
 }) => {
   const params = new URLSearchParams()
-
   if (filters.transactionType) params.set("type", filters.transactionType)
   if (filters.category) params.set("category", filters.category)
   if (filters.startDate) params.set("startDate", filters.startDate)
   if (filters.endDate) params.set("endDate", filters.endDate)
-
   const query = params.toString()
   return query ? `/checking-account/transactions?${query}` : "/checking-account/transactions"
 }
 
-const PAGE_SIZE = 10
+function buildPaginationItems(currentPage: number, totalPages: number): Array<number | "ellipsis"> {
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
+  const current = currentPage + 1
+  const pages = new Set<number>([1, totalPages, current - 1, current, current + 1])
+  const sorted = [...pages].filter((p) => p >= 1 && p <= totalPages).sort((a, b) => a - b)
+  const result: Array<number | "ellipsis"> = []
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) result.push("ellipsis")
+    result.push(p)
+  })
+  return result
+}
 
-type SortBy = "date" | "amount" | "transactionId"
-type SortDirection = "asc" | "desc"
+const PAGE_SIZE = 10
+type SortBy = "date" | "amount"
+type SortDirection = "ASC" | "DESC"
+const DEFAULT_SORT_BY: SortBy = "date"
+const DEFAULT_SORT_DIRECTION: SortDirection = "DESC"
 
 export interface CheckingTransactionListModalProps {
   open: boolean
@@ -108,10 +96,10 @@ export function CheckingTransactionListModal({
   payload,
 }: CheckingTransactionListModalProps) {
   const [page, setPage] = useState(0)
-  const [sortBy, setSortBy] = useState<SortBy>("date")
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
-  const [typeFilter, setTypeFilter] = useState<string | null>(null)
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<SortBy>(DEFAULT_SORT_BY)
+  const [sortDirection, setSortDirection] = useState<SortDirection>(DEFAULT_SORT_DIRECTION)
+  const [typeFilter, setTypeFilter] = useState<"" | "INCOME" | "EXPENSE">("")
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   const transactions = payload.transactions ?? []
   const totalCount = payload.totalCount ?? 0
@@ -123,288 +111,332 @@ export function CheckingTransactionListModal({
     endDate: null,
   }
 
-  // Get unique types and categories from the data
-  const uniqueTypes = useMemo(() => {
-    const types = new Set(transactions.map((t) => t.transactionType))
-    return Array.from(types).sort()
-  }, [transactions])
+  const hasMoreResults = totalCount > displayedCount
 
-  const uniqueCategories = useMemo(() => {
-    const categories = new Set(transactions.map((t) => t.category).filter((c): c is string => c !== null && c !== undefined))
-    return Array.from(categories).sort()
-  }, [transactions])
+  const availableCategories = useMemo(() => {
+    if (typeFilter === "INCOME") return INCOME_CATEGORIES_WITH_LABELS
+    if (typeFilter === "EXPENSE") return EXPENSE_CATEGORIES_WITH_LABELS
+    const merged = [...EXPENSE_CATEGORIES_WITH_LABELS, ...INCOME_CATEGORIES_WITH_LABELS]
+    const map = new Map<string, { value: string; label: string }>()
+    merged.forEach((e) => { if (!map.has(e.value)) map.set(e.value, e) })
+    return [...map.values()]
+  }, [typeFilter])
 
-  // Filter and sort transactions
   const filteredAndSorted = useMemo(() => {
     let filtered = [...transactions]
-
-    if (typeFilter) {
-      filtered = filtered.filter((t) => t.transactionType === typeFilter)
+    if (typeFilter) filtered = filtered.filter((t) => t.transactionType === typeFilter)
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((t) => t.category && selectedCategories.includes(t.category))
     }
-
-    if (categoryFilter) {
-      filtered = filtered.filter((t) => t.category === categoryFilter)
-    }
-
-    // Sort
     filtered.sort((a, b) => {
-      let aVal: number | string | null = null
-      let bVal: number | string | null = null
-
-      switch (sortBy) {
-        case "date":
-          aVal = new Date(a.transactionDate).getTime()
-          bVal = new Date(b.transactionDate).getTime()
-          break
-        case "amount":
-          aVal = a.amount
-          bVal = b.amount
-          break
-        case "transactionId":
-          aVal = String(a.id)
-          bVal = String(b.id)
-          break
-      }
-
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        return sortDirection === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
-      }
-
-      const anum = typeof aVal === "number" ? aVal : 0
-      const bnum = typeof bVal === "number" ? bVal : 0
-      return sortDirection === "asc" ? anum - bnum : bnum - anum
+      const aVal = sortBy === "date" ? new Date(a.transactionDate).getTime() : a.amount
+      const bVal = sortBy === "date" ? new Date(b.transactionDate).getTime() : b.amount
+      return sortDirection === "ASC" ? aVal - bVal : bVal - aVal
     })
-
     return filtered
-  }, [transactions, typeFilter, categoryFilter, sortBy, sortDirection])
+  }, [transactions, typeFilter, selectedCategories, sortBy, sortDirection])
 
-  const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE)
+  const effectiveTotalPages = Math.max(Math.ceil(filteredAndSorted.length / PAGE_SIZE), 1)
+  const paginationItems = useMemo(
+    () => buildPaginationItems(page, effectiveTotalPages),
+    [page, effectiveTotalPages]
+  )
   const paginatedTransactions = useMemo(() => {
     const start = page * PAGE_SIZE
     return filteredAndSorted.slice(start, start + PAGE_SIZE)
   }, [filteredAndSorted, page])
 
-  const appliedFiltersText = useMemo(
-    () => buildAppliedFiltersText(appliedFilters),
-    [appliedFilters]
-  )
+  const rangeStart = filteredAndSorted.length === 0 ? 0 : page * PAGE_SIZE + 1
+  const rangeEnd = filteredAndSorted.length === 0 ? 0 : Math.min(filteredAndSorted.length, (page + 1) * PAGE_SIZE)
 
-  const transactionPageUrl = useMemo(
-    () => buildQueryParams(appliedFilters),
-    [appliedFilters]
-  )
+  const directionLabels =
+    sortBy === "amount"
+      ? { ASC: "Lowest first", DESC: "Highest first" }
+      : { ASC: "Oldest first", DESC: "Newest first" }
 
-  const hasMoreResults = totalCount > displayedCount
+  const showReset =
+    typeFilter !== "" ||
+    selectedCategories.length > 0 ||
+    sortBy !== DEFAULT_SORT_BY ||
+    sortDirection !== DEFAULT_SORT_DIRECTION
 
-  // Reset page when filters change
-  const handleFilterChange = () => {
+  const transactionPageUrl = useMemo(() => buildQueryParams(appliedFilters), [appliedFilters])
+
+  const appliedFiltersDescription = useMemo(() => {
+    const parts: string[] = []
+    if (appliedFilters.transactionType) parts.push(`Type: ${appliedFilters.transactionType}`)
+    if (appliedFilters.category) parts.push(`Category: ${appliedFilters.category}`)
+    if (appliedFilters.startDate && appliedFilters.endDate) {
+      const s = new Date(appliedFilters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+      const e = new Date(appliedFilters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      parts.push(`${s} – ${e}`)
+    }
+    return parts.join(" • ") || undefined
+  }, [appliedFilters])
+
+  const handleReset = () => {
+    setTypeFilter("")
+    setSelectedCategories([])
+    setSortBy(DEFAULT_SORT_BY)
+    setSortDirection(DEFAULT_SORT_DIRECTION)
     setPage(0)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl max-h-[85vh] overflow-hidden flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-7xl max-h-[85vh] overflow-hidden flex flex-col gap-0 p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle>Checking Transactions</DialogTitle>
-          {appliedFiltersText && (
-            <DialogDescription>{appliedFiltersText}</DialogDescription>
+          {appliedFiltersDescription && (
+            <DialogDescription>{appliedFiltersDescription}</DialogDescription>
           )}
-        </DialogHeader>
 
-        {/* Filters Section */}
-        <div className="space-y-3 border-b pb-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">Type</label>
-              <Select value={typeFilter ?? "all"} onValueChange={(value) => {
-                setTypeFilter(value === "all" ? null : value)
-                handleFilterChange()
-              }}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="All types" />
+          {/* Filter controls — matches transactions page layout */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              value={typeFilter}
+              onValueChange={(v) => {
+                setTypeFilter((v as "" | "INCOME" | "EXPENSE") ?? "")
+                setSelectedCategories([])
+                setPage(0)
+              }}
+            >
+              <ToggleGroupItem value="">All</ToggleGroupItem>
+              <ToggleGroupItem value="INCOME">Income</ToggleGroupItem>
+              <ToggleGroupItem value="EXPENSE">Expense</ToggleGroupItem>
+            </ToggleGroup>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <ListFilter data-icon="inline-start" />
+                  {selectedCategories.length > 0
+                    ? `Category (${selectedCategories.length})`
+                    : "Category"}
+                  <ChevronDown data-icon="inline-end" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search categories…" />
+                  <CommandList>
+                    <CommandEmpty>No categories found.</CommandEmpty>
+                    <CommandGroup>
+                      {availableCategories.map((opt) => {
+                        const selected = selectedCategories.includes(opt.value)
+                        return (
+                          <CommandItem
+                            key={opt.value}
+                            value={opt.value}
+                            onSelect={() => {
+                              setSelectedCategories((prev) =>
+                                selected
+                                  ? prev.filter((c) => c !== opt.value)
+                                  : [...prev, opt.value]
+                              )
+                              setPage(0)
+                            }}
+                          >
+                            <Checkbox checked={selected} aria-label={opt.label} />
+                            <span>{opt.label}</span>
+                          </CommandItem>
+                        )
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+                <div className="border-t p-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-center"
+                    disabled={selectedCategories.length === 0}
+                    onClick={() => { setSelectedCategories([]); setPage(0) }}
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <div className="flex items-center gap-2">
+              <Select
+                value={sortBy}
+                onValueChange={(v) => { setSortBy(v as SortBy); setPage(0) }}
+              >
+                <SelectTrigger size="sm" className="w-[130px]">
+                  <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All types</SelectItem>
-                  {uniqueTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">Category</label>
-              <Select value={categoryFilter ?? "all"} onValueChange={(value) => {
-                setCategoryFilter(value === "all" ? null : value)
-                handleFilterChange()
-              }}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="All categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All categories</SelectItem>
-                  {uniqueCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">Sort By</label>
-              <div className="flex gap-2">
-                <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortBy)}>
-                  <SelectTrigger className="h-8 text-xs flex-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
+                <SelectContent align="start">
+                  <SelectGroup>
                     <SelectItem value="date">Date</SelectItem>
                     <SelectItem value="amount">Amount</SelectItem>
-                    <SelectItem value="transactionId">ID</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 px-0"
-                  onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")}
-                >
-                  {sortDirection === "asc" ? "↑" : "↓"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
 
-        {/* Table Section */}
-        <div className="overflow-auto flex-1">
-          {paginatedTransactions.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-muted border-b">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-xs text-muted-foreground">Transaction ID</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs text-muted-foreground">Type</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs text-muted-foreground">Category</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 text-right font-medium text-xs text-muted-foreground">Amount</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs text-muted-foreground">Description</th>
-                  <th className="px-4 py-3 text-center font-medium text-xs text-muted-foreground">Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedTransactions.map((transaction, idx) => (
-                  <tr key={transaction.id} className="border-b hover:bg-muted/50">
-                    <td className="px-4 py-3 text-xs font-mono text-muted-foreground">{transaction.id}</td>
-                    <td className="px-4 py-3">
-                      <TransactionTypeBadge
-                        transactionType={transaction.transactionType as "INCOME" | "EXPENSE"}
-                        category={transaction.category ?? "OTHER"}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
-                      {transaction.category ? (
-                        <TransactionCategoryBadge category={transaction.category} />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">
-                      {formatDate(transaction.transactionDate)}
-                    </td>
-                    <td className={`px-4 py-3 text-xs font-medium text-right tabular-nums ${amountColorClass(transaction.transactionType)}`}>
-                      {formatCurrency(getSignedAmount(transaction.amount, transaction.transactionType))}
-                    </td>
-                    <td className="px-4 py-3 text-xs max-w-xs">
-                      <TooltipProvider>
+              <Select
+                value={sortDirection}
+                onValueChange={(v) => { setSortDirection(v as SortDirection); setPage(0) }}
+              >
+                <SelectTrigger size="sm" className="w-[130px]">
+                  <SelectValue placeholder="Direction" />
+                </SelectTrigger>
+                <SelectContent align="start">
+                  <SelectGroup>
+                    <SelectItem value="DESC">{directionLabels.DESC}</SelectItem>
+                    <SelectItem value="ASC">{directionLabels.ASC}</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {showReset && (
+              <Button variant="ghost" size="sm" onClick={handleReset}>
+                <X data-icon="inline-start" />
+                Reset
+              </Button>
+            )}
+          </div>
+        </DialogHeader>
+
+        {/* Table */}
+        <div className="overflow-x-auto flex-1 overflow-y-auto">
+          <TooltipProvider>
+            <Table className="table-fixed min-w-[900px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[120px]">Transaction ID</TableHead>
+                  <TableHead className="w-[130px]">Type</TableHead>
+                  <TableHead className="w-[160px]">Category</TableHead>
+                  <TableHead className="w-[130px]">Date</TableHead>
+                  <TableHead className="w-[130px] pr-4">Amount</TableHead>
+                  <TableHead className="w-[240px] pl-4">Description</TableHead>
+                  <TableHead className="w-[100px]">Details</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedTransactions.length > 0 ? (
+                  paginatedTransactions.map((transaction) => (
+                    <TableRow key={transaction.id}>
+                      <TableCell className="font-mono text-muted-foreground">
+                        {transaction.id}
+                      </TableCell>
+                      <TableCell>
+                        <TransactionTypeBadge
+                          transactionType={transaction.transactionType as "INCOME" | "EXPENSE"}
+                          category={transaction.category ?? "OTHER"}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {transaction.category ? (
+                          <TransactionCategoryBadge category={transaction.category} />
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{formatDate(transaction.transactionDate)}</TableCell>
+                      <TableCell
+                        className={cn(
+                          "pr-4 tabular-nums font-medium",
+                          transaction.transactionType === "EXPENSE"
+                            ? "text-red-600"
+                            : "text-emerald-600"
+                        )}
+                      >
+                        {formatCurrency(getSignedAmount(transaction.amount, transaction.transactionType))}
+                      </TableCell>
+                      <TableCell>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="block truncate">{transaction.description || "—"}</span>
+                            <span className="block max-w-[220px] truncate pl-4">
+                              {transaction.description || "—"}
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent>{transaction.description}</TooltipContent>
                         </Tooltip>
-                      </TooltipProvider>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Button variant="ghost" size="sm">
-                        <ArrowRight className="size-4" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-              No transactions found
-            </div>
-          )}
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          Details
+                          <ArrowRight data-icon="inline-end" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-12">
+                      <div className="text-center">
+                        <InboxIcon className="mx-auto size-10 text-muted-foreground" />
+                        <p className="mt-3 text-sm text-muted-foreground">No transactions found.</p>
+                        {(typeFilter || selectedCategories.length > 0) && (
+                          <p className="text-sm text-muted-foreground">
+                            Try adjusting your filters.
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TooltipProvider>
         </div>
 
-        <DialogFooter className="border-t pt-4 space-y-4">
-          {hasMoreResults && (
-            <div className="text-xs text-muted-foreground">
-              Showing {displayedCount} of {totalCount} results available.{" "}
-              <a href={transactionPageUrl} className="font-medium text-primary hover:underline">
-                View all on full page
-              </a>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between">
-            {filteredAndSorted.length > PAGE_SIZE && (
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
+        <DialogFooter className="flex flex-col items-end gap-2 border-t px-6 py-4">
+          <Pagination className="justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  aria-disabled={page === 0}
+                  className={cn(page === 0 && "pointer-events-none opacity-50")}
+                  onClick={(e) => { e.preventDefault(); if (page > 0) setPage((p) => p - 1) }}
+                />
+              </PaginationItem>
+              {paginationItems.map((item, idx) => (
+                <PaginationItem key={`${item}-${idx}`}>
+                  {item === "ellipsis" ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
                       href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setPage((p) => Math.max(0, p - 1))
-                      }}
-                      className={page === 0 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
+                      isActive={item === page + 1}
+                      onClick={(e) => { e.preventDefault(); setPage(item - 1) }}
+                    >
+                      {item}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  aria-disabled={page >= effectiveTotalPages - 1}
+                  className={cn(page >= effectiveTotalPages - 1 && "pointer-events-none opacity-50")}
+                  onClick={(e) => { e.preventDefault(); if (page < effectiveTotalPages - 1) setPage((p) => p + 1) }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
 
-                  {Array.from({ length: totalPages }).map((_, idx) => (
-                    <PaginationItem key={idx}>
-                      <PaginationLink
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setPage(idx)
-                        }}
-                        isActive={idx === page}
-                      >
-                        {idx + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setPage((p) => Math.min(totalPages - 1, p + 1))
-                      }}
-                      className={page >= totalPages - 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+          <p className="text-xs text-muted-foreground">
+            Showing {rangeStart}–{rangeEnd} of {filteredAndSorted.length} transactions
+            {hasMoreResults && (
+              <> · {displayedCount} of {totalCount} loaded from server</>
             )}
+          </p>
 
-            <Button variant="outline" asChild className="ml-auto">
-              <a href={transactionPageUrl}>
-                View all transactions
-                <ChevronRight className="ml-2 size-4" />
-              </a>
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" asChild>
+            <a href={transactionPageUrl}>
+              View all transactions
+              <ArrowRight data-icon="inline-end" />
+            </a>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
