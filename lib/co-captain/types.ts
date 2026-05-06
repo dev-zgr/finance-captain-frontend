@@ -84,6 +84,32 @@ export type DebtsPaymentDraftPayload = {
   description: string
 }
 
+export type InvestmentDepositDraftPayload = {
+  amount: number
+  description: string | null
+}
+
+export type InvestmentWithdrawDraftPayload = {
+  amount: number
+  description: string | null
+}
+
+export type InvestmentBuyDraftPayload = {
+  ticker: string
+  quantity: number
+  priceSnapshot: number | null
+  estimatedTotal: number | null
+  description: string | null
+}
+
+export type InvestmentSellDraftPayload = {
+  ticker: string
+  quantity: number
+  priceSnapshot: number | null
+  estimatedTotal: number | null
+  description: string | null
+}
+
 export type CheckingSummaryPayload = {
   balance: number
   monthlyIncome: number

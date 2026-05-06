@@ -56,7 +56,7 @@ export function InvestmentNewsListArtifact({ artifact }: ArtifactRendererProps<u
                   {payload.displayedCount} {payload.displayedCount === 1 ? "story" : "stories"} · {tickerSummary}
                 </p>
                 {firstHeadline && (
-                  <p className="truncate text-[10px] font-medium text-muted-foreground">
+                  <p className="truncate texclet-[10px] font-medium text-muted-foreground">
                     {firstHeadline} ...
                   </p>
                 )}
