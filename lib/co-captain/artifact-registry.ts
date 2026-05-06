@@ -3,6 +3,7 @@ import { AccountsDetailsArtifact } from "@/components/components/co-captain/arti
 import { CheckingSummaryArtifact } from "@/components/components/co-captain/artifacts/CheckingSummaryArtifact"
 import { CheckingTransactionListArtifact } from "@/components/components/co-captain/artifacts/CheckingTransactionListArtifact"
 import { DebtsTransactionListArtifact } from "@/components/components/co-captain/artifacts/DebtsTransactionListArtifact"
+import { DebtsSummaryArtifact } from "@/components/components/co-captain/artifacts/DebtsSummaryArtifact"
 import { ServerTimeArtifact } from "@/components/components/co-captain/artifacts/ServerTimeArtifact"
 import type { ArtifactRendererProps } from "@/lib/co-captain/types"
 
@@ -10,6 +11,7 @@ export const ARTIFACT_RENDERERS: Record<string, FC<ArtifactRendererProps<unknown
   "accounts.details": AccountsDetailsArtifact,
   "checking.summary": CheckingSummaryArtifact,
   "checking.transaction_list": CheckingTransactionListArtifact,
+  "debts.summary": DebtsSummaryArtifact,
   "debts.transaction_list": DebtsTransactionListArtifact,
   "server_time": ServerTimeArtifact,
 }
