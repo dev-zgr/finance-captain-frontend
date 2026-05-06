@@ -122,6 +122,18 @@ export type InvestmentPositionListPayload = {
   }>
 }
 
+export type InvestmentSummaryPayload = {
+  cashBalance: number
+  totalMarketValue: number
+  totalCostBasis: number
+  totalUnrealizedPnl: number
+  totalUnrealizedPnlPercent: number
+  dayChangeAmount: number
+  dayChangePercent: number
+  positionsCount: number
+  priceDataPartial: boolean
+}
+
 export type ToolCallStatus = "running" | "ok" | "failed"
 
 export type ToolCallState = {

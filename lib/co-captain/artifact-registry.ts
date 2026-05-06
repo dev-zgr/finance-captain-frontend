@@ -5,6 +5,7 @@ import { CheckingTransactionListArtifact } from "@/components/components/co-capt
 import { DebtsTransactionListArtifact } from "@/components/components/co-captain/artifacts/DebtsTransactionListArtifact"
 import { DebtsSummaryArtifact } from "@/components/components/co-captain/artifacts/DebtsSummaryArtifact"
 import { InvestmentPositionListArtifact } from "@/components/components/co-captain/artifacts/InvestmentPositionListArtifact"
+import { InvestmentSummaryArtifact } from "@/components/components/co-captain/artifacts/InvestmentSummaryArtifact"
 import { ServerTimeArtifact } from "@/components/components/co-captain/artifacts/ServerTimeArtifact"
 import type { ArtifactRendererProps } from "@/lib/co-captain/types"
 
@@ -16,5 +17,7 @@ export const ARTIFACT_RENDERERS: Record<string, FC<ArtifactRendererProps<unknown
   "debts.transaction_list": DebtsTransactionListArtifact,
   "investment.position_list": InvestmentPositionListArtifact,
   "investments.positions": InvestmentPositionListArtifact,
+  "investment.summary": InvestmentSummaryArtifact,
+  "investments.summary": InvestmentSummaryArtifact,
   "server_time": ServerTimeArtifact,
 }
