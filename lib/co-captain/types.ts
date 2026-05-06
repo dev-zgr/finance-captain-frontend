@@ -72,6 +72,25 @@ export type CheckingTransactionListPayload = {
   }>
 }
 
+export type DebtsTransactionListPayload = {
+  totalCount: number
+  displayedCount: number
+  appliedFilters: {
+    transactionType: string | null
+    category: string | null
+    startDate: string | null
+    endDate: string | null
+  }
+  transactions: Array<{
+    id: number
+    transactionType: "DEBT" | "PAYMENT"
+    category: string | null
+    amount: number
+    transactionDate: string
+    description: string | null
+  }>
+}
+
 export type ToolCallStatus = "running" | "ok" | "failed"
 
 export type ToolCallState = {
