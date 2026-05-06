@@ -134,6 +134,32 @@ export type InvestmentSummaryPayload = {
   priceDataPartial: boolean
 }
 
+export type InvestmentTransactionListPayload = {
+  totalCount: number
+  displayedCount: number
+  appliedFilters: {
+    transactionTypes: string[] | null
+    categories: string[] | null
+    startDate: string | null
+    endDate: string | null
+    tickers: string[] | null
+    q: string | null
+  }
+  transactions: Array<{
+    id: number
+    transactionType: "TRANSFER" | "TRADE"
+    category: "DEPOSIT" | "WITHDRAW" | "BUY" | "SELL"
+    amount: number
+    transactionDate: string
+    description: string | null
+    ticker: string | null
+    companyName: string | null
+    quantity: number | null
+    pricePerShare: number | null
+    realizedProfitLoss: number | null
+  }>
+}
+
 export type ToolCallStatus = "running" | "ok" | "failed"
 
 export type ToolCallState = {
