@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowRight, ChevronDown, InboxIcon, ListFilter, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -95,6 +96,7 @@ export function CheckingTransactionListModal({
   onOpenChange,
   payload,
 }: CheckingTransactionListModalProps) {
+  const router = useRouter()
   const [page, setPage] = useState(0)
   const [sortBy, setSortBy] = useState<SortBy>(DEFAULT_SORT_BY)
   const [sortDirection, setSortDirection] = useState<SortDirection>(DEFAULT_SORT_DIRECTION)
@@ -360,7 +362,11 @@ export function CheckingTransactionListModal({
                         </Tooltip>
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => router.push(`/checking-account/transactions/${transaction.id}`)}
+                        >
                           Details
                           <ArrowRight data-icon="inline-end" />
                         </Button>
