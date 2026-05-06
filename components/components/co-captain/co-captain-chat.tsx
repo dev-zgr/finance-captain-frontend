@@ -143,6 +143,14 @@ function normalizeArtifact(raw: unknown): Artifact | null {
     kind,
     status,
     payload: source.payload ?? {},
+    committedResourceType:
+      typeof source.committedResourceType === "string"
+        ? source.committedResourceType
+        : undefined,
+    committedResourceId:
+      typeof source.committedResourceId === "number"
+        ? source.committedResourceId
+        : undefined,
   }
 }
 
@@ -337,6 +345,23 @@ export function CoCaptainChat({ token }: Props) {
     [token],
   )
 
+  const handleArtifactUpdate = useCallback((messageId: string, nextArtifact: Artifact) => {
+    setMessages((prev) =>
+      prev.map((message) => {
+        if (message.id !== messageId || !message.artifacts) {
+          return message
+        }
+
+        return {
+          ...message,
+          artifacts: message.artifacts.map((artifact) =>
+            artifact.id === nextArtifact.id ? nextArtifact : artifact,
+          ),
+        }
+      }),
+    )
+  }, [])
+
   const hasMessages = messages.length > 0
 
   return (
@@ -375,7 +400,9 @@ export function CoCaptainChat({ token }: Props) {
                   >
                     <ChatMessageBubble
                       message={msg}
+                      token={token}
                       isStreaming={isLoading && i === messages.length - 1 && msg.role === "assistant"}
+                      onArtifactUpdate={(next) => handleArtifactUpdate(msg.id, next)}
                     />
                   </div>
                 )

@@ -38,11 +38,37 @@ export type Artifact<T = unknown> = {
   kind: ArtifactKind
   status: ArtifactStatus
   payload: T
+  committedResourceType?: string
+  committedResourceId?: number
 }
 
 export type ArtifactRendererProps<T = unknown> = {
   artifact: Artifact<T>
+  token?: string
   onUpdate?: (next: Artifact<T>) => void
+}
+
+export type CheckingExpenseDraftPayload = {
+  amount: number
+  category:
+    | "FOOD"
+    | "TRANSPORT"
+    | "UTILITIES"
+    | "RENT"
+    | "HEALTHCARE"
+    | "ENTERTAINMENT"
+    | "SHOPPING"
+    | "TRANSFERS"
+    | "OTHER"
+  transactionDate: string
+  description: string
+}
+
+export type CheckingIncomeDraftPayload = {
+  amount: number
+  category: "SALARY" | "INVESTMENT" | "RENTAL" | "TRANSFERS" | "OTHER"
+  transactionDate: string
+  description: string
 }
 
 export type CheckingSummaryPayload = {

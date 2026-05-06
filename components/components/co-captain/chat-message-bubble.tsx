@@ -6,7 +6,7 @@ import { ArtifactRenderer } from "./ArtifactRenderer"
 import { ToolCallList } from "./ToolCallList"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
-import type { ChatMessage } from "@/lib/co-captain/types"
+import type { Artifact, ChatMessage } from "@/lib/co-captain/types"
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
@@ -46,10 +46,12 @@ const avatarAI = (
 
 type Props = {
   message: ChatMessage
+  token: string
   isStreaming?: boolean
+  onArtifactUpdate?: (next: Artifact) => void
 }
 
-export function ChatMessageBubble({ message, isStreaming }: Props) {
+export function ChatMessageBubble({ message, token, isStreaming, onArtifactUpdate }: Props) {
   const isUser = message.role === "user"
 
   if (isUser) {
@@ -74,7 +76,12 @@ export function ChatMessageBubble({ message, isStreaming }: Props) {
               <Separator />
               <div className="mt-4 space-y-3">
                 {message.artifacts.map((artifact) => (
-                  <ArtifactRenderer key={artifact.id} artifact={artifact} />
+                  <ArtifactRenderer
+                    key={artifact.id}
+                    artifact={artifact}
+                    token={token}
+                    onUpdate={onArtifactUpdate}
+                  />
                 ))}
               </div>
             </div>
