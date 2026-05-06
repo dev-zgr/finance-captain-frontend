@@ -7,17 +7,35 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { ArtifactRendererProps, CheckingTransactionListPayload } from "@/lib/co-captain/types"
 import { CheckingTransactionListModal } from "./CheckingTransactionListModal"
 
-const formatDateRange = (startDate?: string, endDate?: string) => {
-  if (!startDate && !endDate) return "All transactions"
-  if (startDate && endDate) {
-    const start = new Date(startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    const end = new Date(endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-    return `${start} - ${end}`
+const buildFilterSummary = (filters: {
+  transactionType: string | null
+  category: string | null
+  startDate: string | null
+  endDate: string | null
+}) => {
+  const parts: string[] = []
+
+  if (filters.transactionType) {
+    parts.push(filters.transactionType)
   }
-  if (startDate) {
-    return `From ${new Date(startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+
+  if (filters.category) {
+    parts.push(filters.category)
   }
-  return `Until ${new Date(endDate!).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+
+  if (filters.startDate && filters.endDate) {
+    const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    const end = new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    parts.push(`${start}–${end}`)
+  } else if (filters.startDate) {
+    const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    parts.push(`from ${start}`)
+  } else if (filters.endDate) {
+    const end = new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    parts.push(`until ${end}`)
+  }
+
+  return parts.length > 0 ? parts.join(" • ") : "All transactions"
 }
 
 export function CheckingTransactionListArtifact({
@@ -29,13 +47,19 @@ export function CheckingTransactionListArtifact({
     const raw = (artifact.payload ?? {}) as Partial<CheckingTransactionListPayload>
 
     return {
-      transactions: Array.isArray(raw.transactions) ? raw.transactions : [],
       totalCount: typeof raw.totalCount === "number" ? raw.totalCount : 0,
-      dateRange: raw.dateRange,
+      displayedCount: typeof raw.displayedCount === "number" ? raw.displayedCount : 0,
+      appliedFilters: raw.appliedFilters ?? {
+        transactionType: null,
+        category: null,
+        startDate: null,
+        endDate: null,
+      },
+      transactions: Array.isArray(raw.transactions) ? raw.transactions : [],
     }
   }, [artifact.payload])
 
-  const dateRangeText = formatDateRange(payload.dateRange?.startDate, payload.dateRange?.endDate)
+  const filterSummary = buildFilterSummary(payload.appliedFilters)
 
   return (
     <>
@@ -65,10 +89,10 @@ export function CheckingTransactionListArtifact({
               <ListChecks className="mt-0.5 size-3.5 text-muted-foreground" />
               <div className="min-w-0 space-y-0">
                 <p className="truncate text-[11px] font-semibold">
-                  {payload.totalCount} transaction{payload.totalCount !== 1 ? "s" : ""}
+                  {payload.displayedCount} transaction{payload.displayedCount !== 1 ? "s" : ""}
                 </p>
                 <p className="truncate text-[10px] font-medium text-muted-foreground">
-                  {dateRangeText}
+                  {filterSummary}
                 </p>
               </div>
             </div>

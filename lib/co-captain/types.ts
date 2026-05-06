@@ -54,20 +54,22 @@ export type CheckingSummaryPayload = {
 }
 
 export type CheckingTransactionListPayload = {
+  totalCount: number
+  displayedCount: number
+  appliedFilters: {
+    transactionType: string | null
+    category: string | null
+    startDate: string | null
+    endDate: string | null
+  }
   transactions: Array<{
-    id: string
-    transactionId: string
-    type: string
-    category: string
-    date: string
+    id: number
+    transactionType: string
+    category: string | null
     amount: number
+    transactionDate: string
     description: string
   }>
-  totalCount: number
-  dateRange?: {
-    startDate: string
-    endDate: string
-  }
 }
 
 export type ToolCallStatus = "running" | "ok" | "failed"
