@@ -71,6 +71,19 @@ export type CheckingIncomeDraftPayload = {
   description: string
 }
 
+export type DebtsDebtDraftPayload = {
+  amount: number
+  category: "LOAN" | "CREDIT_CARD_ADVANCE" | "MORTGAGE" | "PERSONAL_BORROWING" | "OTHER"
+  transactionDate: string
+  description: string
+}
+
+export type DebtsPaymentDraftPayload = {
+  amount: number
+  transactionDate: string
+  description: string
+}
+
 export type CheckingSummaryPayload = {
   balance: number
   monthlyIncome: number
