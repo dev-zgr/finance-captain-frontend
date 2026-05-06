@@ -160,6 +160,22 @@ export type InvestmentTransactionListPayload = {
   }>
 }
 
+export type InvestmentNewsListPayload = {
+  totalCount: number
+  displayedCount: number
+  overallSummary: string | null
+  generatedAt: string | null
+  items: Array<{
+    title: string
+    aiSummary: string
+    link: string
+    imageUrl: string | null
+    sourceName: string
+    publishedAt: string
+    relevantTicker: string | null
+  }>
+}
+
 export type ToolCallStatus = "running" | "ok" | "failed"
 
 export type ToolCallState = {
