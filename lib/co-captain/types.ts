@@ -98,6 +98,30 @@ export type DebtsTransactionListPayload = {
   }>
 }
 
+export type InvestmentPositionListPayload = {
+  totalCount: number
+  displayedCount: number
+  priceDataPartial: boolean
+  appliedFilters: {
+    gainLossFilter: "ALL" | "GAINERS" | "LOSERS" | null
+    q: string | null
+  }
+  positions: Array<{
+    id: number
+    ticker: string
+    companyName: string
+    logoUrl: string | null
+    quantity: number
+    averageBuyPrice: number
+    currentPrice: number
+    dayChange: number
+    dayChangePercent: number
+    marketValue: number
+    unrealizedPnl: number
+    unrealizedPnlPercent: number
+  }>
+}
+
 export type ToolCallStatus = "running" | "ok" | "failed"
 
 export type ToolCallState = {
