@@ -9,7 +9,6 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogDescription,
@@ -186,7 +185,7 @@ export function CheckingTransactionListModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl max-h-[85vh] overflow-hidden flex flex-col gap-0 p-0">
+      <DialogContent className="sm:max-w-5xl h-[85vh] overflow-hidden flex flex-col gap-0 p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle>Checking Transactions</DialogTitle>
           {appliedFiltersDescription && (
@@ -306,7 +305,7 @@ export function CheckingTransactionListModal({
         </DialogHeader>
 
         {/* Table */}
-        <div className="overflow-x-auto flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-auto px-2">
           <TooltipProvider>
             <Table className="table-fixed min-w-[900px]">
               <TableHeader>
@@ -393,7 +392,7 @@ export function CheckingTransactionListModal({
           </TooltipProvider>
         </div>
 
-        <DialogFooter className="flex flex-col items-end gap-2 border-t px-6 py-4">
+        <div className="flex flex-row items-center justify-end gap-3 border-t px-6 py-4">
           <Pagination className="justify-end">
             <PaginationContent>
               <PaginationItem>
@@ -430,20 +429,13 @@ export function CheckingTransactionListModal({
             </PaginationContent>
           </Pagination>
 
-          <p className="text-xs text-muted-foreground">
-            Showing {rangeStart}–{rangeEnd} of {filteredAndSorted.length} transactions
-            {hasMoreResults && (
-              <> · {displayedCount} of {totalCount} loaded from server</>
-            )}
-          </p>
-
           <Button variant="outline" size="sm" asChild>
             <a href={transactionPageUrl}>
               View all transactions
               <ArrowRight data-icon="inline-end" />
             </a>
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   )

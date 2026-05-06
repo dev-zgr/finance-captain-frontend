@@ -69,16 +69,8 @@ export function CheckingTransactionListArtifact({ artifact }: ArtifactRendererPr
         }}
         className="cursor-pointer transition hover:ring-1 hover:ring-primary/40"
       >
-        <CardContent className="relative space-y-1.5 p-2.5">
-          <Badge
-            variant="outline"
-            className="absolute top-1.5 right-1.5 flex items-center gap-1 border-blue-500/30 bg-blue-500/10 px-1.5 py-0 text-[10px] text-blue-700 hover:bg-blue-500/10"
-          >
-            <ListChecks className="size-3" />
-            Checking Transactions
-          </Badge>
-
-          <div className="flex items-start justify-between gap-2 pr-36">
+        <CardContent className="space-y-1.5 p-2.5">
+          <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-start gap-1.5">
               <ListChecks className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
               <div className="min-w-0 space-y-0.5">
@@ -92,6 +84,13 @@ export function CheckingTransactionListArtifact({ artifact }: ArtifactRendererPr
                 </p>
               </div>
             </div>
+            <Badge
+              variant="outline"
+              className="shrink-0 flex items-center gap-1 border-blue-500/30 bg-blue-500/10 px-1.5 py-0 text-[10px] text-blue-700 hover:bg-blue-500/10"
+            >
+              <ListChecks className="size-3" />
+              Checking Transactions
+            </Badge>
           </div>
         </CardContent>
       </Card>

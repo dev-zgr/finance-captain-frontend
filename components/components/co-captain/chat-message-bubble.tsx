@@ -65,7 +65,7 @@ export function ChatMessageBubble({ message, isStreaming }: Props) {
   return (
     <div className="flex w-full items-start gap-3">
       {avatarAI}
-      <div className="w-full max-w-[75%] min-w-0">
+      <div className="w-full max-w-[90%] min-w-0">
         <div className="w-full overflow-hidden rounded-xl border bg-card px-4 py-3 text-sm leading-relaxed text-card-foreground shadow-sm break-words [overflow-wrap:anywhere]">
           {isStreaming && !message.content ? <Spinner className="size-4 text-blue-500" /> : message.content}
 
