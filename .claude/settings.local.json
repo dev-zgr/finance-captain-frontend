@@ -6,7 +6,25 @@
       "Bash(gh repo *)",
       "Bash(git remote *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(npm i *)",
+      "Bash(node *)",
+      "WebFetch(domain:www.cult-ui.com)",
+      "WebFetch(domain:cult-ui.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api *)",
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(npm install *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(git *)",
+      "Bash(gh pr *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
+      "Bash(npx tsc *)",
+      "Bash(pkill -f \"next dev\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:3000/co-captain)",
+      "Bash(npx eslint *)"
     ]
   }
 }
