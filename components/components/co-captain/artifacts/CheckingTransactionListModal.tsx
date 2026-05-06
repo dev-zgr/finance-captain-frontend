@@ -216,15 +216,15 @@ export function CheckingTransactionListModal({
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-muted-foreground">Type</label>
-              <Select value={typeFilter ?? ""} onValueChange={(value) => {
-                setTypeFilter(value || null)
+              <Select value={typeFilter ?? "all"} onValueChange={(value) => {
+                setTypeFilter(value === "all" ? null : value)
                 handleFilterChange()
               }}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
+                  <SelectItem value="all">All types</SelectItem>
                   {uniqueTypes.map((type) => (
                     <SelectItem key={type} value={type}>
                       {type}
@@ -236,15 +236,15 @@ export function CheckingTransactionListModal({
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-muted-foreground">Category</label>
-              <Select value={categoryFilter ?? ""} onValueChange={(value) => {
-                setCategoryFilter(value || null)
+              <Select value={categoryFilter ?? "all"} onValueChange={(value) => {
+                setCategoryFilter(value === "all" ? null : value)
                 handleFilterChange()
               }}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
+                  <SelectItem value="all">All categories</SelectItem>
                   {uniqueCategories.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
