@@ -7,6 +7,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { ArtifactRendererProps, CheckingTransactionListPayload } from "@/lib/co-captain/types"
 import { CheckingTransactionListModal } from "./CheckingTransactionListModal"
 
+const fmt = (value: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value)
+
 const buildFilterSummary = (filters: {
   transactionType: string | null
   category: string | null
@@ -14,22 +17,17 @@ const buildFilterSummary = (filters: {
   endDate: string | null
 }) => {
   const parts: string[] = []
-
   if (filters.transactionType) parts.push(filters.transactionType)
   if (filters.category) parts.push(filters.category)
-
   if (filters.startDate && filters.endDate) {
     const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     const end = new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     parts.push(`${start}–${end}`)
   } else if (filters.startDate) {
-    const start = new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    parts.push(`from ${start}`)
+    parts.push(`from ${new Date(filters.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`)
   } else if (filters.endDate) {
-    const end = new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    parts.push(`until ${end}`)
+    parts.push(`until ${new Date(filters.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`)
   }
-
   return parts.length > 0 ? parts.join(" • ") : "All transactions"
 }
 
@@ -38,19 +36,22 @@ export function CheckingTransactionListArtifact({ artifact }: ArtifactRendererPr
 
   const payload = useMemo(() => {
     const raw = (artifact.payload ?? {}) as Partial<CheckingTransactionListPayload>
-
     return {
       totalCount: typeof raw.totalCount === "number" ? raw.totalCount : 0,
       displayedCount: typeof raw.displayedCount === "number" ? raw.displayedCount : 0,
-      appliedFilters: raw.appliedFilters ?? {
-        transactionType: null,
-        category: null,
-        startDate: null,
-        endDate: null,
-      },
+      appliedFilters: raw.appliedFilters ?? { transactionType: null, category: null, startDate: null, endDate: null },
       transactions: Array.isArray(raw.transactions) ? raw.transactions : [],
     }
   }, [artifact.payload])
+
+  const { incomeTotal, expenseTotal } = useMemo(() => ({
+    incomeTotal: payload.transactions
+      .filter((t) => t.transactionType === "INCOME")
+      .reduce((sum, t) => sum + t.amount, 0),
+    expenseTotal: payload.transactions
+      .filter((t) => t.transactionType === "EXPENSE")
+      .reduce((sum, t) => sum + t.amount, 0),
+  }), [payload.transactions])
 
   const filterSummary = buildFilterSummary(payload.appliedFilters)
 
@@ -66,7 +67,7 @@ export function CheckingTransactionListArtifact({ artifact }: ArtifactRendererPr
             setOpen(true)
           }
         }}
-        className="w-full cursor-pointer transition hover:ring-1 hover:ring-primary/40"
+        className="cursor-pointer transition hover:ring-1 hover:ring-primary/40"
       >
         <CardContent className="relative space-y-1.5 p-2.5">
           <Badge
@@ -80,14 +81,17 @@ export function CheckingTransactionListArtifact({ artifact }: ArtifactRendererPr
           <div className="flex items-start justify-between gap-2 pr-36">
             <div className="flex min-w-0 items-start gap-1.5">
               <ListChecks className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-              <div className="min-w-0 space-y-0">
-                <p className="truncate text-[11px] font-semibold">Checking Transactions</p>
-                <p className="truncate text-[10px] font-medium text-muted-foreground">{filterSummary}</p>
+              <div className="min-w-0 space-y-0.5">
+                <p className="truncate text-[11px] font-semibold">
+                  {payload.displayedCount} transactions · {filterSummary}
+                </p>
+                <p className="truncate text-[10px] font-medium text-muted-foreground">
+                  <span className="text-emerald-600 dark:text-emerald-500">↑ {fmt(incomeTotal)} income</span>
+                  <span className="mx-1 text-muted-foreground/50">·</span>
+                  <span className="text-red-600 dark:text-red-500">↓ {fmt(expenseTotal)} expenses</span>
+                </p>
               </div>
             </div>
-            <p className="shrink-0 text-sm font-semibold leading-tight tabular-nums">
-              {payload.displayedCount}
-            </p>
           </div>
         </CardContent>
       </Card>
