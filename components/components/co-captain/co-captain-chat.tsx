@@ -233,12 +233,19 @@ export function CoCaptainChat({ token }: Props) {
         const { messageId, streamToken } = res.data.content!
         const reader = await openStream(token, messageId, streamToken, controller.signal)
         const decoder = new TextDecoder()
+        let buffer = ""
 
         outer: while (true) {
           const { done, value } = await reader.read()
           if (done) break
 
-          for (const named of parseSseChunk(decoder.decode(value, { stream: true }))) {
+          buffer += decoder.decode(value, { stream: true })
+          const lastDoubleNewline = buffer.lastIndexOf("\n\n")
+          if (lastDoubleNewline < 0) continue
+          const complete = buffer.slice(0, lastDoubleNewline + 2)
+          buffer = buffer.slice(lastDoubleNewline + 2)
+
+          for (const named of parseSseChunk(complete)) {
             switch (named.event) {
               case "text_delta":
                 setMessages((prev) =>
@@ -275,8 +282,11 @@ export function CoCaptainChat({ token }: Props) {
 
               case "artifact":
               case "draft": {
+                console.log("Received artifact event:", named.data)
                 const artifact = normalizeArtifact(named.data)
+                console.log("Normalized artifact:", artifact)
                 if (!artifact) {
+                  console.log("Failed to normalize artifact")
                   break
                 }
 

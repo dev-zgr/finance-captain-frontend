@@ -10,6 +10,8 @@ type Props = {
 export function ArtifactRenderer({ artifact, onUpdate }: Props) {
   const Renderer = ARTIFACT_RENDERERS[artifact.type]
 
+  console.log("ArtifactRenderer - type:", artifact.type, "Renderer found:", !!Renderer, "Available renderers:", Object.keys(ARTIFACT_RENDERERS))
+
   if (!Renderer) {
     if (process.env.NODE_ENV === "production") {
       return null

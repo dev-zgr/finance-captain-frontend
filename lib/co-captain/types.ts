@@ -45,6 +45,33 @@ export type ArtifactRendererProps<T = unknown> = {
   onUpdate?: (next: Artifact<T>) => void
 }
 
+export type CheckingSummaryPayload = {
+  balance: number
+  monthlyIncome: number
+  monthlyExpenses: number
+  monthlyNet: number
+  accountOpenedAt: string
+}
+
+export type CheckingTransactionListPayload = {
+  totalCount: number
+  displayedCount: number
+  appliedFilters: {
+    transactionType: string | null
+    category: string | null
+    startDate: string | null
+    endDate: string | null
+  }
+  transactions: Array<{
+    id: number
+    transactionType: string
+    category: string | null
+    amount: number
+    transactionDate: string
+    description: string
+  }>
+}
+
 export type ToolCallStatus = "running" | "ok" | "failed"
 
 export type ToolCallState = {
