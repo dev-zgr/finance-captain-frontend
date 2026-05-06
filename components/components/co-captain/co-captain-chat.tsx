@@ -275,8 +275,11 @@ export function CoCaptainChat({ token }: Props) {
 
               case "artifact":
               case "draft": {
+                console.log("Received artifact event:", named.data)
                 const artifact = normalizeArtifact(named.data)
+                console.log("Normalized artifact:", artifact)
                 if (!artifact) {
+                  console.log("Failed to normalize artifact")
                   break
                 }
 
