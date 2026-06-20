@@ -24,7 +24,10 @@
       "Bash(pkill -f \"next dev\")",
       "Read(//tmp/**)",
       "Bash(curl -s http://localhost:3000/co-captain)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Read(//Users/ozgurkamali/WebstormProjects/**)",
+      "Read(//Users/ozgurkamali/**)",
+      "Bash(lsof -iTCP:3000 -sTCP:LISTEN)"
     ]
   }
 }
